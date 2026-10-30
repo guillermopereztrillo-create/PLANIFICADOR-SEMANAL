@@ -177,6 +177,7 @@ input[type=number]{font-family:var(--f-mono)}
       <span>Has cambiado los ajustes. Reorganiza para aplicarlos a esta semana (se conservan los bloques ya marcados).</span>
       <button class="btn small" id="regenBanner">Reorganizar semana</button>
     </div>
+    <section class="card" id="setup" hidden><h2>Pon tu tiempo de estudio</h2><p class="help">La app no organiza nada hasta que indiques cuántas horas tienes cada día. Rellena los días que quieras en Ajustes y la semana se reparte sola; los días que dejes vacíos se quedan sin planificar. Tus bloques fijos ya aparecen abajo.</p><a class="btn" href="#ajustes" style="justify-self:start;text-decoration:none">Ir a Ajustes</a></section>
     <section class="summary" id="summary" aria-label="Balance de la semana"></section>
     <div class="daychips" id="chips" role="group" aria-label="Elegir día"></div>
     <section class="week" id="week"></section>
@@ -195,7 +196,7 @@ input[type=number]{font-family:var(--f-mono)}
     <div class="cols">
       <section class="card">
         <h2>Tiempo por día</h2>
-        <p class="help">Hora a la que empiezas y tiempo de estudio de cada día. Marca «sin entreno» en los días de descanso físico.</p>
+        <p class="help">Hora a la que empiezas y horas de estudio de cada día. Un día vacío no se organiza (ni estudio ni entreno). Marca «sin entreno» en los días de descanso físico.</p>
         <div class="row days rowhead"><span>Día</span><span>Empiezo</span><span>Estudio (h)</span><span></span></div>
         <div class="rows" id="dayRows"></div>
       </section>
@@ -210,7 +211,7 @@ input[type=number]{font-family:var(--f-mono)}
         </div>
         <ul class="rules">
           <li>Dominadas, 1500 m y 100 m nunca en días seguidos (48 h de recuperación). Evita juntar 1500 m y 100 m el mismo día.</li>
-          <li>Días de CrossFit: sin dominadas y, si se puede, sin carrera. Natación sí, como descarga.</li>
+          <li>Los días de CrossFit no se añade otro entreno salvo que no quepa en el resto de la semana.</li>
           <li>Marcas del Decreto 36/2025 (Anexo III, hombres): cada prueba puntúa de 0 a 10 y hay que sacar al menos un 5 en todas.</li>
           <li>Máximo dos entrenos por día y 15 min de margen para ducha antes de estudiar.</li>
         </ul>
@@ -265,15 +266,15 @@ function defaults(){
     {id:"nat",name:"Natación 100 m",kind:"train",color:"--c-nat",sessions:3,dur:45,goal:"5 → 1:50 · 10 → 1:18"},
     {id:"car",name:"Carrera 1500 m",kind:"train",color:"--c-car",sessions:2,dur:40,goal:"5 → 6:06 · 10 → 4:32"},
     {id:"vel",name:"Velocidad 100 m",kind:"train",color:"--signal",sessions:1,dur:35,goal:"5 → 14,50 s · 10 → 12,20 s"},
-    {id:"dom",name:"Dominadas",kind:"train",color:"--c-dom",sessions:3,dur:20,goal:"5 → 12 rep · 10 → 30 rep"}
+    {id:"dom",name:"Dominadas",kind:"train",color:"--c-dom",sessions:2,dur:20,goal:"5 → 12 rep · 10 → 30 rep"}
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:2,
-    days:DAYS.map((_,i)=>({start:i>=5?"10:00":"16:00",study:i===6?120:180,noTrain:i===6})),
+    v:3,
+    days:DAYS.map((_,i)=>({start:i>=5?"10:00":"16:00",study:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST)},
-    fixed:[{id:uid(),day:0,start:"08:00",end:"09:00",label:"CrossFit"},{id:uid(),day:2,start:"08:00",end:"09:00",label:"CrossFit"}],
+    fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
     trainPos:"after",block:50,brk:10,
     plans:{},dirty:{}
   };
@@ -281,7 +282,10 @@ function defaults(){
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){S=null}
 if(S&&S.v===1){const n=defaults();["days","fixed","trainPos","block","brk"].forEach(k=>{if(S[k]!==undefined)n[k]=S[k]});S=n}
-if(!S||S.v!==2)S=defaults();
+if(S&&S.v===2){S.v=3;S.plans={};S.dirty={};S.days.forEach(d=>d.study=null);S.subjects.forEach(x=>{if(x.id==="dom"&&x.sessions===3)x.sessions=2});S.fixed.forEach(f=>{if(/cross/i.test(f.label)&&f.start==="08:00"){f.start="20:00";f.end="21:00"}})}
+if(!S||S.v!==3)S=defaults();
+const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
+const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* fechas */
@@ -291,7 +295,7 @@ const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+Stri
 const MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const toMin=s=>{const[h,m]=s.split(":").map(Number);return h*60+m};
 const fmt=m=>String(Math.floor(m/60)%24).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
-const hm=m=>{const h=Math.floor(m/60),r=m%60;return h?(h+" h"+(r?" "+r:"")):(r+" min")};
+const hm=m=>{m=m||0;const h=Math.floor(m/60),r=m%60;return h?(h+" h"+(r?" "+r:"")):(r+" min")};
 const subj=id=>S.subjects.find(s=>s.id===id);
 
 /* ------- organizador ------- */
@@ -305,12 +309,12 @@ function assignTraining(){
     for(let k=0;k<(t.sessions|0);k++){
       let best=-1,bc=Infinity;
       for(let d=0;d<7;d++){
-        if(S.days[d].noTrain||byDay[d].includes(t.id)||byDay[d].length>=2)continue;
+        if(S.days[d].noTrain||!hasTime(d)||byDay[d].includes(t.id)||byDay[d].length>=2)continue;
         let c=byDay[d].length*4;
         const near=[d-1,d+1].filter(x=>x>=0&&x<7&&byDay[x].includes(t.id)).length;
         if(t.id!=="nat")c+=near*20;else c+=near*2;
         if((t.id==="car"&&byDay[d].includes("vel"))||(t.id==="vel"&&byDay[d].includes("car")))c+=12;
-        if(crossfit.has(d)){if(t.id==="dom")c+=30;else if(t.id!=="nat")c+=8;}
+        if(crossfit.has(d))c+=t.id==="nat"?15:30; // el CrossFit ya es entreno ese día
         // reparte: preferir días lejos de otras sesiones del mismo tipo
         let dist=7;for(let x=0;x<7;x++)if(byDay[x].includes(t.id))dist=Math.min(dist,Math.abs(x-d));
         c+=(7-dist)*0.5+d*0.01;
@@ -336,6 +340,7 @@ function generate(key){
   const B=Math.max(15,+S.block||50),P=Math.max(0,+S.brk||0);
   const plan=DAYS.map((_,d)=>{
     const out=[],fx=fixedFor(d);
+    if(!hasTime(d))return out;
     let cur=toMin(S.days[d].start||"16:00");
     const trains=tr[d].map(id=>subj(id));
     const placeTrain=()=>{for(const t of trains){const s=fit(cur,+t.dur,fx);out.push({id:uid(),type:"train",subj:t.id,start:s,end:s+ +t.dur,done:false});cur=s+ +t.dur}
@@ -375,8 +380,9 @@ const CHECK='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L1
 
 function renderWeek(){
   const mon=monday(offset),key=iso(mon);
-  if(!S.plans[key])generate(key);
+  if(!S.plans[key]||(anyTime()&&S.plans[key].every(a=>!a.length)))generate(key);
   const plan=S.plans[key];
+  $("setup").hidden=anyTime();$("summary").hidden=!anyTime();
   const sun=new Date(mon);sun.setDate(mon.getDate()+6);
   $("range").textContent=mon.getDate()+" "+MES[mon.getMonth()]+" – "+sun.getDate()+" "+MES[sun.getMonth()];
   const todayIdx=offset===0?(new Date().getDay()+6)%7:-1;
@@ -414,7 +420,7 @@ function renderWeek(){
       const sub=b.type==="study"?(b.topic?esc(b.topic):"Sin temas pendientes"):(s.goal?"Objetivo: "+esc(s.goal):"Entreno");
       return g+`<li class="blk${b.done?" done":""}" style="--c:var(${s.color})"><div class="body"><span class="t">${fmt(b.start)}–${fmt(b.end)} · ${b.end-b.start} min</span><span class="n">${esc(s.name)}</span><span class="s">${sub}</span></div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} como hecho">${CHECK}</button></li>`;
     }).join("");
-    return `<article class="day${d===activeDay?" active":""}${d===todayIdx?" today":""}"><div class="dayhead"><h3>${n}${d===todayIdx?'<span class="today-tag">HOY</span>':""}</h3><span class="meta">${dt.getDate()} ${MES[dt.getMonth()]} · ${hm(st)} estudio${nt?" · "+nt+" entreno"+(nt>1?"s":""):""}</span></div>${li?`<ul class="blocks">${li}</ul>`:`<p class="empty">Día libre. Añade tiempo de estudio en Ajustes.</p>`}</article>`;
+    return `<article class="day${d===activeDay?" active":""}${d===todayIdx?" today":""}"><div class="dayhead"><h3>${n}${d===todayIdx?'<span class="today-tag">HOY</span>':""}</h3><span class="meta">${dt.getDate()} ${MES[dt.getMonth()]} · ${hm(st)} estudio${nt?" · "+nt+" entreno"+(nt>1?"s":""):""}</span></div>${li?`<ul class="blocks">${li}</ul>`:""}${!hasTime(d)?`<p class="empty">Sin tiempo de estudio puesto. Este día no se organiza hasta que lo indiques en Ajustes.</p>`:(li?"":`<p class="empty">Día libre.</p>`)}</article>`;
   }).join("");
 }
 
@@ -428,8 +434,9 @@ function renderTopics(){
 }
 
 /* ------- ajustes ------- */
+const hasTimeVal=d=>(d.study===null||d.study===undefined||d.study==="")?"":+(d.study/60).toFixed(2);
 function renderSettings(){
-  $("dayRows").innerHTML=S.days.map((d,i)=>`<div class="row days"><b style="font-family:var(--f-display);font-size:17px">${D3[i]}</b><input type="time" id="ds-${i}" data-k="start" data-i="${i}" value="${d.start}"><input type="number" id="dh-${i}" data-k="study" data-i="${i}" min="0" max="12" step="0.25" value="${+(d.study/60).toFixed(2)}"><label class="toggle"><input type="checkbox" id="dn-${i}" data-k="noTrain" data-i="${i}" ${d.noTrain?"checked":""}>sin entreno</label></div>`).join("");
+  $("dayRows").innerHTML=S.days.map((d,i)=>`<div class="row days"><b style="font-family:var(--f-display);font-size:17px">${D3[i]}</b><input type="time" id="ds-${i}" data-k="start" data-i="${i}" value="${d.start}"><input type="number" id="dh-${i}" data-k="study" data-i="${i}" min="0" max="12" step="0.25" value="${hasTimeVal(d)}" placeholder="—"><label class="toggle"><input type="checkbox" id="dn-${i}" data-k="noTrain" data-i="${i}" ${d.noTrain?"checked":""}>sin entreno</label></div>`).join("");
   $("trainRows").innerHTML=S.subjects.filter(s=>s.kind==="train").map(s=>`<div class="row train"><div style="min-width:0"><div class="nm"><span class="dot" style="background:var(${s.color})"></span>${esc(s.name)}</div><div class="goal">Objetivo <b>${esc(s.goal||"")}</b></div></div><input type="number" id="ts-${s.id}" data-sid="${s.id}" data-k="sessions" min="0" max="7" value="${s.sessions}" aria-label="Sesiones por semana"><input type="number" id="td-${s.id}" data-sid="${s.id}" data-k="dur" min="10" max="180" step="5" value="${s.dur}" aria-label="Minutos por sesión"></div>`).join("");
   $("studyRows").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>`<div class="row study"><div class="nm"><span class="dot" style="background:var(${s.color})"></span>${esc(s.name)}</div><select id="sw-${s.id}" data-sid="${s.id}" data-k="weight" aria-label="Peso"><option value="0">0 · fuera</option>${[1,2,3,4].map(w=>`<option value="${w}" ${+s.weight===w?"selected":""}>${w} · ${["","bajo","normal","alto","máximo"][w]}</option>`).join("")}</select></div>`).join("");
   $("fixedRows").innerHTML=S.fixed.map(f=>`<div class="row fixedr"><select id="fd-${f.id}" data-fid="${f.id}" data-k="day" aria-label="Día">${D3.map((x,i)=>`<option value="${i}" ${+f.day===i?"selected":""}>${x}</option>`).join("")}</select><input type="text" id="fl-${f.id}" data-fid="${f.id}" data-k="label" value="${esc(f.label)}" aria-label="Nombre"><input type="time" id="fs-${f.id}" data-fid="${f.id}" data-k="start" value="${f.start}" aria-label="Inicio"><input type="time" id="fe-${f.id}" data-fid="${f.id}" data-k="end" value="${f.end}" aria-label="Fin"><button class="x" data-fdel="${f.id}" aria-label="Quitar bloque">×</button></div>`).join("")||'<p class="empty">Sin bloques fijos.</p>';
@@ -462,7 +469,7 @@ $("topicCols").addEventListener("submit",e=>{e.preventDefault();const f=e.target
 
 $("view-ajustes").addEventListener("change",e=>{
   const el=e.target,k=el.dataset.k;
-  if(el.dataset.i!==undefined){const d=S.days[+el.dataset.i];if(k==="start")d.start=el.value||"16:00";else if(k==="study")d.study=Math.max(0,Math.round((+el.value||0)*60));else if(k==="noTrain")d.noTrain=el.checked}
+  if(el.dataset.i!==undefined){const d=S.days[+el.dataset.i];if(k==="start")d.start=el.value||"16:00";else if(k==="study")d.study=el.value===""?null:Math.max(0,Math.round((+el.value||0)*60));else if(k==="noTrain")d.noTrain=el.checked}
   else if(el.dataset.sid){const s=subj(el.dataset.sid);s[k]=Math.max(0,+el.value||0)}
   else if(el.dataset.fid){const f=S.fixed.find(x=>x.id===el.dataset.fid);f[k]=k==="day"?+el.value:el.value}
   else if(el.id==="blockLen")S.block=Math.min(120,Math.max(20,+el.value||50));
