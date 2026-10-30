@@ -15,6 +15,7 @@ Abre `index.html` en el navegador (o actívalo en GitHub Pages: *Settings → Pa
 - Reparte el estudio en bloques (50 min + 10 de pausa por defecto) alternando materias según su peso, con el reparto equilibrado en toda la semana.
 - Coloca los entrenos evitando repetir dominadas, 1500 m o 100 m en días seguidos, sin dominadas los días de CrossFit y con natación como descarga.
 - Los días de CrossFit no añade otro entreno salvo que no quepa en el resto de la semana.
-- Nunca pone nada encima de un bloque fijo y deja 15 min de margen tras entrenar.
+- Nunca pone nada encima de un bloque fijo y deja 15 min de margen tras entrenar (también después del CrossFit).
+- Si los entrenos no caben en los días con tiempo, el balance de la semana avisa de cuántas sesiones faltan.
 
 El código está en `src/app.html`; `index.html` es la misma página con la cabecera HTML completa.

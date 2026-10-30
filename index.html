@@ -333,7 +333,8 @@ function assignTraining(){
   }
   return byDay;
 }
-function fixedFor(d){return S.fixed.filter(f=>+f.day===d).map(f=>[toMin(f.start),toMin(f.end)]).sort((a,b)=>a[0]-b[0])}
+// el CrossFit es entreno: deja los mismos 15 min de margen después
+function fixedFor(d){return S.fixed.filter(f=>+f.day===d).map(f=>[toMin(f.start),toMin(f.end)+(/cross/i.test(f.label)?15:0)]).sort((a,b)=>a[0]-b[0])}
 function fit(cur,dur,fx){let moved=true;while(moved){moved=false;for(const[s,e]of fx){if(cur<e&&cur+dur>s){cur=e;moved=true}}}return cur}
 
 function generate(key){
@@ -402,10 +403,12 @@ function renderWeek(){
   plan.forEach(a=>a.forEach(b=>{const L=b.end-b.start;per[b.subj]=per[b.subj]||{p:0,d:0};per[b.subj].p+=L;if(b.done)per[b.subj].d+=L;
     if(b.type==="study"){sp+=L;if(b.done)sd+=L}else{tp++;if(b.done)td++}}));
   const pct=(a,b)=>b?Math.round(a/b*100):0;
+  const want=S.subjects.filter(s=>s.kind==="train").reduce((x,s)=>x+(s.sessions|0),0);
+  const miss=want-tp;
   const mix=(kind)=>S.subjects.filter(s=>s.kind===kind&&per[s.id]).map(s=>`<div><span class="dot" style="background:var(${s.color})"></span><span>${esc(s.name)}</span><span class="mono">${kind==="study"?hm(per[s.id].d)+" / "+hm(per[s.id].p):Math.round(per[s.id].d/(+s.dur||1))+" / "+Math.round(per[s.id].p/(+s.dur||1))}</span></div>`).join("");
   $("summary").innerHTML=
    `<div class="stat"><span class="label">Estudio hecho</span><div class="big">${hm(sd)} <small>de ${hm(sp)}</small></div><div class="bar"><i style="width:${pct(sd,sp)}%"></i></div><div class="mix">${mix("study")}</div></div>`+
-   `<div class="stat"><span class="label">Entrenos hechos</span><div class="big">${td} <small>de ${tp} sesiones</small></div><div class="bar"><i style="width:${pct(td,tp)}%;background:var(--ok)"></i></div><div class="mix">${mix("train")}</div></div>`;
+   `<div class="stat"><span class="label">Entrenos hechos</span><div class="big">${td} <small>de ${tp} sesiones</small></div><div class="bar"><i style="width:${pct(td,tp)}%;background:var(--ok)"></i></div><div class="mix">${mix("train")}</div>${miss>0?`<p class="goal" style="margin:0">No caben ${miss} sesi${miss>1?"ones":"ón"} de las ${want} previstas: pon tiempo a más días o quita «sin entreno».</p>`:""}</div>`;
 
   // chips
   $("chips").innerHTML=DAYS.map((n,d)=>{const a=plan[d];const tot=a.reduce((x,b)=>x+b.end-b.start,0),dn=a.reduce((x,b)=>x+(b.done?b.end-b.start:0),0);
