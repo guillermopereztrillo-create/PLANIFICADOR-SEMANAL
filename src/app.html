@@ -176,15 +176,21 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
         <h3>Entrenamientos <span>Anexo III · marcas hombres</span></h3>
         <div class="row train colhead"><span>Prueba y objetivo</span><span>Ses./sem</span><span>Min</span></div>
         <div id="trainRows" style="display:grid;gap:10px"></div>
-        <p class="help">Cada prueba puntúa de 0 a 10 y hay que sacar al menos un 5 en todas. Dominadas, 1500 m y 100 m nunca van en días seguidos y los días de CrossFit no se añade otro entreno si cabe en el resto de la semana.</p>
+        <p class="help">Cada prueba puntúa de 0 a 10 y hay que sacar al menos un 5 en todas. Dominadas, 1500 m y 100 m nunca van en días seguidos. Se evita correr (1500 m o 100 m) dos días seguidos. Los días de CrossFit no se añade ningún otro entreno.</p>
       </section>
       <section class="sec">
         <h3>Días sin entreno</h3>
         <div class="pills" id="noTrain" role="group" aria-label="Días sin entreno"></div>
       </section>
       <section class="sec">
-        <h3>Entreno respecto al estudio</h3>
+        <h3>Natación y dominadas respecto al estudio</h3>
         <div class="pills" id="trainPos" role="group" aria-label="Entreno respecto al estudio"><button class="pill" data-v="before">Antes</button><button class="pill" data-v="after">Después</button></div>
+      </section>
+      <section class="sec">
+        <h3>Carrera y 100 m <span>al aire libre</span></h3>
+        <div class="pills" id="outdoor" role="group" aria-label="Cuándo correr"><button class="pill" data-o="morning">Temprano</button><button class="pill" data-o="evening">Por la noche</button></div>
+        <div class="two"><label for="morningAt">Hora de salir temprano<input type="time" id="morningAt"></label></div>
+        <p class="help">Para evitar el calor, nunca se corre a mediodía. «Temprano» los pone a esa hora si terminas antes de empezar a estudiar; si no da tiempo, pasan a la noche. Por la noche no antes de las 21:00 de junio a septiembre, las 20:00 en mayo y octubre y las 19:00 el resto del año.</p>
       </section>
       <section class="sec">
         <h3>Peso de cada materia</h3>
@@ -237,12 +243,12 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:4,
+    v:5,
     days:DAYS.map((_,i)=>({start:i>=5?"10:00":"16:00",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST)},
     fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
-    trainPos:"after",block:50,brk:10,
+    trainPos:"after",outdoor:"morning",morningAt:"07:30",block:50,brk:10,
     plans:{},dirty:{}
   };
 }
@@ -251,7 +257,8 @@ try{S=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){S=null}
 if(S&&S.v===1){const n=defaults();["days","fixed","trainPos","block","brk"].forEach(k=>{if(S[k]!==undefined)n[k]=S[k]});S=n}
 if(S&&S.v===2){S.v=3;S.plans={};S.dirty={};S.days.forEach(d=>d.study=null);S.subjects.forEach(x=>{if(x.id==="dom"&&x.sessions===3)x.sessions=2});S.fixed.forEach(f=>{if(/cross/i.test(f.label)&&f.start==="08:00"){f.start="20:00";f.end="21:00"}})}
 if(S&&S.v===3){S.v=4;S.days.forEach(d=>d.topics=null)}
-if(!S||S.v!==4)S=defaults();
+if(S&&S.v===4){S.v=5;S.outdoor="morning";S.morningAt="07:30";S.dirty={};Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
+if(!S||S.v!==5)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -278,11 +285,13 @@ function assignTraining(){
       let best=-1,bc=Infinity;
       for(let d=0;d<7;d++){
         if(S.days[d].noTrain||!hasTime(d)||byDay[d].includes(t.id)||byDay[d].length>=2)continue;
+        if(crossfit.has(d))continue; // el CrossFit ya es el entreno del día
         let c=byDay[d].length*4;
         const near=[d-1,d+1].filter(x=>x>=0&&x<7&&byDay[x].includes(t.id)).length;
         if(t.id!=="nat")c+=near*20;else c+=near*2;
         if((t.id==="car"&&byDay[d].includes("vel"))||(t.id==="vel"&&byDay[d].includes("car")))c+=12;
-        if(crossfit.has(d))c+=t.id==="nat"?15:30; // el CrossFit ya es entreno ese día
+        // dos días seguidos de carrera (1500 m y 100 m) cargan demasiado las piernas
+        if(t.id==="car"||t.id==="vel")c+=[d-1,d+1].filter(x=>x>=0&&x<7&&(byDay[x].includes("car")||byDay[x].includes("vel"))).length*10;
         // reparte: preferir días lejos de otras sesiones del mismo tipo
         let dist=7;for(let x=0;x<7;x++)if(byDay[x].includes(t.id))dist=Math.min(dist,Math.abs(x-d));
         c+=(7-dist)*0.5+d*0.01;
@@ -311,7 +320,11 @@ function generate(key){
     const out=[],fx=fixedFor(d);
     if(!hasTime(d))return out;
     let cur=toMin(S.days[d].start||"16:00");
-    const trains=tr[d].map(id=>subj(id));
+    const dayStart=cur;
+    // carrera y 100 m son al aire libre: temprano o de noche, nunca con el calor del mediodía
+    const outdoorIds=["car","vel"];
+    const outdoor=tr[d].filter(id=>outdoorIds.includes(id)).map(id=>subj(id));
+    const trains=tr[d].filter(id=>!outdoorIds.includes(id)).map(id=>subj(id));
     const placeTrain=()=>{for(const t of trains){const s=fit(cur,+t.dur,fx);if(s+ +t.dur>23*60+30)continue; // no entrenar más tarde de las 23:30
       out.push({id:uid(),type:"train",subj:t.id,start:s,end:s+ +t.dur,done:false});cur=s+ +t.dur}
       if(trains.length)cur+=15};
@@ -351,11 +364,23 @@ function generate(key){
       });
     });
     if(S.trainPos!=="before"){if(nb&&trains.length)cur+=15;placeTrain()}
+    if(outdoor.length){
+      const dur=outdoor.reduce((a,t)=>a+ +t.dur,0);
+      const busy=()=>[...fx,...out.map(b=>[b.start,b.end+(b.type==="train"?15:0)])];
+      const put=start=>{let c=start;for(const t of outdoor){const s=fit(c,+t.dur,busy());out.push({id:uid(),type:"train",subj:t.id,start:s,end:s+ +t.dur,done:false});c=s+ +t.dur}};
+      const m=toMin(S.morningAt||"07:30"),early=fit(m,dur,busy());
+      if(S.outdoor!=="evening"&&early+dur+15<=dayStart&&early<11*60)put(early);
+      else{const ev=fit(Math.max(eveningFrom(dayDate(key,d)),...out.map(b=>b.end+15)),dur,busy());if(ev+dur<=23*60+30)put(ev)}
+      out.sort((a,b)=>a.start-b.start);
+    }
     out.forEach(b=>{if(doneSig.has(d+"|"+b.subj+"|"+b.start))b.done=true});
     return out;
   });
   S.plans[key]=plan;delete S.dirty[key];save();
 }
+function dayDate(key,d){const x=new Date(key+"T12:00:00");x.setDate(x.getDate()+d);return x}
+// hora mínima para correr por la tarde en Sevilla según el mes: en verano no antes de las 21:00
+function eveningFrom(date){const m=date.getMonth();return (m>=5&&m<=8?21*60:(m===4||m===9)?20*60:19*60)}
 function markDirty(){Object.keys(S.plans).forEach(k=>{if(k>=iso(monday(0)))S.dirty[k]=1});save()}
 
 /* ------- interfaz ------- */
@@ -429,6 +454,8 @@ function renderSettings(){
   $("trainRows").innerHTML=S.subjects.filter(s=>s.kind==="train").map(s=>`<div class="row train"><div style="min-width:0"><div class="nm2"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</div><div class="goal">${goalHtml(s.goal)}</div></div><input type="number" id="ts-${s.id}" data-sid="${s.id}" data-k="sessions" min="0" max="7" value="${s.sessions}" aria-label="Sesiones por semana de ${esc(s.name)}"><input type="number" id="td-${s.id}" data-sid="${s.id}" data-k="dur" min="10" max="180" step="5" value="${s.dur}" aria-label="Minutos por sesión de ${esc(s.name)}"></div>`).join("");
   $("noTrain").innerHTML=DAYS.map((n,i)=>`<button class="pill" data-nt="${i}" aria-pressed="${!!S.days[i].noTrain}" aria-label="${n}">${D3[i]}</button>`).join("");
   document.querySelectorAll("#trainPos .pill").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.trainPos));
+  document.querySelectorAll("#outdoor .pill").forEach(b=>b.setAttribute("aria-pressed",b.dataset.o===(S.outdoor||"morning")));
+  $("morningAt").value=S.morningAt||"07:30";
   $("studyRows").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>`<div class="row weight"><div class="nm2"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</div><select id="sw-${s.id}" data-sid="${s.id}" data-k="weight" aria-label="Peso de ${esc(s.name)}"><option value="0">0 · fuera</option>${[1,2,3,4].map(w=>`<option value="${w}" ${+s.weight===w?"selected":""}>${w} · ${["","bajo","normal","alto","máximo"][w]}</option>`).join("")}</select></div>`).join("");
   $("blockLen").value=S.block;$("breakLen").value=S.brk;
   $("fixedRows").innerHTML=S.fixed.map(f=>`<div class="row fixedr"><select id="fd-${f.id}" data-fid="${f.id}" data-k="day" aria-label="Día">${D3.map((x,i)=>`<option value="${i}" ${+f.day===i?"selected":""}>${x}</option>`).join("")}</select><input class="fl" type="text" id="fl-${f.id}" data-fid="${f.id}" data-k="label" value="${esc(f.label)}" aria-label="Nombre"><button class="x" data-fdel="${f.id}" aria-label="Quitar bloque">×</button><input class="fs" type="time" id="fs-${f.id}" data-fid="${f.id}" data-k="start" value="${f.start}" aria-label="Inicio"><input type="time" id="fe-${f.id}" data-fid="${f.id}" data-k="end" value="${f.end}" aria-label="Fin"></div>`).join("")||'<p class="empty">Sin bloques fijos.</p>';
@@ -466,13 +493,15 @@ $("ajustes").addEventListener("change",e=>{
   if(el.dataset.sid){const s=subj(el.dataset.sid);s[k]=Math.max(0,+el.value||0)}
   else if(el.dataset.fid){const f=S.fixed.find(x=>x.id===el.dataset.fid);f[k]=k==="day"?+el.value:el.value}
   else if(el.id==="blockLen")S.block=Math.min(120,Math.max(20,+el.value||50));
+  else if(el.id==="morningAt")S.morningAt=el.value||"07:30";
   else if(el.id==="breakLen")S.brk=Math.min(30,Math.max(0,+el.value||0));
   else return;
   changed();toast("Guardado y semana reorganizada");
 });
 $("ajustes").addEventListener("click",e=>{
-  const nt=e.target.closest("[data-nt]"),tp=e.target.closest("#trainPos [data-v]"),fd=e.target.closest("[data-fdel]");
+  const nt=e.target.closest("[data-nt]"),tp=e.target.closest("#trainPos [data-v]"),od=e.target.closest("#outdoor [data-o]"),fd=e.target.closest("[data-fdel]");
   if(nt){const d=S.days[+nt.dataset.nt];d.noTrain=!d.noTrain;nt.setAttribute("aria-pressed",d.noTrain);changed()}
+  else if(od){S.outdoor=od.dataset.o;renderSettings();changed()}
   else if(tp){S.trainPos=tp.dataset.v;renderSettings();changed()}
   else if(fd){S.fixed=S.fixed.filter(f=>f.id!==fd.dataset.fdel);renderSettings();changed()}
 });
