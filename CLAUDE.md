@@ -9,17 +9,13 @@ Planificador semanal de estudio y entrenamiento para Guillermo, opositor a Bombe
 ## Archivos
 
 - `src/app.html`: el código fuente. Es una sola página (HTML + CSS + JS sin librerías) escrita sin `<!doctype>`, `<html>`, `<head>` ni `<body>`, porque también se publica como artifact de Claude, que añade esa cabecera.
-- `index.html`: la misma página con la cabecera HTML completa, para abrirla en el navegador o en GitHub Pages. **Se genera desde `src/app.html`; no la edites a mano.** Después de cambiar `src/app.html`, regénerala:
-
-```bash
-{ printf '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>\n</head>\n<body>\n'; cat src/app.html; printf '\n</body>\n</html>\n'; } > index.html
-```
-
+- `index.html`: la misma página con la cabecera HTML completa (manifiesto, iconos y metas para instalarla en la pantalla de inicio), para abrirla en el navegador o en GitHub Pages. **Se genera desde `src/app.html`; no la edites a mano.** Después de cambiar `src/app.html`, regénerala con `./build.sh`.
+- `manifest.webmanifest` e `icons/`: nombre, colores e iconos de la app instalada. Los iconos salen del logo de Guillermo (escudo con hacha y ola). El logo de la cabecera va dentro de `src/app.html` como `data:` WebP, porque el artifact no puede cargar imágenes externas.
 - `README.md`: descripción para el usuario. Mantenlo al día si cambia el funcionamiento.
 
 ## Datos
 
-- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `3`).
+- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `4`).
 - Si cambias la forma de los datos, sube `v` y añade una migración desde la versión anterior que conserve lo que el usuario ya ha configurado (días, bloques fijos, temas marcados).
 - Envuelve cada lectura y escritura de `localStorage` en `try/catch`.
 
@@ -41,17 +37,18 @@ Estas marcas salen de resúmenes de academias, no del BOJA original. Si el usuar
 
 - **Un día sin horas de estudio no se organiza**: ni estudio ni entrenos. Las horas empiezan vacías y solo las pone el usuario.
 - El estudio va en bloques (50 min + 10 de pausa por defecto) y alterna materias según su peso: Generales 2, Específicos 3, Propios de Sevilla 1, Test y repaso 1. El reparto se equilibra en toda la semana.
-- Cada bloque de estudio toma el siguiente tema pendiente de su materia.
+- Cada bloque de estudio toma el siguiente tema pendiente de su materia. Si el usuario fija cuántos temas quiere estudiar ese día (`days[i].topics`), el tiempo del día se reparte entre esos temas (mínimo 15 min cada uno) y un tema puede ocupar varios bloques seguidos; vacío (`null`) = un tema por bloque. Con 2 temas, uno es de Generales y otro de Específicos (el más atrasado de los dos va primero).
 - Entrenos por defecto: natación 3×45 min, carrera 1500 m 2×40, velocidad 100 m 1×35, dominadas 2×20.
-- Dominadas, 1500 m y 100 m nunca van en días seguidos, y se evita juntar 1500 m y 100 m el mismo día. Como máximo hay 2 entrenos por día, con 15 min de margen tras entrenar.
+- Dominadas, 1500 m y 100 m nunca van en días seguidos, y se evita juntar 1500 m y 100 m el mismo día. Como máximo hay 2 entrenos por día, con 15 min de margen tras entrenar (también tras el CrossFit). Ningún entreno acaba después de las 23:30.
 - **CrossFit: lunes y miércoles de 20:00 a 21:00**, como bloque fijo. Esos días no se añade otro entreno salvo que no quepa en el resto de la semana.
 - Nunca se coloca nada encima de un bloque fijo.
-- Al reorganizar se conservan los bloques ya marcados como hechos.
+- Cualquier cambio reorganiza al momento la semana visible (y las futuras ya generadas). Se conservan los bloques ya marcados como hechos.
 
 ## Estilo
 
-- Página pensada sobre todo para el móvil: debe funcionar a 400 px de ancho sin scroll horizontal.
-- Tema claro y oscuro con variables CSS en `:root`. Rojo bombero como acento y fuentes Barlow Condensed, IBM Plex Sans e IBM Plex Mono.
+- Una sola página sin pestañas: cabecera con la semana, balance, una tarjeta por día (horas y temas con botones − / + dentro de la propia tarjeta) y, al final, «Temario» y «Ajustes» como secciones plegables.
+- Pensada sobre todo para el móvil: debe funcionar a 400 px de ancho sin scroll horizontal.
+- Tema claro y oscuro con variables CSS en `:root`. Azul marino y amarillo reflectante (franja de alta visibilidad en la cabecera). Fuentes Archivo (títulos), Public Sans (texto) y JetBrains Mono (horas). Los colores de cada materia se guardan en los datos como nombre de variable (`--c-leg`, `--c-esp`, `--c-fix`, `--c-test`, `--c-nat`, `--c-car`, `--signal`, `--c-dom`): no los renombres.
 - Textos de la interfaz en español, claros y directos.
 
 ## Comprobar
