@@ -1,0 +1,59 @@
+# CLAUDE.md
+
+Contexto para trabajar en este repositorio. Responde siempre en español.
+
+## Qué es
+
+Planificador semanal de estudio y entrenamiento para Guillermo, opositor a Bombero del Ayuntamiento de Sevilla. Él indica las horas de estudio de cada día y la app reparte el tiempo entre materias y entrenos.
+
+## Archivos
+
+- `src/app.html`: el código fuente. Es una sola página (HTML + CSS + JS sin librerías) escrita sin `<!doctype>`, `<html>`, `<head>` ni `<body>`, porque también se publica como artifact de Claude, que añade esa cabecera.
+- `index.html`: la misma página con la cabecera HTML completa, para abrirla en el navegador o en GitHub Pages. **Se genera desde `src/app.html`; no la edites a mano.** Después de cambiar `src/app.html`, regénerala:
+
+```bash
+{ printf '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>\n</head>\n<body>\n'; cat src/app.html; printf '\n</body>\n</html>\n'; } > index.html
+```
+
+- `README.md`: descripción para el usuario. Mantenlo al día si cambia el funcionamiento.
+
+## Datos
+
+- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `3`).
+- Si cambias la forma de los datos, sube `v` y añade una migración desde la versión anterior que conserve lo que el usuario ya ha configurado (días, bloques fijos, temas marcados).
+- Envuelve cada lectura y escritura de `localStorage` en `try/catch`.
+
+## Contenido de la oposición (Decreto 36/2025, de 11 de febrero, Andalucía)
+
+- **Temario (Anexo I):** 12 temas generales, 33 específicos y 5 propios del servicio que convoca. Los 5 de Sevilla aún dependen de las bases, así que están como huecos con el texto «según bases».
+- **Pruebas físicas (Anexo III):** cada una se puntúa de 0 a 10 y hay que sacar al menos un 5 en todas. Marcas para hombres:
+
+| Prueba | Para un 5 | Para un 10 |
+|---|---|---|
+| Dominadas | 12 rep | 30 rep |
+| 100 m lisos | 14,50 s | 12,20 s |
+| 1500 m | 6:06 | 4:32 |
+| 100 m natación | 1:50 | 1:18 |
+
+Estas marcas salen de resúmenes de academias, no del BOJA original. Si el usuario aporta el anexo oficial, corrígelas.
+
+## Reglas del organizador
+
+- **Un día sin horas de estudio no se organiza**: ni estudio ni entrenos. Las horas empiezan vacías y solo las pone el usuario.
+- El estudio va en bloques (50 min + 10 de pausa por defecto) y alterna materias según su peso: Generales 2, Específicos 3, Propios de Sevilla 1, Test y repaso 1. El reparto se equilibra en toda la semana.
+- Cada bloque de estudio toma el siguiente tema pendiente de su materia.
+- Entrenos por defecto: natación 3×45 min, carrera 1500 m 2×40, velocidad 100 m 1×35, dominadas 2×20.
+- Dominadas, 1500 m y 100 m nunca van en días seguidos, y se evita juntar 1500 m y 100 m el mismo día. Como máximo hay 2 entrenos por día, con 15 min de margen tras entrenar.
+- **CrossFit: lunes y miércoles de 20:00 a 21:00**, como bloque fijo. Esos días no se añade otro entreno salvo que no quepa en el resto de la semana.
+- Nunca se coloca nada encima de un bloque fijo.
+- Al reorganizar se conservan los bloques ya marcados como hechos.
+
+## Estilo
+
+- Página pensada sobre todo para el móvil: debe funcionar a 400 px de ancho sin scroll horizontal.
+- Tema claro y oscuro con variables CSS en `:root`. Rojo bombero como acento y fuentes Barlow Condensed, IBM Plex Sans e IBM Plex Mono.
+- Textos de la interfaz en español, claros y directos.
+
+## Comprobar
+
+No hay tests. Antes de subir cambios, ejecuta el script y comprueba que la semana generada es coherente. Por ejemplo, carga la lógica en Node con un DOM mínimo de pega, pon horas a varios días e imprime los bloques.
