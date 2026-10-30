@@ -8,13 +8,14 @@ Abre `index.html` en el navegador (o actívalo en GitHub Pages: *Settings → Pa
 
 Es una sola página, sin pestañas:
 
-- **La semana**: una tarjeta por día. Con los botones − y + pones las horas de estudio y cuántos temas quieres ver ese día («Auto» = un tema por bloque). La semana se reorganiza sola al cambiar algo y conserva los bloques ya marcados como hechos. Un día sin horas solo lleva el callejero.
+- **La semana**: una tarjeta por día. Con los botones − y + pones las horas de estudio y cuántos temas quieres ver ese día, y debajo a qué hora empiezas por la mañana y por la tarde («Auto» = un tema por bloque). La semana se reorganiza sola al cambiar algo y conserva los bloques ya marcados como hechos. Un día sin horas solo lleva el callejero.
 - **Temario** (plegable): el de Bombero del Decreto 36/2025, de 11 de febrero (Anexo I): 12 temas generales, 33 específicos y 5 propios del SPEIS de Sevilla, más bloques de test y repaso y el callejero de Sevilla por distritos. Marca los temas terminados o añade los tuyos.
 - **Ajustes** (plegable): sesiones y minutos de las cuatro pruebas físicas del Anexo III (dominadas, 100 m lisos, 1500 m y 100 m natación, con las marcas del 5 y del 10), días sin entreno, entreno antes o después del estudio, cuándo correr (temprano o por la noche), peso de cada materia, duración de bloques y pausas, y bloques fijos (CrossFit lunes y miércoles de 20:00 a 21:00 ya viene cargado).
 
 ## Cómo organiza la semana
 
-- **Todos los días** hay un rato de **callejero de Sevilla** (20 min por defecto). En los días con horas de estudio abre la sesión y sale de esas horas; en los días sin horas va solo, a la hora de «Empiezo». Va recorriendo los 11 distritos, las rondas y avenidas y los edificios clave. Se cambia o se quita en Ajustes.
+- **Todos los días** hay **callejero de Sevilla**. En los días con horas de estudio se lleva una cuarta parte (de 4 h, 1 h de callejero y 3 h para lo demás) y abre la mañana; en los días sin horas va solo 1 h. Recorre los 11 distritos, las rondas y avenidas y los edificios clave. Se ajusta en Ajustes.
+- El estudio se reparte **entre mañana y tarde**: cada día tiene su hora de empezar por la mañana y por la tarde (déjala vacía si esa franja no puedes). Con 2 h o más, la mitad va por la mañana (hasta las 14:00) y el resto por la tarde.
 - Reparte el estudio en bloques (50 min + 10 de pausa por defecto) alternando materias según su peso, con el reparto equilibrado en toda la semana.
 - Si indicas cuántos temas quieres estudiar un día, reparte ese tiempo a partes iguales entre esos temas (mínimo 15 min por tema); si lo dejas vacío, cada bloque es un tema nuevo.
 - Con 2 temas en un día, uno es de Generales (legislación) y el otro de Específicos.
