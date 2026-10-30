@@ -46,12 +46,13 @@ Estas marcas salen de resúmenes de academias, no del BOJA original. Si el usuar
 - Dominadas, 1500 m y 100 m nunca van en días seguidos, y se evita juntar 1500 m y 100 m el mismo día. Como máximo hay 2 entrenos por día, con 15 min de margen tras entrenar (también tras el CrossFit). Ningún entreno acaba después de las 23:30.
 - **CrossFit: lunes y miércoles de 20:00 a 21:00**, como bloque fijo. Esos días no se añade otro entreno salvo que no quepa en el resto de la semana.
 - Nunca se coloca nada encima de un bloque fijo.
-- Al reorganizar se conservan los bloques ya marcados como hechos.
+- Cualquier cambio reorganiza al momento la semana visible (y las futuras ya generadas). Se conservan los bloques ya marcados como hechos.
 
 ## Estilo
 
-- Página pensada sobre todo para el móvil: debe funcionar a 400 px de ancho sin scroll horizontal.
-- Tema claro y oscuro con variables CSS en `:root`. Rojo bombero como acento y fuentes Barlow Condensed, IBM Plex Sans e IBM Plex Mono.
+- Una sola página sin pestañas: cabecera con la semana, balance, una tarjeta por día (horas y temas con botones − / + dentro de la propia tarjeta) y, al final, «Temario» y «Ajustes» como secciones plegables.
+- Pensada sobre todo para el móvil: debe funcionar a 400 px de ancho sin scroll horizontal.
+- Tema claro y oscuro con variables CSS en `:root`. Azul marino y amarillo reflectante (franja de alta visibilidad en la cabecera). Fuentes Archivo (títulos), Public Sans (texto) y JetBrains Mono (horas). Los colores de cada materia se guardan en los datos como nombre de variable (`--c-leg`, `--c-esp`, `--c-fix`, `--c-test`, `--c-nat`, `--c-car`, `--signal`, `--c-dom`): no los renombres.
 - Textos de la interfaz en español, claros y directos.
 
 ## Comprobar

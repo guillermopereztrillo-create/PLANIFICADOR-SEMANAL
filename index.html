@@ -10,247 +10,211 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=JetBrains+Mono:wght@500&family=Public+Sans:wght@400;500;600&display=swap">
 <style>
-/* Layout: parte de servicio — cabecera con la semana y su balance, selector de días (móvil) o 7 columnas (escritorio), cada día como una línea de tiempo de bloques. */
+/* Layout: una sola columna. Cabecera con franja reflectante, balance en una línea y la semana como lista de días; cada día se configura (horas y temas) en su propia tarjeta. Temario y ajustes, plegados al final. */
 :root{
-  --bg:#F4F3F1; --surface:#FFFFFF; --sunk:#ECEAE7; --ink:#1C1E21; --muted:#686B70; --line:#DCD9D5;
-  --accent:#C2341D; --accent-ink:#FFFFFF; --signal:#E3A400; --ok:#2F7D3B;
-  --c-leg:#2D5BA6; --c-esp:#C2341D; --c-test:#A8760A; --c-nat:#14839A; --c-car:#3B8A39; --c-dom:#7445AD; --c-fix:#5A5D62;
-  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
-  --r:10px;
+  --bg:#EDF0F4; --surface:#FFFFFF; --sunk:#E2E7EE; --ink:#14243A; --muted:#58687D; --line:#D2D9E3;
+  --hivis:#F2C200; --on-hivis:#14243A; --silver:#B8C1CD; --ok:#1E7A4C; --focus:#2F5FD0;
+  --c-leg:#2F5FD0; --c-esp:#D03A28; --c-fix:#6A7686; --c-test:#A87400; --c-nat:#0C88A3; --c-car:#2E8A3D; --signal:#DB7500; --c-dom:#7849C0;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#131416; --surface:#1C1E21; --sunk:#232529; --ink:#ECEAE6; --muted:#9A9DA3; --line:#2F3236;
-  --accent:#E8583F; --accent-ink:#160A07; --signal:#F2B92B; --ok:#5DB86A;
-  --c-leg:#6E9BE6; --c-esp:#EE6A52; --c-test:#E0AA35; --c-nat:#43B8CE; --c-car:#6CC068; --c-dom:#A983DD; --c-fix:#8D9096;
+  --bg:#0C141F; --surface:#142030; --sunk:#1B283A; --ink:#E5EBF2; --muted:#93A1B4; --line:#25354A;
+  --hivis:#F5C842; --on-hivis:#0C141F; --silver:#56657A; --ok:#4BC283; --focus:#7FA3F2;
+  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA;
   color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#131416; --surface:#1C1E21; --sunk:#232529; --ink:#ECEAE6; --muted:#9A9DA3; --line:#2F3236;
-  --accent:#E8583F; --accent-ink:#160A07; --signal:#F2B92B; --ok:#5DB86A;
-  --c-leg:#6E9BE6; --c-esp:#EE6A52; --c-test:#E0AA35; --c-nat:#43B8CE; --c-car:#6CC068; --c-dom:#A983DD; --c-fix:#8D9096;
+  --bg:#0C141F; --surface:#142030; --sunk:#1B283A; --ink:#E5EBF2; --muted:#93A1B4; --line:#25354A;
+  --hivis:#F5C842; --on-hivis:#0C141F; --silver:#56657A; --ok:#4BC283; --focus:#7FA3F2;
+  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA;
   color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
 button,input,select{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.wrap{max-width:1280px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 48px;display:grid;gap:18px}
-h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;margin:0;text-wrap:balance}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:680px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance}
 .mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-.label{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
 
 /* cabecera */
-header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px}
-.brand{display:flex;align-items:center;gap:12px}
-.badge{width:42px;height:42px;border-radius:9px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:20px;letter-spacing:.02em}
-.brand h1{font-size:30px;line-height:1;text-transform:uppercase}
-.brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
-.weeknav{display:flex;align-items:center;gap:6px}
-.weeknav .range{font-family:var(--f-display);font-size:20px;font-weight:600;min-width:150px;text-align:center}
-.iconbtn{border:1px solid var(--line);background:var(--surface);border-radius:8px;height:36px;min-width:36px;padding:0 10px;cursor:pointer}
-.iconbtn:hover{border-color:var(--muted)}
-
-nav.tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:10px;width:max-content;max-width:100%}
-nav.tabs a{padding:7px 14px;border-radius:7px;text-decoration:none;color:var(--muted);font-weight:600;font-size:14px}
-nav.tabs a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .08)}
+.top{display:grid;gap:12px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.titlerow{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px}
+h1{font-size:34px;font-weight:800;font-stretch:118%;line-height:1;letter-spacing:-.01em}
+.stripe{height:12px;border-radius:2px;background:linear-gradient(var(--hivis) 0 32%,var(--silver) 32% 68%,var(--hivis) 68%)}
+.weeknav{display:flex;align-items:center;gap:4px}
+.weeknav .range{font-family:var(--f-display);font-stretch:110%;font-weight:700;font-size:16px;min-width:132px;text-align:center}
+.nb{border:1px solid var(--line);background:var(--surface);border-radius:999px;height:34px;min-width:34px;padding:0 12px;font-weight:600;font-size:14px}
+.nb:hover{border-color:var(--muted)}
 
 /* balance */
-.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:grid;gap:8px;min-width:0}
-.stat .big{font-family:var(--f-display);font-size:28px;font-weight:700;line-height:1}
-.stat .big small{font-size:16px;color:var(--muted);font-weight:600}
+.meters{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.meter{display:grid;gap:6px;min-width:0}
+.meter .v{font-size:13px;color:var(--muted)}
+.meter .v b{font-family:var(--f-display);font-stretch:110%;font-size:20px;color:var(--ink);font-weight:700}
 .bar{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}
-.bar i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
-.mix{display:grid;gap:5px;font-size:13px}
-.mix div{display:grid;grid-template-columns:10px 1fr auto;align-items:center;gap:8px}
-.dot{width:10px;height:10px;border-radius:3px}
-
-.banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--signal);background:color-mix(in srgb,var(--signal) 12%,var(--surface));border-radius:var(--r);padding:10px 14px;font-size:14px}
-.btn{border:0;background:var(--accent);color:var(--accent-ink);font-weight:600;border-radius:8px;padding:9px 14px;cursor:pointer}
-.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
-.btn.small{padding:6px 10px;font-size:13px}
+.bar i{display:block;height:100%;background:var(--ink);transition:width .3s}
+.bar.tr i{background:var(--ok)}
+.note{margin:0;font-size:13px;color:var(--muted);grid-column:1/-1}
+.hint{margin:0;padding:12px 14px;border-radius:10px;background:var(--hivis);color:var(--on-hivis);font-size:14px;font-weight:500}
 
 /* días */
-.daychips{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.chip{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:6px 0 7px;cursor:pointer;display:grid;justify-items:center;gap:3px}
-.chip b{font-family:var(--f-display);font-size:17px;line-height:1}
-.chip span{font-size:11px;color:var(--muted)}
-.chip .mini{width:60%;height:3px;border-radius:2px;background:var(--sunk);overflow:hidden}
-.chip .mini i{display:block;height:100%;background:var(--ok)}
-.chip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.chip.today b{color:var(--accent)}
+.days{display:grid;gap:10px;list-style:none;margin:0;padding:0}
+.day{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px;min-width:0}
+.day.today{border-color:var(--ink);box-shadow:inset 0 3px 0 var(--hivis)}
+.dh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.dh h2{font-size:22px;font-weight:700;font-stretch:112%;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.dh .date{font-family:var(--f-body);font-size:13px;font-weight:500;color:var(--muted)}
+.tag{font-family:var(--f-body);font-size:11px;font-weight:700;letter-spacing:.06em;background:var(--hivis);color:var(--on-hivis);padding:2px 7px;border-radius:999px;align-self:center}
+.start{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.start input{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:4px 6px;font-family:var(--f-mono);font-size:13px;width:96px}
+.ctrls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.step{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;background:var(--sunk);border-radius:10px;padding:4px;min-width:0}
+.step button{height:36px;border:0;border-radius:8px;background:var(--surface);font-size:20px;line-height:1;font-weight:500}
+.step button:hover{background:var(--bg)}
+.step .val{text-align:center;display:grid;line-height:1.15;min-width:0}
+.step .val b{font-family:var(--f-display);font-stretch:110%;font-size:17px;font-weight:700}
+.step .val span{font-size:11px;color:var(--muted)}
+.step.unset .val b{color:var(--muted)}
 
-.week{display:grid;gap:12px}
-.day{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:grid;gap:10px;align-content:start;min-width:0}
-.day.today{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
-.dayhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.dayhead h3{font-size:22px;text-transform:uppercase}
-.dayhead .meta{font-size:12px;color:var(--muted);text-align:right}
-.today-tag{font-family:var(--f-body);font-size:10px;font-weight:600;letter-spacing:.08em;background:var(--accent);color:var(--accent-ink);padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:6px}
-
-.blocks{display:grid;gap:6px;list-style:none;margin:0;padding:0}
-.blk{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 10px 8px 0;border-radius:8px;background:var(--sunk);position:relative;min-width:0}
-.blk::before{content:"";align-self:stretch;width:4px;border-radius:0 3px 3px 0;background:var(--c)}
-.blk .body{min-width:0;display:grid;gap:1px}
-.blk .t{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
-.blk .n{font-weight:600;font-size:14px;line-height:1.25}
-.blk .s{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
-.blk.fixed{background:transparent;border:1px dashed var(--line)}
-.blk.done .n,.blk.done .s{text-decoration:line-through;opacity:.55}
-.tick{width:26px;height:26px;border-radius:7px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-items:center;flex:none}
-.tick svg{width:15px;height:15px;opacity:0}
+.blocks{display:grid;gap:4px;list-style:none;margin:0;padding:0}
+.blk{display:grid;grid-template-columns:54px minmax(0,1fr) 34px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.blk:first-child{border-top:0;padding-top:0}
+.blk .tm{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;display:grid;line-height:1.2}
+.blk .tm small{font-size:11px;color:var(--muted)}
+.blk .bd{display:grid;gap:1px;min-width:0}
+.blk .nm{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:7px}
+.sw{width:9px;height:9px;border-radius:50%;flex:none}
+.blk .tp{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.blk.fixed .nm{font-family:var(--f-display);font-stretch:110%;letter-spacing:.02em;text-transform:uppercase;font-size:14px}
+.blk.fixed .fx{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);justify-self:center}
+.blk.done .nm,.blk.done .tp{text-decoration:line-through;opacity:.5}
+.tick{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);background:transparent;display:grid;place-items:center;padding:0}
+.tick svg{width:16px;height:16px;opacity:0}
+.tick svg path{stroke:var(--surface)}
 .tick[aria-pressed="true"]{background:var(--ok);border-color:var(--ok)}
 .tick[aria-pressed="true"] svg{opacity:1}
-.tick svg path{stroke:var(--surface)}
-.empty{font-size:13px;color:var(--muted);padding:8px 2px}
-.gap{font-size:11px;color:var(--muted);padding-left:16px;font-family:var(--f-mono)}
+.empty{margin:0;font-size:13px;color:var(--muted)}
 
-@media (max-width:899px){ .week .day{display:none} .week .day.active{display:grid} }
-@media (min-width:900px){
-  .daychips{display:none}
-  .week{grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
-  .day{padding:10px 8px}
-  .blk{grid-template-columns:auto 1fr;padding-right:8px}
-  .blk .tick{grid-column:2;justify-self:start;width:22px;height:22px}
-  .dayhead{flex-direction:column;gap:2px}
-  .dayhead .meta{text-align:left}
-}
+/* secciones plegables */
+details.fold{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+details.fold>summary{list-style:none;cursor:pointer;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary h2{font-size:20px;font-weight:700;font-stretch:112%}
+details.fold>summary .sm{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+details.fold>summary .sm::after{content:"+";font-size:20px;line-height:1;color:var(--ink)}
+details.fold[open]>summary .sm::after{content:"−"}
+.foldbody{padding:0 14px 16px;display:grid;gap:20px}
+.sec{display:grid;gap:10px;min-width:0}
+.sec h3{font-size:13px;font-weight:700;font-stretch:110%;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.sec h3 span{font-family:var(--f-body);font-weight:500;letter-spacing:0;text-transform:none}
+.help{margin:0;font-size:13px;color:var(--muted);max-width:65ch}
+.row{display:grid;gap:8px;align-items:center;min-width:0}
+.row.train{grid-template-columns:minmax(0,1fr) 64px 64px}
+.row.weight{grid-template-columns:minmax(0,1fr) 132px}
+.row.fixedr{grid-template-columns:64px minmax(0,1fr) minmax(0,1fr) 30px}
+.row.fixedr .fl{grid-column:2/4}
+.row.fixedr .fs{grid-column:2}
+.colhead{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.nm2{display:flex;align-items:center;gap:7px;font-weight:600;min-width:0}
+.goal{font-size:12px;color:var(--muted)}
+.goal b{font-family:var(--f-mono);font-weight:500;color:var(--ink)}
+input[type=text],input[type=number],input[type=time],select{width:100%;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 8px}
+input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;min-width:40px}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.two label{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.btn{border:0;background:var(--ink);color:var(--surface);font-weight:600;border-radius:999px;padding:8px 16px;font-size:14px}
+.btn.line{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.x{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;padding:2px 6px}
+.x:hover{color:var(--c-esp)}
 
-/* paneles de temario y ajustes */
-.panel{display:grid;gap:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:12px;min-width:0}
-.card h2{font-size:22px;text-transform:uppercase}
-.card p.help{margin:0;color:var(--muted);font-size:13px;max-width:65ch}
-.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
-.rows{display:grid;gap:8px}
-.row{display:grid;gap:8px;align-items:center}
-.row.days{grid-template-columns:28px minmax(0,1fr) 60px 56px 40px}
-.row.days .toggle{justify-content:center}
-.row.train{grid-template-columns:1fr 70px 70px}
-.row.study{grid-template-columns:1fr 110px}
-.row.fixedr{grid-template-columns:56px 1fr 84px 84px 36px}
-.row .nm{display:flex;align-items:center;gap:8px;font-weight:600;min-width:0}
-.rowhead{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
-input[type=text],input[type=number],input[type=time],select{width:100%;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 8px}
-input[type=number]{font-family:var(--f-mono)}
-.toggle{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);white-space:nowrap}
-.toggle input{width:16px;height:16px;accent-color:var(--accent)}
-.goal{font-size:12.5px;color:var(--muted)}
-.goal b{color:var(--ink);font-family:var(--f-mono);font-weight:500}
-
-.topics{display:grid;gap:4px;list-style:none;margin:0;padding:0}
-.topics li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:6px 4px;border-bottom:1px solid var(--line)}
-.topics li:last-child{border-bottom:0}
+.topics{display:grid;list-style:none;margin:0;padding:0}
+.topics li{display:grid;grid-template-columns:22px minmax(0,1fr) 28px;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
+.topics li:first-child{border-top:0}
 .topics li.done span{text-decoration:line-through;color:var(--muted)}
-.topics input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok)}
-.x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 6px}
-.x:hover{color:var(--accent)}
-.addrow{display:grid;grid-template-columns:1fr auto;gap:8px}
-.seg{display:inline-flex;background:var(--sunk);border-radius:8px;padding:3px;gap:3px}
-.seg button{border:0;background:transparent;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;color:var(--muted)}
-.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
-.rules{margin:0;padding-left:18px;color:var(--muted);font-size:13px;display:grid;gap:4px;max-width:70ch}
+.topics input[type=checkbox]{width:18px;height:18px;accent-color:var(--ok);margin:0}
+.addrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
 .confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:14px;font-weight:500;z-index:20}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:500;z-index:20}
+@media (max-width:420px){ h1{font-size:30px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
 <div class="wrap">
   <header class="top">
-    <div class="brand">
-      <div class="badge" aria-hidden="true">PS</div>
-      <div>
-        <h1>Parte semanal</h1>
-        <p>Oposición Bombero Ayto. de Sevilla · Decreto 36/2025</p>
+    <span class="eyebrow">Oposición Bombero · Ayto. de Sevilla</span>
+    <div class="titlerow">
+      <h1>Mi semana</h1>
+      <div class="weeknav">
+        <button class="nb" id="prevWeek" aria-label="Semana anterior">‹</button>
+        <span class="range" id="range"></span>
+        <button class="nb" id="nextWeek" aria-label="Semana siguiente">›</button>
+        <button class="nb" id="thisWeek" hidden>Hoy</button>
       </div>
     </div>
-    <div class="weeknav">
-      <button class="iconbtn" id="prevWeek" aria-label="Semana anterior">‹</button>
-      <div class="range" id="range"></div>
-      <button class="iconbtn" id="nextWeek" aria-label="Semana siguiente">›</button>
-      <button class="iconbtn" id="thisWeek">Hoy</button>
-    </div>
+    <div class="stripe" aria-hidden="true"></div>
   </header>
 
-  <nav class="tabs" aria-label="Secciones">
-    <a href="#semana" data-view="semana">Semana</a>
-    <a href="#temario" data-view="temario">Temario</a>
-    <a href="#ajustes" data-view="ajustes">Ajustes</a>
-  </nav>
+  <p class="hint" id="hint" hidden>Pon con + las horas de estudio de cada día. Hasta entonces la app no organiza nada.</p>
+  <section class="meters" id="meters" aria-label="Balance de la semana"></section>
+  <ol class="days" id="week"></ol>
 
-  <main id="view-semana" class="panel">
-    <div id="banner" class="banner" hidden>
-      <span>Has cambiado los ajustes. Reorganiza para aplicarlos a esta semana (se conservan los bloques ya marcados).</span>
-      <button class="btn small" id="regenBanner">Reorganizar semana</button>
+  <details class="fold" id="foldTemario">
+    <summary><h2>Temario</h2><span class="sm" id="temSum"></span></summary>
+    <div class="foldbody">
+      <p class="help">Decreto 36/2025, de 11 de febrero (Anexo I). Cada bloque de estudio toma el siguiente tema pendiente de su materia. Marca un tema cuando lo termines y sale del reparto.</p>
+      <div id="topicSecs" style="display:grid;gap:20px"></div>
     </div>
-    <section class="card" id="setup" hidden><h2>Pon tu tiempo de estudio</h2><p class="help">La app no organiza nada hasta que indiques cuántas horas tienes cada día. Rellena los días que quieras en Ajustes y la semana se reparte sola; los días que dejes vacíos se quedan sin planificar. Tus bloques fijos ya aparecen abajo.</p><a class="btn" href="#ajustes" style="justify-self:start;text-decoration:none">Ir a Ajustes</a></section>
-    <section class="summary" id="summary" aria-label="Balance de la semana"></section>
-    <div class="daychips" id="chips" role="group" aria-label="Elegir día"></div>
-    <section class="week" id="week"></section>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-      <button class="btn ghost small" id="regen">Reorganizar semana</button>
-      <span class="label" id="regenHint">La app reparte de nuevo el tiempo con tus ajustes actuales</span>
-    </div>
-  </main>
+  </details>
 
-  <main id="view-temario" class="panel" hidden>
-    <p class="help" style="margin:0;color:var(--muted);font-size:13px;max-width:70ch">Temario de Bombero del Decreto 36/2025, de 11 de febrero (Anexo I): 12 temas generales, 33 específicos y 5 propios del servicio que convoca, que fijarán las bases de Sevilla. Cada bloque de estudio toma el siguiente tema pendiente de su materia. Marca un tema cuando lo termines y sale del reparto. Puedes renombrar los propios de Sevilla cuando salgan las bases.</p>
-    <div class="cols" id="topicCols"></div>
-  </main>
-
-  <main id="view-ajustes" class="panel" hidden>
-    <div class="cols">
-      <section class="card">
-        <h2>Tiempo por día</h2>
-        <p class="help">Hora a la que empiezas, horas de estudio y cuántos temas quieres ver cada día. Un día sin horas no se organiza (ni estudio ni entreno). Con «Temas» vacío cada bloque es un tema nuevo; si pones un número, el tiempo del día se reparte entre esos temas. Marca «Sin entreno» en los días de descanso físico.</p>
-        <div class="row days rowhead"><span>Día</span><span>Empiezo</span><span>Horas</span><span>Temas</span><span title="Sin entreno">Sin entr.</span></div>
-        <div class="rows" id="dayRows"></div>
+  <details class="fold" id="foldAjustes">
+    <summary><h2>Ajustes</h2><span class="sm">Entrenos, materias y bloques fijos</span></summary>
+    <div class="foldbody" id="ajustes">
+      <section class="sec">
+        <h3>Entrenamientos <span>Anexo III · marcas hombres</span></h3>
+        <div class="row train colhead"><span>Prueba y objetivo</span><span>Ses./sem</span><span>Min</span></div>
+        <div id="trainRows" style="display:grid;gap:10px"></div>
+        <p class="help">Cada prueba puntúa de 0 a 10 y hay que sacar al menos un 5 en todas. Dominadas, 1500 m y 100 m nunca van en días seguidos y los días de CrossFit no se añade otro entreno si cabe en el resto de la semana.</p>
       </section>
-      <section class="card">
-        <h2>Entrenamientos</h2>
-        <p class="help">Sesiones por semana y minutos por sesión. La app elige los días.</p>
-        <div class="row train rowhead"><span>Prueba</span><span>Ses./sem</span><span>Min</span></div>
-        <div class="rows" id="trainRows"></div>
-        <div class="row" style="grid-template-columns:1fr auto">
-          <span class="label">Entreno respecto al estudio</span>
-          <div class="seg" id="trainPos"><button data-v="before">Antes</button><button data-v="after">Después</button></div>
-        </div>
-        <ul class="rules">
-          <li>Dominadas, 1500 m y 100 m nunca en días seguidos (48 h de recuperación). Evita juntar 1500 m y 100 m el mismo día.</li>
-          <li>Los días de CrossFit no se añade otro entreno salvo que no quepa en el resto de la semana.</li>
-          <li>Marcas del Decreto 36/2025 (Anexo III, hombres): cada prueba puntúa de 0 a 10 y hay que sacar al menos un 5 en todas.</li>
-          <li>Máximo dos entrenos por día y 15 min de margen para ducha antes de estudiar.</li>
-        </ul>
+      <section class="sec">
+        <h3>Días sin entreno</h3>
+        <div class="pills" id="noTrain" role="group" aria-label="Días sin entreno"></div>
       </section>
-      <section class="card">
-        <h2>Materias de estudio</h2>
-        <p class="help">El peso decide qué parte del tiempo semanal se lleva cada materia.</p>
-        <div class="row study rowhead"><span>Materia</span><span>Peso</span></div>
-        <div class="rows" id="studyRows"></div>
-        <div class="row" style="grid-template-columns:1fr 90px 90px">
-          <span class="label">Bloques de estudio</span>
-          <label class="toggle">Bloque <input type="number" id="blockLen" min="20" max="120" step="5" style="width:58px"></label>
-          <label class="toggle">Pausa <input type="number" id="breakLen" min="0" max="30" step="5" style="width:52px"></label>
+      <section class="sec">
+        <h3>Entreno respecto al estudio</h3>
+        <div class="pills" id="trainPos" role="group" aria-label="Entreno respecto al estudio"><button class="pill" data-v="before">Antes</button><button class="pill" data-v="after">Después</button></div>
+      </section>
+      <section class="sec">
+        <h3>Peso de cada materia</h3>
+        <div id="studyRows" style="display:grid;gap:8px"></div>
+        <div class="two">
+          <label for="blockLen">Bloque de estudio (min)<input type="number" id="blockLen" min="20" max="120" step="5"></label>
+          <label for="breakLen">Pausa entre bloques (min)<input type="number" id="breakLen" min="0" max="30" step="5"></label>
         </div>
       </section>
-      <section class="card">
-        <h2>Bloques fijos</h2>
-        <p class="help">Clases, CrossFit o cualquier cosa que no se mueve. La app nunca pone nada encima.</p>
-        <div class="rows" id="fixedRows"></div>
-        <button class="btn ghost small" id="addFixed" style="justify-self:start">Añadir bloque fijo</button>
+      <section class="sec">
+        <h3>Bloques fijos</h3>
+        <p class="help">Lo que no se mueve, como el CrossFit. La app nunca pone nada encima.</p>
+        <div id="fixedRows" style="display:grid;gap:8px"></div>
+        <button class="btn line" id="addFixed" style="justify-self:start">Añadir bloque fijo</button>
+      </section>
+      <section class="sec">
+        <h3>Datos</h3>
+        <p class="help">Todo se guarda en este navegador.</p>
+        <div class="confirm" id="resetArea"><button class="btn line" id="resetBtn">Borrar todos los datos</button></div>
       </section>
     </div>
-    <section class="card">
-      <h2>Datos</h2>
-      <p class="help">Todo se guarda en este navegador. Borrar devuelve la app a los valores iniciales.</p>
-      <div class="confirm" id="resetArea"><button class="btn ghost small" id="resetBtn">Borrar todos los datos</button></div>
-    </section>
-  </main>
+  </details>
 </div>
-<div class="toast" id="toast" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
 
 <script>
 (function(){
@@ -364,8 +328,8 @@ function generate(key){
     // temas del día: vacío = un tema por bloque; con número, el tiempo se reparte entre esos temas (mínimo 15 min cada uno)
     const nT=Math.min(+S.days[d].topics||0,Math.floor(M/15));
     let groups;
-    // dentro de un tema, bloques iguales (120 min → 40+40+40)
-    const even=m=>{const n=Math.ceil(m/B),l=Math.round(m/n/5)*5,a=Array(n).fill(l);a[n-1]=m-l*(n-1);return a};
+    // dentro de un tema, bloques iguales (60 min → 60, 120 → 60+60, 150 → 50+50+50)
+    const even=m=>{const n=Math.ceil(m/(B*1.25)),l=Math.round(m/n/5)*5,a=Array(n).fill(l);a[n-1]=m-l*(n-1);return a};
     if(nT>0){const part=Math.floor(M/nT/5)*5;groups=[];for(let g=0;g<nT;g++)groups.push(even(g<nT-1?part:M-part*(nT-1)))}
     else groups=split(M).map(l=>[l]);
     const nb=groups.reduce((a,g)=>a+g.length,0);
@@ -396,123 +360,133 @@ function generate(key){
 }
 function markDirty(){Object.keys(S.plans).forEach(k=>{if(k>=iso(monday(0)))S.dirty[k]=1});save()}
 
-/* ------- render semana ------- */
+/* ------- interfaz ------- */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const CHECK='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const CHECK='<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const hours=m=>String(+(m/60).toFixed(2)).replace(".",",")+" h";
+const thisMonday=()=>iso(monday(0));
+
+// cualquier cambio reorganiza al momento la semana visible y las futuras ya generadas (se conservan los bloques hechos)
+function changed(){markDirty();renderWeek();renderTemSum()}
 
 function renderWeek(){
   const mon=monday(offset),key=iso(mon);
-  if(!S.plans[key]||(anyTime()&&S.plans[key].every(a=>!a.length)))generate(key);
+  if(!S.plans[key]||(S.dirty[key]&&key>=thisMonday())||(anyTime()&&S.plans[key].every(a=>!a.length)))generate(key);
   const plan=S.plans[key];
-  $("setup").hidden=anyTime();$("summary").hidden=!anyTime();
   const sun=new Date(mon);sun.setDate(mon.getDate()+6);
   $("range").textContent=mon.getDate()+" "+MES[mon.getMonth()]+" – "+sun.getDate()+" "+MES[sun.getMonth()];
+  $("thisWeek").hidden=offset===0;
   const todayIdx=offset===0?(new Date().getDay()+6)%7:-1;
-  if(activeDay===null)activeDay=todayIdx>=0?todayIdx:0;
-  $("banner").hidden=!S.dirty[key];
+  $("hint").hidden=anyTime();$("meters").hidden=!anyTime();
 
   // balance
-  let sp=0,sd=0,tp=0,td=0;const per={};
-  plan.forEach(a=>a.forEach(b=>{const L=b.end-b.start;per[b.subj]=per[b.subj]||{p:0,d:0};per[b.subj].p+=L;if(b.done)per[b.subj].d+=L;
-    if(b.type==="study"){sp+=L;if(b.done)sd+=L}else{tp++;if(b.done)td++}}));
+  let sp=0,sd=0,tp=0,td=0;
+  plan.forEach(a=>a.forEach(b=>{const L=b.end-b.start;if(b.type==="study"){sp+=L;if(b.done)sd+=L}else{tp++;if(b.done)td++}}));
   const pct=(a,b)=>b?Math.round(a/b*100):0;
   const want=S.subjects.filter(s=>s.kind==="train").reduce((x,s)=>x+(s.sessions|0),0);
   const miss=want-tp;
-  const mix=(kind)=>S.subjects.filter(s=>s.kind===kind&&per[s.id]).map(s=>`<div><span class="dot" style="background:var(${s.color})"></span><span>${esc(s.name)}</span><span class="mono">${kind==="study"?hm(per[s.id].d)+" / "+hm(per[s.id].p):Math.round(per[s.id].d/(+s.dur||1))+" / "+Math.round(per[s.id].p/(+s.dur||1))}</span></div>`).join("");
-  $("summary").innerHTML=
-   `<div class="stat"><span class="label">Estudio hecho</span><div class="big">${hm(sd)} <small>de ${hm(sp)}</small></div><div class="bar"><i style="width:${pct(sd,sp)}%"></i></div><div class="mix">${mix("study")}</div></div>`+
-   `<div class="stat"><span class="label">Entrenos hechos</span><div class="big">${td} <small>de ${tp} sesiones</small></div><div class="bar"><i style="width:${pct(td,tp)}%;background:var(--ok)"></i></div><div class="mix">${mix("train")}</div>${miss>0?`<p class="goal" style="margin:0">No caben ${miss} sesi${miss>1?"ones":"ón"} de las ${want} previstas: pon tiempo a más días o quita «Sin entreno».</p>`:""}</div>`;
-
-  // chips
-  $("chips").innerHTML=DAYS.map((n,d)=>{const a=plan[d];const tot=a.reduce((x,b)=>x+b.end-b.start,0),dn=a.reduce((x,b)=>x+(b.done?b.end-b.start:0),0);
-    const dt=new Date(mon);dt.setDate(mon.getDate()+d);
-    return `<button class="chip${d===todayIdx?" today":""}" data-d="${d}" aria-pressed="${d===activeDay}" aria-label="${n} ${dt.getDate()}"><b>${D3[d]}</b><span>${dt.getDate()}</span><div class="mini"><i style="width:${pct(dn,tot)}%"></i></div></button>`}).join("");
+  $("meters").innerHTML=
+    `<div class="meter"><span class="v">Estudio <b>${hm(sd)}</b> de ${hm(sp)}</span><div class="bar"><i style="width:${pct(sd,sp)}%"></i></div></div>`+
+    `<div class="meter"><span class="v">Entrenos <b>${td}</b> de ${tp}</span><div class="bar tr"><i style="width:${pct(td,tp)}%"></i></div></div>`+
+    (miss>0?`<p class="note">No caben ${miss} sesi${miss>1?"ones":"ón"} de entreno de las ${want} previstas. Pon horas a más días o quita días sin entreno en Ajustes.</p>`:"");
 
   // días
   $("week").innerHTML=DAYS.map((n,d)=>{
-    const dt=new Date(mon);dt.setDate(mon.getDate()+d);
+    const day=S.days[d],dt=new Date(mon);dt.setDate(mon.getDate()+d);
     const fx=S.fixed.filter(f=>+f.day===d).map(f=>({type:"fixed",label:f.label,start:toMin(f.start),end:toMin(f.end)}));
     const items=[...fx,...plan[d]].sort((a,b)=>a.start-b.start);
-    const st=plan[d].filter(b=>b.type==="study").reduce((x,b)=>x+b.end-b.start,0);
-    const nt=plan[d].filter(b=>b.type==="train").length;
-    const ntp=new Set(plan[d].filter(b=>b.type==="study"&&b.topic).map(b=>b.topic)).size;
-    let prevEnd=null;
     const li=items.map(b=>{
-      let g="";if(prevEnd!==null&&b.start-prevEnd>=5&&b.type!=="fixed")g=`<li class="gap">· ${b.start-prevEnd} min de pausa</li>`;
-      prevEnd=Math.max(prevEnd||0,b.end);
-      if(b.type==="fixed")return `<li class="blk fixed" style="--c:var(--c-fix)"><div class="body"><span class="t">${fmt(b.start)}–${fmt(b.end)}</span><span class="n">${esc(b.label)}</span><span class="s">Bloque fijo</span></div></li>`;
+      if(b.type==="fixed")return `<li class="blk fixed"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(--c-fix)"></i>${esc(b.label)}</span></div><span class="fx">Fijo</span></li>`;
       const s=subj(b.subj)||{name:"?",color:"--c-fix"};
-      const sub=b.type==="study"?(b.topic?esc(b.topic)+(b.part?" · parte "+b.part:""):"Sin temas pendientes"):(s.goal?"Objetivo: "+esc(s.goal):"Entreno");
-      return g+`<li class="blk${b.done?" done":""}" style="--c:var(${s.color})"><div class="body"><span class="t">${fmt(b.start)}–${fmt(b.end)} · ${b.end-b.start} min</span><span class="n">${esc(s.name)}</span><span class="s">${sub}</span></div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} como hecho">${CHECK}</button></li>`;
+      const sub=b.type==="study"?(b.topic?esc(b.topic)+(b.part?" · parte "+b.part:""):"Sin temas pendientes"):(s.goal?goalHtml(s.goal).replace(/<\/?b>/g,""):"Entreno");
+      return `<li class="blk${b.done?" done":""}"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span><span class="tp">${sub}</span></div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} de las ${fmt(b.start)} como hecho">${CHECK}</button></li>`;
     }).join("");
-    return `<article class="day${d===activeDay?" active":""}${d===todayIdx?" today":""}"><div class="dayhead"><h3>${n}${d===todayIdx?'<span class="today-tag">HOY</span>':""}</h3><span class="meta">${dt.getDate()} ${MES[dt.getMonth()]} · ${hm(st)} estudio${ntp?" · "+ntp+" tema"+(ntp>1?"s":""):""}${nt?" · "+nt+" entreno"+(nt>1?"s":""):""}</span></div>${li?`<ul class="blocks">${li}</ul>`:""}${!hasTime(d)?`<p class="empty">Sin tiempo de estudio puesto. Este día no se organiza hasta que lo indiques en Ajustes.</p>`:(li?"":`<p class="empty">Día libre.</p>`)}</article>`;
+    const h=hasTime(d),t=day.topics;
+    return `<li class="day${d===todayIdx?" today":""}">
+      <div class="dh"><h2>${n}<span class="date">${dt.getDate()} ${MES[dt.getMonth()]}</span>${d===todayIdx?'<span class="tag">HOY</span>':""}</h2>
+        <label class="start" for="ds-${d}">Empiezo<input type="time" id="ds-${d}" data-d="${d}" value="${day.start}"></label></div>
+      <div class="ctrls">
+        <div class="step${h?"":" unset"}"><button data-act="h-" data-d="${d}" aria-label="Menos horas de estudio el ${n.toLowerCase()}">−</button><span class="val"><b>${h?hours(+day.study):"—"}</b><span>de estudio</span></span><button data-act="h+" data-d="${d}" aria-label="Más horas de estudio el ${n.toLowerCase()}">+</button></div>
+        <div class="step${t?"":" unset"}"><button data-act="t-" data-d="${d}" aria-label="Menos temas el ${n.toLowerCase()}">−</button><span class="val"><b>${t?t+" tema"+(t>1?"s":""):"Auto"}</b><span>${t?"para el día":"1 tema por bloque"}</span></span><button data-act="t+" data-d="${d}" aria-label="Más temas el ${n.toLowerCase()}">+</button></div>
+      </div>
+      ${li?`<ol class="blocks">${li}</ol>`:""}${h?(plan[d].length?"":'<p class="empty">Sin bloques este día.</p>'):'<p class="empty">Sin organizar: pon tus horas de estudio.</p>'}
+    </li>`;
   }).join("");
 }
 
-/* ------- temario ------- */
+function renderTemSum(){
+  const all=S.subjects.filter(s=>s.kind==="study"&&s.id!=="test").flatMap(s=>S.topics[s.id]||[]);
+  $("temSum").textContent=all.filter(t=>t.done).length+" de "+all.length+" temas hechos";
+}
 function renderTopics(){
-  $("topicCols").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>{
-    const list=S.topics[s.id]||[];const left=list.filter(t=>!t.done).length;
-    return `<section class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><h2 style="display:flex;align-items:center;gap:8px"><span class="dot" style="background:var(${s.color});width:12px;height:12px"></span>${esc(s.name)}</h2><span class="label">${left} pendientes</span></div>
+  $("topicSecs").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>{
+    const list=S.topics[s.id]||[],left=list.filter(t=>!t.done).length;
+    return `<section class="sec"><h3><span class="nm2" style="text-transform:uppercase;letter-spacing:.06em;font-weight:700"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span><span>${left} pendientes</span></h3>
     <ul class="topics">${list.map(t=>`<li class="${t.done?"done":""}"><input type="checkbox" id="tp-${t.id}" data-s="${s.id}" data-t="${t.id}" ${t.done?"checked":""} aria-label="Tema terminado"><span>${esc(t.text)}</span><button class="x" data-del="${t.id}" data-s="${s.id}" aria-label="Quitar tema">×</button></li>`).join("")||'<li><span></span><span class="empty">Sin temas todavía.</span><span></span></li>'}</ul>
-    <form class="addrow" data-s="${s.id}"><input type="text" id="add-${s.id}" placeholder="Nuevo tema" aria-label="Nuevo tema de ${esc(s.name)}"><button class="btn small">Añadir</button></form></section>`}).join("");
+    <form class="addrow" data-s="${s.id}"><input type="text" id="add-${s.id}" placeholder="Añadir tema" aria-label="Nuevo tema de ${esc(s.name)}"><button class="btn line">Añadir</button></form></section>`}).join("");
+  renderTemSum();
 }
-
-/* ------- ajustes ------- */
-const hasTimeVal=d=>(d.study===null||d.study===undefined||d.study==="")?"":+(d.study/60).toFixed(2);
 function renderSettings(){
-  $("dayRows").innerHTML=S.days.map((d,i)=>`<div class="row days"><b style="font-family:var(--f-display);font-size:17px">${D3[i]}</b><input type="time" id="ds-${i}" data-k="start" data-i="${i}" value="${d.start}"><input type="number" id="dh-${i}" data-k="study" data-i="${i}" min="0" max="12" step="0.25" value="${hasTimeVal(d)}" placeholder="—" aria-label="Horas de estudio"><input type="number" id="dt-${i}" data-k="topics" data-i="${i}" min="1" max="12" step="1" value="${d.topics||""}" placeholder="—" aria-label="Temas del día"><label class="toggle"><input type="checkbox" id="dn-${i}" data-k="noTrain" data-i="${i}" ${d.noTrain?"checked":""} aria-label="Sin entreno"></label></div>`).join("");
-  $("trainRows").innerHTML=S.subjects.filter(s=>s.kind==="train").map(s=>`<div class="row train"><div style="min-width:0"><div class="nm"><span class="dot" style="background:var(${s.color})"></span>${esc(s.name)}</div><div class="goal">Objetivo <b>${esc(s.goal||"")}</b></div></div><input type="number" id="ts-${s.id}" data-sid="${s.id}" data-k="sessions" min="0" max="7" value="${s.sessions}" aria-label="Sesiones por semana"><input type="number" id="td-${s.id}" data-sid="${s.id}" data-k="dur" min="10" max="180" step="5" value="${s.dur}" aria-label="Minutos por sesión"></div>`).join("");
-  $("studyRows").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>`<div class="row study"><div class="nm"><span class="dot" style="background:var(${s.color})"></span>${esc(s.name)}</div><select id="sw-${s.id}" data-sid="${s.id}" data-k="weight" aria-label="Peso"><option value="0">0 · fuera</option>${[1,2,3,4].map(w=>`<option value="${w}" ${+s.weight===w?"selected":""}>${w} · ${["","bajo","normal","alto","máximo"][w]}</option>`).join("")}</select></div>`).join("");
-  $("fixedRows").innerHTML=S.fixed.map(f=>`<div class="row fixedr"><select id="fd-${f.id}" data-fid="${f.id}" data-k="day" aria-label="Día">${D3.map((x,i)=>`<option value="${i}" ${+f.day===i?"selected":""}>${x}</option>`).join("")}</select><input type="text" id="fl-${f.id}" data-fid="${f.id}" data-k="label" value="${esc(f.label)}" aria-label="Nombre"><input type="time" id="fs-${f.id}" data-fid="${f.id}" data-k="start" value="${f.start}" aria-label="Inicio"><input type="time" id="fe-${f.id}" data-fid="${f.id}" data-k="end" value="${f.end}" aria-label="Fin"><button class="x" data-fdel="${f.id}" aria-label="Quitar bloque">×</button></div>`).join("")||'<p class="empty">Sin bloques fijos.</p>';
+  $("trainRows").innerHTML=S.subjects.filter(s=>s.kind==="train").map(s=>`<div class="row train"><div style="min-width:0"><div class="nm2"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</div><div class="goal">${goalHtml(s.goal)}</div></div><input type="number" id="ts-${s.id}" data-sid="${s.id}" data-k="sessions" min="0" max="7" value="${s.sessions}" aria-label="Sesiones por semana de ${esc(s.name)}"><input type="number" id="td-${s.id}" data-sid="${s.id}" data-k="dur" min="10" max="180" step="5" value="${s.dur}" aria-label="Minutos por sesión de ${esc(s.name)}"></div>`).join("");
+  $("noTrain").innerHTML=DAYS.map((n,i)=>`<button class="pill" data-nt="${i}" aria-pressed="${!!S.days[i].noTrain}" aria-label="${n}">${D3[i]}</button>`).join("");
+  document.querySelectorAll("#trainPos .pill").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.trainPos));
+  $("studyRows").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>`<div class="row weight"><div class="nm2"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</div><select id="sw-${s.id}" data-sid="${s.id}" data-k="weight" aria-label="Peso de ${esc(s.name)}"><option value="0">0 · fuera</option>${[1,2,3,4].map(w=>`<option value="${w}" ${+s.weight===w?"selected":""}>${w} · ${["","bajo","normal","alto","máximo"][w]}</option>`).join("")}</select></div>`).join("");
   $("blockLen").value=S.block;$("breakLen").value=S.brk;
-  document.querySelectorAll("#trainPos button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.trainPos));
+  $("fixedRows").innerHTML=S.fixed.map(f=>`<div class="row fixedr"><select id="fd-${f.id}" data-fid="${f.id}" data-k="day" aria-label="Día">${D3.map((x,i)=>`<option value="${i}" ${+f.day===i?"selected":""}>${x}</option>`).join("")}</select><input class="fl" type="text" id="fl-${f.id}" data-fid="${f.id}" data-k="label" value="${esc(f.label)}" aria-label="Nombre"><button class="x" data-fdel="${f.id}" aria-label="Quitar bloque">×</button><input class="fs" type="time" id="fs-${f.id}" data-fid="${f.id}" data-k="start" value="${f.start}" aria-label="Inicio"><input type="time" id="fe-${f.id}" data-fid="${f.id}" data-k="end" value="${f.end}" aria-label="Fin"></div>`).join("")||'<p class="empty">Sin bloques fijos.</p>';
 }
-
-/* ------- vistas ------- */
-function show(){
-  let v=(location.hash||"#semana").slice(1);if(!["semana","temario","ajustes"].includes(v))v="semana";
-  ["semana","temario","ajustes"].forEach(x=>$("view-"+x).hidden=x!==v);
-  document.querySelectorAll("nav.tabs a").forEach(a=>a.setAttribute("aria-current",a.dataset.view===v?"page":"false"));
-  if(v==="semana")renderWeek();else if(v==="temario")renderTopics();else renderSettings();
-}
+// «5 → 1:50 · 10 → 1:18» → «Un 5: 1:50 · un 10: 1:18»
+function goalHtml(g){const m=/^5\s*→\s*(.+?)\s*·\s*10\s*→\s*(.+)$/.exec(g||"");return m?`Un 5: <b>${esc(m[1])}</b> · un 10: <b>${esc(m[2])}</b>`:esc(g||"")}
 let tt;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,1800)}
 
 /* ------- eventos ------- */
-window.addEventListener("hashchange",show);
-$("prevWeek").onclick=()=>{offset--;activeDay=0;renderWeek()};
-$("nextWeek").onclick=()=>{offset++;activeDay=0;renderWeek()};
-$("thisWeek").onclick=()=>{offset=0;activeDay=null;if(location.hash!=="#semana"&&location.hash)location.hash="semana";else renderWeek()};
-const regen=()=>{generate(iso(monday(offset)));renderWeek();toast("Semana reorganizada")};
-$("regen").onclick=regen;$("regenBanner").onclick=regen;
-$("chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;activeDay=+b.dataset.d;renderWeek()});
-$("week").addEventListener("click",e=>{const b=e.target.closest(".tick");if(!b)return;const key=iso(monday(offset));const blk=S.plans[key][+b.dataset.d].find(x=>x.id===b.dataset.id);if(!blk)return;blk.done=!blk.done;save();renderWeek()});
+$("prevWeek").onclick=()=>{offset--;renderWeek()};
+$("nextWeek").onclick=()=>{offset++;renderWeek()};
+$("thisWeek").onclick=()=>{offset=0;renderWeek()};
 
-$("topicCols").addEventListener("change",e=>{const c=e.target;if(c.type!=="checkbox")return;const t=S.topics[c.dataset.s].find(x=>x.id===c.dataset.t);t.done=c.checked;markDirty();save();renderTopics()});
-$("topicCols").addEventListener("click",e=>{const b=e.target.closest("[data-del]");if(!b)return;S.topics[b.dataset.s]=S.topics[b.dataset.s].filter(t=>t.id!==b.dataset.del);markDirty();save();renderTopics()});
-$("topicCols").addEventListener("submit",e=>{e.preventDefault();const f=e.target,inp=f.querySelector("input"),v=inp.value.trim();if(!v)return;(S.topics[f.dataset.s]=S.topics[f.dataset.s]||[]).push({id:uid(),text:v,done:false});markDirty();save();renderTopics();const n=$("add-"+f.dataset.s);n&&n.focus()});
+$("week").addEventListener("click",e=>{
+  const tk=e.target.closest(".tick");
+  if(tk){const blk=S.plans[iso(monday(offset))][+tk.dataset.d].find(x=>x.id===tk.dataset.id);if(blk){blk.done=!blk.done;save();renderWeek()}return}
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const day=S.days[+b.dataset.d],a=b.dataset.act,m=+day.study||0,had=hasTime(+b.dataset.d);
+  if(a==="h+")day.study=had?Math.min(720,Math.floor(m/30)*30+30):60;
+  else if(a==="h-"){if(!had)return;const v=Math.ceil(m/30)*30-30;day.study=v>=30?v:null}
+  else if(a==="t+")day.topics=Math.min(12,(day.topics|0)+1);
+  else if(a==="t-"){if(!day.topics)return;day.topics=day.topics>1?day.topics-1:null}
+  const focusId=document.activeElement&&document.activeElement.getAttribute("aria-label");
+  changed();
+  if(focusId){const f=[...document.querySelectorAll("#week [data-act]")].find(x=>x.getAttribute("aria-label")===focusId);f&&f.focus()}
+});
+$("week").addEventListener("change",e=>{const el=e.target;if(el.type!=="time")return;S.days[+el.dataset.d].start=el.value||"16:00";changed()});
 
-$("view-ajustes").addEventListener("change",e=>{
+$("topicSecs").addEventListener("change",e=>{const c=e.target;if(c.type!=="checkbox")return;const t=S.topics[c.dataset.s].find(x=>x.id===c.dataset.t);t.done=c.checked;c.closest("li").classList.toggle("done",c.checked);changed()});
+$("topicSecs").addEventListener("click",e=>{const b=e.target.closest("[data-del]");if(!b)return;S.topics[b.dataset.s]=S.topics[b.dataset.s].filter(t=>t.id!==b.dataset.del);renderTopics();changed()});
+$("topicSecs").addEventListener("submit",e=>{e.preventDefault();const f=e.target,v=f.querySelector("input").value.trim();if(!v)return;(S.topics[f.dataset.s]=S.topics[f.dataset.s]||[]).push({id:uid(),text:v,done:false});renderTopics();changed();const n=$("add-"+f.dataset.s);n&&n.focus()});
+
+$("ajustes").addEventListener("change",e=>{
   const el=e.target,k=el.dataset.k;
-  if(el.dataset.i!==undefined){const d=S.days[+el.dataset.i];if(k==="start")d.start=el.value||"16:00";else if(k==="study")d.study=el.value===""?null:Math.max(0,Math.round((+el.value||0)*60));else if(k==="topics")d.topics=el.value===""||+el.value<1?null:Math.min(12,Math.round(+el.value));else if(k==="noTrain")d.noTrain=el.checked}
-  else if(el.dataset.sid){const s=subj(el.dataset.sid);s[k]=Math.max(0,+el.value||0)}
+  if(el.dataset.sid){const s=subj(el.dataset.sid);s[k]=Math.max(0,+el.value||0)}
   else if(el.dataset.fid){const f=S.fixed.find(x=>x.id===el.dataset.fid);f[k]=k==="day"?+el.value:el.value}
   else if(el.id==="blockLen")S.block=Math.min(120,Math.max(20,+el.value||50));
   else if(el.id==="breakLen")S.brk=Math.min(30,Math.max(0,+el.value||0));
   else return;
-  markDirty();save();toast("Guardado. Reorganiza la semana para aplicarlo");
+  changed();toast("Guardado y semana reorganizada");
 });
-$("trainPos").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.trainPos=b.dataset.v;markDirty();save();renderSettings()});
-$("addFixed").onclick=()=>{S.fixed.push({id:uid(),day:1,start:"09:00",end:"10:00",label:"Nuevo bloque"});markDirty();save();renderSettings()};
-$("fixedRows").addEventListener("click",e=>{const b=e.target.closest("[data-fdel]");if(!b)return;S.fixed=S.fixed.filter(f=>f.id!==b.dataset.fdel);markDirty();save();renderSettings()});
+$("ajustes").addEventListener("click",e=>{
+  const nt=e.target.closest("[data-nt]"),tp=e.target.closest("#trainPos [data-v]"),fd=e.target.closest("[data-fdel]");
+  if(nt){const d=S.days[+nt.dataset.nt];d.noTrain=!d.noTrain;nt.setAttribute("aria-pressed",d.noTrain);changed()}
+  else if(tp){S.trainPos=tp.dataset.v;renderSettings();changed()}
+  else if(fd){S.fixed=S.fixed.filter(f=>f.id!==fd.dataset.fdel);renderSettings();changed()}
+});
+$("addFixed").onclick=()=>{S.fixed.push({id:uid(),day:1,start:"09:00",end:"10:00",label:"Nuevo bloque"});renderSettings();changed()};
 $("resetArea").addEventListener("click",e=>{
-  const a=$("resetArea");
-  if(e.target.id==="resetBtn")a.innerHTML='<span>Se borrarán temas, ajustes y semanas marcadas.</span><button class="btn small" id="resetYes">Sí, borrar</button><button class="btn ghost small" id="resetNo">Cancelar</button>';
-  else if(e.target.id==="resetYes"){S=defaults();save();a.innerHTML='<button class="btn ghost small" id="resetBtn">Borrar todos los datos</button>';renderSettings();toast("Datos borrados")}
-  else if(e.target.id==="resetNo")a.innerHTML='<button class="btn ghost small" id="resetBtn">Borrar todos los datos</button>';
+  const a=$("resetArea"),idle='<button class="btn line" id="resetBtn">Borrar todos los datos</button>';
+  if(e.target.id==="resetBtn")a.innerHTML='<span>Se borrarán horas, temas marcados, ajustes y semanas.</span><button class="btn" id="resetYes">Sí, borrar</button><button class="btn line" id="resetNo">Cancelar</button>';
+  else if(e.target.id==="resetYes"){S=defaults();save();a.innerHTML=idle;renderSettings();renderTopics();renderWeek();toast("Datos borrados")}
+  else if(e.target.id==="resetNo")a.innerHTML=idle;
 });
-show();
+
+renderWeek();renderTopics();renderSettings();
 })();
 </script>
 

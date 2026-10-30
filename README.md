@@ -6,9 +6,11 @@ Planificador semanal de estudio y entrenamiento pensado para la oposición de Bo
 
 Abre `index.html` en el navegador (o actívalo en GitHub Pages: *Settings → Pages → Deploy from branch → main / root*). Todo se guarda en el propio navegador.
 
-- **Semana**: línea de tiempo de cada día con sus bloques. Marca cada bloque al terminarlo y el balance de la semana se actualiza.
-- **Temario**: el de Bombero del Decreto 36/2025, de 11 de febrero (Anexo I): 12 temas generales, 33 específicos y 5 propios del SPEIS de Sevilla (se renombran cuando salgan las bases), más bloques de test y repaso. Cada bloque de estudio toma el siguiente tema pendiente.
-- **Ajustes**: hora de inicio, horas de estudio y número de temas por día, sesiones y minutos de las cuatro pruebas físicas del Anexo III (dominadas, 100 m lisos, 1500 m y 100 m natación, con las marcas del 5 y del 10), peso de cada materia, duración de bloques y pausas, y bloques fijos (CrossFit lunes y miércoles de 20:00 a 21:00 ya viene cargado). Un día sin horas de estudio no se organiza.
+Es una sola página, sin pestañas:
+
+- **La semana**: una tarjeta por día. Con los botones − y + pones las horas de estudio y cuántos temas quieres ver ese día («Auto» = un tema por bloque). La semana se reorganiza sola al cambiar algo y conserva los bloques ya marcados como hechos. Un día sin horas no se organiza.
+- **Temario** (plegable): el de Bombero del Decreto 36/2025, de 11 de febrero (Anexo I): 12 temas generales, 33 específicos y 5 propios del SPEIS de Sevilla, más bloques de test y repaso. Marca los temas terminados o añade los tuyos.
+- **Ajustes** (plegable): sesiones y minutos de las cuatro pruebas físicas del Anexo III (dominadas, 100 m lisos, 1500 m y 100 m natación, con las marcas del 5 y del 10), días sin entreno, entreno antes o después del estudio, peso de cada materia, duración de bloques y pausas, y bloques fijos (CrossFit lunes y miércoles de 20:00 a 21:00 ya viene cargado).
 
 ## Cómo organiza la semana
 
