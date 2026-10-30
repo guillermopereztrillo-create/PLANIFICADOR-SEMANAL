@@ -10,7 +10,7 @@ Es una sola página, sin pestañas:
 
 - **La semana**: una tarjeta por día. Con los botones − y + pones las horas de estudio y cuántos temas quieres ver ese día («Auto» = un tema por bloque). La semana se reorganiza sola al cambiar algo y conserva los bloques ya marcados como hechos. Un día sin horas no se organiza.
 - **Temario** (plegable): el de Bombero del Decreto 36/2025, de 11 de febrero (Anexo I): 12 temas generales, 33 específicos y 5 propios del SPEIS de Sevilla, más bloques de test y repaso. Marca los temas terminados o añade los tuyos.
-- **Ajustes** (plegable): sesiones y minutos de las cuatro pruebas físicas del Anexo III (dominadas, 100 m lisos, 1500 m y 100 m natación, con las marcas del 5 y del 10), días sin entreno, entreno antes o después del estudio, peso de cada materia, duración de bloques y pausas, y bloques fijos (CrossFit lunes y miércoles de 20:00 a 21:00 ya viene cargado).
+- **Ajustes** (plegable): sesiones y minutos de las cuatro pruebas físicas del Anexo III (dominadas, 100 m lisos, 1500 m y 100 m natación, con las marcas del 5 y del 10), días sin entreno, entreno antes o después del estudio, cuándo correr (temprano o por la noche), peso de cada materia, duración de bloques y pausas, y bloques fijos (CrossFit lunes y miércoles de 20:00 a 21:00 ya viene cargado).
 
 ## Cómo organiza la semana
 
@@ -18,8 +18,9 @@ Es una sola página, sin pestañas:
 - Si indicas cuántos temas quieres estudiar un día, reparte ese tiempo a partes iguales entre esos temas (mínimo 15 min por tema); si lo dejas vacío, cada bloque es un tema nuevo.
 - Con 2 temas en un día, uno es de Generales (legislación) y el otro de Específicos.
 - No coloca entrenos que acaben más tarde de las 23:30.
-- Coloca los entrenos evitando repetir dominadas, 1500 m o 100 m en días seguidos, sin dominadas los días de CrossFit y con natación como descarga.
-- Los días de CrossFit no añade otro entreno salvo que no quepa en el resto de la semana.
+- Coloca los entrenos evitando repetir dominadas, 1500 m o 100 m en días seguidos y sin correr dos días seguidos.
+- Los días de CrossFit no añade ningún otro entreno.
+- Carrera y 100 m (al aire libre) nunca van a mediodía: temprano (07:30 por defecto, si terminas antes de empezar a estudiar) o por la noche, no antes de las 21:00 de junio a septiembre, las 20:00 en mayo y octubre y las 19:00 el resto del año. Natación y dominadas van antes o después del estudio.
 - Nunca pone nada encima de un bloque fijo y deja 15 min de margen tras entrenar (también después del CrossFit).
 - Si los entrenos no caben en los días con tiempo, el balance de la semana avisa de cuántas sesiones faltan.
 
