@@ -174,7 +174,7 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
     <div class="stripe" aria-hidden="true"></div>
   </header>
 
-  <p class="hint" id="hint" hidden>Pon con + las horas de estudio de cada día. Hasta entonces la app no organiza nada.</p>
+  <p class="hint" id="hint" hidden>Pon con + las horas de estudio de cada día. Hasta entonces solo verás el rato diario de callejero.</p>
   <section class="meters" id="meters" aria-label="Balance de la semana"></section>
   <ol class="days" id="week"></ol>
 
@@ -212,7 +212,7 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
       <section class="sec">
         <h3>Callejero de Sevilla</h3>
         <div class="two"><label for="calMin">Minutos cada día (0 = sin callejero)<input type="number" id="calMin" min="0" max="60" step="5"></label></div>
-        <p class="help">Cada día con horas de estudio empieza con este rato de callejero, descontado de esas horas. Va recorriendo los distritos de Sevilla; márcalos en el Temario cuando los domines.</p>
+        <p class="help">Todos los días hay este rato de callejero. En los días con horas de estudio abre la sesión y sale de esas horas; en los demás va solo, a la hora de «Empiezo». Va recorriendo los distritos de Sevilla; márcalos en el Temario cuando los domines.</p>
       </section>
       <section class="sec">
         <h3>Peso de cada materia</h3>
@@ -267,7 +267,7 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:6,
+    v:7,
     days:DAYS.map((_,i)=>({start:i>=5?"10:00":"16:00",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST),cal:mk(CAL)},
@@ -284,7 +284,8 @@ if(S&&S.v===2){S.v=3;S.plans={};S.dirty={};S.days.forEach(d=>d.study=null);S.sub
 if(S&&S.v===3){S.v=4;S.days.forEach(d=>d.topics=null)}
 if(S&&S.v===4){S.v=5;S.outdoor="morning";S.morningAt="07:30";S.dirty={};Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
 if(S&&S.v===5){S.v=6;const n=defaults();S.subjects.splice(S.subjects.findIndex(x=>x.kind==="train"),0,n.subjects.find(x=>x.id==="cal"));S.topics.cal=n.topics.cal;S.cal=20;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
-if(!S||S.v!==6)S=defaults();
+if(S&&S.v===6){S.v=7;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
+if(!S||S.v!==7)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -346,7 +347,15 @@ function generate(key){
   const B=Math.max(15,+S.block||50),P=Math.max(0,+S.brk||0);
   const plan=DAYS.map((_,d)=>{
     const out=[],fx=fixedFor(d);
-    if(!hasTime(d))return out;
+    // callejero: todos los días, también los que no tienen horas de estudio
+    const calBlock=(at,len)=>{
+      const pend=(S.topics.cal||[]).filter(t=>!t.done);
+      const topic=pend.length?pend[ptr.cal++%pend.length].text:"Repaso general del callejero";
+      const s=fit(at,len,fx);
+      out.push({id:uid(),type:"study",subj:"cal",topic,part:"",start:s,end:s+len,done:false});
+      return s+len;
+    };
+    if(!hasTime(d)){if(+S.cal>0)calBlock(toMin(S.days[d].start||"16:00"),+S.cal);out.forEach(b=>{if(doneSig.has(sig(d,b)))b.done=true});return out}
     let cur=toMin(S.days[d].start||"16:00");
     const dayStart=cur;
     // carrera y 100 m son al aire libre: temprano o de noche, nunca con el calor del mediodía
@@ -361,14 +370,9 @@ function generate(key){
     const split=M=>{const lens=[];while(M>0){if(M>=B){lens.push(B);M-=B}else{if(M>=15||!lens.length)lens.push(M);else lens[lens.length-1]+=M;M=0}}return lens};
     let M=+S.days[d].study||0;
     // callejero: un rato fijo cada día con estudio, al empezar, tomado de las horas del día
+    // en días con estudio, el callejero abre la sesión y sale de esas horas
     const calMin=Math.min(+S.cal||0,M);
-    if(calMin>0){
-      const pend=(S.topics.cal||[]).filter(t=>!t.done);
-      const topic=pend.length?pend[ptr.cal++%pend.length].text:"Repaso general del callejero";
-      const s=fit(cur,calMin,fx);
-      out.push({id:uid(),type:"study",subj:"cal",topic,part:"",start:s,end:s+calMin,done:false});
-      M-=calMin;cur=s+calMin+(M>0&&P?5:0);
-    }
+    if(calMin>0){cur=calBlock(cur,calMin);M-=calMin;if(M>0&&P)cur+=5}
     // temas del día: vacío = un tema por bloque; con número, el tiempo se reparte entre esos temas (mínimo 15 min cada uno)
     const nT=Math.min(+S.days[d].topics||0,Math.floor(M/15));
     let groups;
@@ -470,7 +474,7 @@ function renderWeek(){
         <div class="step${h?"":" unset"}"><button data-act="h-" data-d="${d}" aria-label="Menos horas de estudio el ${n.toLowerCase()}">−</button><span class="val"><b>${h?hours(+day.study):"—"}</b><span>de estudio</span></span><button data-act="h+" data-d="${d}" aria-label="Más horas de estudio el ${n.toLowerCase()}">+</button></div>
         <div class="step${t?"":" unset"}"><button data-act="t-" data-d="${d}" aria-label="Menos temas el ${n.toLowerCase()}">−</button><span class="val"><b>${t?t+" tema"+(t>1?"s":""):"Auto"}</b><span>${t?"para el día":"1 tema por bloque"}</span></span><button data-act="t+" data-d="${d}" aria-label="Más temas el ${n.toLowerCase()}">+</button></div>
       </div>
-      ${li?`<ol class="blocks">${li}</ol>`:""}${h?(plan[d].length?"":'<p class="empty">Sin bloques este día.</p>'):'<p class="empty">Sin organizar: pon tus horas de estudio.</p>'}
+      ${li?`<ol class="blocks">${li}</ol>`:""}${h?(plan[d].length?"":'<p class="empty">Sin bloques este día.</p>'):(plan[d].length?'<p class="empty">Solo callejero. Pon horas de estudio para organizar el resto.</p>':'<p class="empty">Sin organizar: pon tus horas de estudio.</p>')}
     </li>`;
   }).join("");
 }
@@ -553,7 +557,7 @@ $("resetArea").addEventListener("click",e=>{
 });
 
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-10-30.3";
+const VERSION="2026-10-30.4";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;
