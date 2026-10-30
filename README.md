@@ -16,6 +16,7 @@ Es una sola página, sin pestañas:
 
 - Reparte el estudio en bloques (50 min + 10 de pausa por defecto) alternando materias según su peso, con el reparto equilibrado en toda la semana.
 - Si indicas cuántos temas quieres estudiar un día, reparte ese tiempo a partes iguales entre esos temas (mínimo 15 min por tema); si lo dejas vacío, cada bloque es un tema nuevo.
+- Con 2 temas en un día, uno es de Generales (legislación) y el otro de Específicos.
 - No coloca entrenos que acaben más tarde de las 23:30.
 - Coloca los entrenos evitando repetir dominadas, 1500 m o 100 m en días seguidos, sin dominadas los días de CrossFit y con natación como descarga.
 - Los días de CrossFit no añade otro entreno salvo que no quepa en el resto de la semana.

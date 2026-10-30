@@ -334,16 +334,20 @@ function generate(key){
     else groups=split(M).map(l=>[l]);
     const nb=groups.reduce((a,g)=>a+g.length,0);
     let last=null,bi=0;
+    // con 2 temas al día: uno de Generales (legislación) y otro de Específicos
+    const pair=nT===2?studies.filter(s=>s.id==="leg"||s.id==="esp"):[];
+    const usedToday=new Set();
     groups.forEach(lens=>{
       const len=lens.reduce((a,b)=>a+b,0);
+      const cands=pair.length===2?pair.filter(s=>!usedToday.has(s.id)):studies;
       let pick=null,pv=-Infinity;
-      for(const s of studies){
+      for(const s of cands){
         let v=(s.weight/wsum)*(total+len)-given[s.id];
         if(s.id===last&&studies.length>1)v-=len*0.9;
         if(v>pv){pv=v;pick=s}
       }
       if(!pick)return;
-      given[pick.id]+=len;total+=len;last=pick.id;
+      given[pick.id]+=len;total+=len;last=pick.id;usedToday.add(pick.id);
       const pend=(S.topics[pick.id]||[]).filter(t=>!t.done);
       const topic=pend.length?pend[ptr[pick.id]++%pend.length].text:"";
       lens.forEach((l,j)=>{
