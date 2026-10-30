@@ -16,7 +16,7 @@ Planificador semanal de estudio y entrenamiento para Guillermo, opositor a Bombe
 
 ## Datos
 
-- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `6`).
+- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `7`).
 - Si cambias la forma de los datos, sube `v` y añade una migración desde la versión anterior que conserve lo que el usuario ya ha configurado (días, bloques fijos, temas marcados).
 - Envuelve cada lectura y escritura de `localStorage` en `try/catch`.
 
@@ -36,10 +36,10 @@ Estas marcas salen de resúmenes de academias, no del BOJA original. Si el usuar
 
 ## Reglas del organizador
 
-- **Un día sin horas de estudio no se organiza**: ni estudio ni entrenos. Las horas empiezan vacías y solo las pone el usuario.
+- **Un día sin horas de estudio no se organiza**: ni estudio ni entrenos, solo el rato diario de callejero. Las horas empiezan vacías y solo las pone el usuario.
 - El estudio va en bloques (50 min + 10 de pausa por defecto) y alterna materias según su peso: Generales 2, Específicos 3, Propios de Sevilla 1, Test y repaso 1. El reparto se equilibra en toda la semana.
 - Cada bloque de estudio toma el siguiente tema pendiente de su materia. Si el usuario fija cuántos temas quiere estudiar ese día (`days[i].topics`), el tiempo del día se reparte entre esos temas (mínimo 15 min cada uno) y un tema puede ocupar varios bloques seguidos; vacío (`null`) = un tema por bloque. Con 2 temas, uno es de Generales y otro de Específicos (el más atrasado de los dos va primero).
-- **Callejero de Sevilla**: materia `cal` de tipo `daily`, fuera del reparto por pesos. Cada día con horas de estudio empieza con `S.cal` minutos (20 por defecto, 0 = sin callejero) descontados de esas horas, con el siguiente distrito pendiente (11 distritos, rondas y avenidas, edificios singulares); si están todos hechos, «Repaso general del callejero». No cuenta como tema del día.
+- **Callejero de Sevilla**: materia `cal` de tipo `daily`, fuera del reparto por pesos. Va **todos los días**, automáticamente: `S.cal` minutos (20 por defecto, 0 = sin callejero). En días con horas abre la sesión y se descuenta de esas horas; en días sin horas va solo a la hora de inicio del día. Cada día toma el siguiente distrito pendiente (11 distritos, rondas y avenidas, edificios singulares); si están todos hechos, «Repaso general del callejero». No cuenta como tema del día.
 - Entrenos por defecto: natación 3×45 min, carrera 1500 m 2×40, velocidad 100 m 1×35, dominadas 2×20.
 - Dominadas, 1500 m y 100 m nunca van en días seguidos, y se evita juntar 1500 m y 100 m el mismo día. Como máximo hay 2 entrenos por día, con 15 min de margen tras entrenar (también tras el CrossFit). Ningún entreno acaba después de las 23:30.
 - **CrossFit: lunes y miércoles de 20:00 a 21:00**, como bloque fijo. Esos días no se añade ningún otro entreno (si no cabe, se avisa de las sesiones que faltan).
