@@ -25,7 +25,7 @@
 :root{
   --bg:#EDF0F4; --surface:#FFFFFF; --sunk:#E2E7EE; --ink:#14243A; --muted:#58687D; --line:#D2D9E3;
   --hivis:#F2C200; --on-hivis:#14243A; --silver:#B8C1CD; --ok:#1E7A4C; --focus:#2F5FD0;
-  --c-leg:#2F5FD0; --c-esp:#D03A28; --c-fix:#6A7686; --c-test:#A87400; --c-nat:#0C88A3; --c-car:#2E8A3D; --signal:#DB7500; --c-dom:#7849C0;
+  --c-leg:#2F5FD0; --c-esp:#D03A28; --c-fix:#6A7686; --c-test:#A87400; --c-nat:#0C88A3; --c-car:#2E8A3D; --signal:#DB7500; --c-dom:#7849C0; --c-cal:#B0407A;
   --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
@@ -33,12 +33,12 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0C141F; --surface:#142030; --sunk:#1B283A; --ink:#E5EBF2; --muted:#93A1B4; --line:#25354A;
   --hivis:#F5C842; --on-hivis:#0C141F; --silver:#56657A; --ok:#4BC283; --focus:#7FA3F2;
-  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA;
+  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA; --c-cal:#E57FAE;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0C141F; --surface:#142030; --sunk:#1B283A; --ink:#E5EBF2; --muted:#93A1B4; --line:#25354A;
   --hivis:#F5C842; --on-hivis:#0C141F; --silver:#56657A; --ok:#4BC283; --focus:#7FA3F2;
-  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA;
+  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA; --c-cal:#E57FAE;
   color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -210,6 +210,11 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
         <p class="help">Para evitar el calor, nunca se corre a mediodía. «Temprano» los pone a esa hora si terminas antes de empezar a estudiar; si no da tiempo, pasan a la noche. Por la noche no antes de las 21:00 de junio a septiembre, las 20:00 en mayo y octubre y las 19:00 el resto del año.</p>
       </section>
       <section class="sec">
+        <h3>Callejero de Sevilla</h3>
+        <div class="two"><label for="calMin">Minutos cada día (0 = sin callejero)<input type="number" id="calMin" min="0" max="60" step="5"></label></div>
+        <p class="help">Cada día con horas de estudio empieza con este rato de callejero, descontado de esas horas. Va recorriendo los distritos de Sevilla; márcalos en el Temario cuando los domines.</p>
+      </section>
+      <section class="sec">
         <h3>Peso de cada materia</h3>
         <div id="studyRows" style="display:grid;gap:8px"></div>
         <div class="two">
@@ -245,6 +250,7 @@ const uid=()=>Math.random().toString(36).slice(2,9);
 const LEG=["T1 · Constitución Española de 1978","T2 · Estatuto de Autonomía de Andalucía","T3 · Ley 7/1985, de Bases del Régimen Local","T4 · Ley 5/2010, de Autonomía Local de Andalucía","T5 · Prevención de riesgos laborales","T6 · Estatuto Básico del Empleado Público","T7 · Ley 5/2023, de Función Pública de Andalucía","T8 · Incompatibilidades y responsabilidad del empleado público","T9 · Fuentes del derecho administrativo","T10 · Hacienda pública y administración tributaria","T11 · Normativa de igualdad de género","T12 · Igualdad y transversalidad en las políticas públicas"];
 const ESP=["T1 · Geografía de Andalucía y riesgos","T2 · Organización y parques de extinción en Andalucía","T3 · Ley 2/2002, de Gestión de Emergencias en Andalucía","T4 · Cartografía, coordenadas y GPS","T5 · Escalas, unidades de medida, calor y temperatura","T6 · Hidráulica, bombas y achique","T7 · Comunicaciones y protocolos de movilización","T8 · Vehículos de emergencia y conducción","T9 · Equipamiento operativo y motosierra","T10 · EPI y equipos de protección respiratoria","T11 · Prevención en equipos de trabajo y EPI","T12 · Teoría del fuego y productos de combustión","T13 · Mecanismos de extinción","T14 · Incendios de interior","T15 · Incendios urbanos y buceo en humo","T16 · Incendios industriales","T17 · Incendios en túneles","T18 · Ventilación de incendios","T19 · Plan INFOCA y fuego forestal","T20 · Rescates en altura y con cuerdas","T21 · Rescate en accidentes de tráfico y excarcelación","T22 · Rescates en ríos, riadas y con animales","T23 · Liberación en ascensores y maquinaria","T24 · Intervención sanitaria, soporte vital y triaje","T25 · Psicología de emergencias","T26 · Edificación y patología","T27 · Código Técnico de la Edificación, DB-SI","T28 · Extintores, hidrantes, BIE y detección","T29 · Apeos, derrumbes y estructuras colapsadas","T30 · Riesgo eléctrico","T31 · Materias y mercancías peligrosas","T32 · Riesgo radiológico","T33 · Gases combustibles y GLP"];
 const SEV=["Propio SPEIS Sevilla 1 · según bases","Propio SPEIS Sevilla 2 · según bases","Propio SPEIS Sevilla 3 · según bases","Propio SPEIS Sevilla 4 · según bases","Propio SPEIS Sevilla 5 · según bases"];
+const CAL=["Distrito Casco Antiguo","Distrito Macarena","Distrito Nervión","Distrito Cerro-Amate","Distrito Sur","Distrito Triana","Distrito Norte","Distrito San Pablo-Santa Justa","Distrito Este-Alcosa-Torreblanca","Distrito Bellavista-La Palmera","Distrito Los Remedios","Rondas, accesos y grandes avenidas","Hospitales, parques de bomberos y edificios singulares"];
 const TST=["Test mixto + repaso de fallos","Simulacro de examen cronometrado"];
 
 function defaults(){
@@ -253,6 +259,7 @@ function defaults(){
     {id:"esp",name:"Específicos",kind:"study",color:"--c-esp",weight:3},
     {id:"sev",name:"Propios de Sevilla",kind:"study",color:"--c-fix",weight:1},
     {id:"test",name:"Test y repaso",kind:"study",color:"--c-test",weight:1},
+    {id:"cal",name:"Callejero de Sevilla",kind:"daily",color:"--c-cal"},
     {id:"nat",name:"Natación 100 m",kind:"train",color:"--c-nat",sessions:3,dur:45,goal:"5 → 1:50 · 10 → 1:18"},
     {id:"car",name:"Carrera 1500 m",kind:"train",color:"--c-car",sessions:2,dur:40,goal:"5 → 6:06 · 10 → 4:32"},
     {id:"vel",name:"Velocidad 100 m",kind:"train",color:"--signal",sessions:1,dur:35,goal:"5 → 14,50 s · 10 → 12,20 s"},
@@ -260,10 +267,11 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:5,
+    v:6,
     days:DAYS.map((_,i)=>({start:i>=5?"10:00":"16:00",study:null,topics:null,noTrain:i===6})),
     subjects,
-    topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST)},
+    topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST),cal:mk(CAL)},
+    cal:20,
     fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
     trainPos:"after",outdoor:"morning",morningAt:"07:30",block:50,brk:10,
     plans:{},dirty:{}
@@ -275,7 +283,8 @@ if(S&&S.v===1){const n=defaults();["days","fixed","trainPos","block","brk"].forE
 if(S&&S.v===2){S.v=3;S.plans={};S.dirty={};S.days.forEach(d=>d.study=null);S.subjects.forEach(x=>{if(x.id==="dom"&&x.sessions===3)x.sessions=2});S.fixed.forEach(f=>{if(/cross/i.test(f.label)&&f.start==="08:00"){f.start="20:00";f.end="21:00"}})}
 if(S&&S.v===3){S.v=4;S.days.forEach(d=>d.topics=null)}
 if(S&&S.v===4){S.v=5;S.outdoor="morning";S.morningAt="07:30";S.dirty={};Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
-if(!S||S.v!==5)S=defaults();
+if(S&&S.v===5){S.v=6;const n=defaults();S.subjects.splice(S.subjects.findIndex(x=>x.kind==="train"),0,n.subjects.find(x=>x.id==="cal"));S.topics.cal=n.topics.cal;S.cal=20;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
+if(!S||S.v!==6)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -326,11 +335,13 @@ function fit(cur,dur,fx){let moved=true;while(moved){moved=false;for(const[s,e]o
 function generate(key){
   const old=S.plans[key];
   const doneSig=new Set();
-  if(old)old.forEach((arr,d)=>arr.forEach(b=>{if(b.done)doneSig.add(d+"|"+b.subj+"|"+b.start)}));
+  // un bloque hecho se reconoce por día, materia y tema (no por la hora, que puede moverse al reorganizar)
+  const sig=(d,b)=>[d,b.subj,b.topic||"",b.part||""].join("|");
+  if(old)old.forEach((arr,d)=>arr.forEach(b=>{if(b.done)doneSig.add(sig(d,b))}));
   const studies=S.subjects.filter(s=>s.kind==="study"&&s.weight>0);
   const wsum=studies.reduce((a,s)=>a+ +s.weight,0)||1;
   const given={};studies.forEach(s=>given[s.id]=0);let total=0;
-  const ptr={};studies.forEach(s=>ptr[s.id]=0);
+  const ptr={cal:0};studies.forEach(s=>ptr[s.id]=0);
   const tr=assignTraining();
   const B=Math.max(15,+S.block||50),P=Math.max(0,+S.brk||0);
   const plan=DAYS.map((_,d)=>{
@@ -348,7 +359,16 @@ function generate(key){
     if(S.trainPos==="before")placeTrain();
     // bloques de estudio
     const split=M=>{const lens=[];while(M>0){if(M>=B){lens.push(B);M-=B}else{if(M>=15||!lens.length)lens.push(M);else lens[lens.length-1]+=M;M=0}}return lens};
-    const M=+S.days[d].study||0;
+    let M=+S.days[d].study||0;
+    // callejero: un rato fijo cada día con estudio, al empezar, tomado de las horas del día
+    const calMin=Math.min(+S.cal||0,M);
+    if(calMin>0){
+      const pend=(S.topics.cal||[]).filter(t=>!t.done);
+      const topic=pend.length?pend[ptr.cal++%pend.length].text:"Repaso general del callejero";
+      const s=fit(cur,calMin,fx);
+      out.push({id:uid(),type:"study",subj:"cal",topic,part:"",start:s,end:s+calMin,done:false});
+      M-=calMin;cur=s+calMin+(M>0&&P?5:0);
+    }
     // temas del día: vacío = un tema por bloque; con número, el tiempo se reparte entre esos temas (mínimo 15 min cada uno)
     const nT=Math.min(+S.days[d].topics||0,Math.floor(M/15));
     let groups;
@@ -390,7 +410,7 @@ function generate(key){
       else{const ev=fit(Math.max(eveningFrom(dayDate(key,d)),...out.map(b=>b.end+15)),dur,busy());if(ev+dur<=23*60+30)put(ev)}
       out.sort((a,b)=>a.start-b.start);
     }
-    out.forEach(b=>{if(doneSig.has(d+"|"+b.subj+"|"+b.start))b.done=true});
+    out.forEach(b=>{if(doneSig.has(sig(d,b)))b.done=true});
     return out;
   });
   S.plans[key]=plan;delete S.dirty[key];save();
@@ -456,11 +476,11 @@ function renderWeek(){
 }
 
 function renderTemSum(){
-  const all=S.subjects.filter(s=>s.kind==="study"&&s.id!=="test").flatMap(s=>S.topics[s.id]||[]);
+  const all=S.subjects.filter(s=>s.kind!=="train"&&s.id!=="test").flatMap(s=>S.topics[s.id]||[]);
   $("temSum").textContent=all.filter(t=>t.done).length+" de "+all.length+" temas hechos";
 }
 function renderTopics(){
-  $("topicSecs").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>{
+  $("topicSecs").innerHTML=S.subjects.filter(s=>s.kind!=="train").map(s=>{
     const list=S.topics[s.id]||[],left=list.filter(t=>!t.done).length;
     return `<section class="sec"><h3><span class="nm2" style="text-transform:uppercase;letter-spacing:.06em;font-weight:700"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span><span>${left} pendientes</span></h3>
     <ul class="topics">${list.map(t=>`<li class="${t.done?"done":""}"><input type="checkbox" id="tp-${t.id}" data-s="${s.id}" data-t="${t.id}" ${t.done?"checked":""} aria-label="Tema terminado"><span>${esc(t.text)}</span><button class="x" data-del="${t.id}" data-s="${s.id}" aria-label="Quitar tema">×</button></li>`).join("")||'<li><span></span><span class="empty">Sin temas todavía.</span><span></span></li>'}</ul>
@@ -473,6 +493,7 @@ function renderSettings(){
   document.querySelectorAll("#trainPos .pill").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.trainPos));
   document.querySelectorAll("#outdoor .pill").forEach(b=>b.setAttribute("aria-pressed",b.dataset.o===(S.outdoor||"morning")));
   $("morningAt").value=S.morningAt||"07:30";
+  $("calMin").value=S.cal??20;
   $("studyRows").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>`<div class="row weight"><div class="nm2"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</div><select id="sw-${s.id}" data-sid="${s.id}" data-k="weight" aria-label="Peso de ${esc(s.name)}"><option value="0">0 · fuera</option>${[1,2,3,4].map(w=>`<option value="${w}" ${+s.weight===w?"selected":""}>${w} · ${["","bajo","normal","alto","máximo"][w]}</option>`).join("")}</select></div>`).join("");
   $("blockLen").value=S.block;$("breakLen").value=S.brk;
   $("fixedRows").innerHTML=S.fixed.map(f=>`<div class="row fixedr"><select id="fd-${f.id}" data-fid="${f.id}" data-k="day" aria-label="Día">${D3.map((x,i)=>`<option value="${i}" ${+f.day===i?"selected":""}>${x}</option>`).join("")}</select><input class="fl" type="text" id="fl-${f.id}" data-fid="${f.id}" data-k="label" value="${esc(f.label)}" aria-label="Nombre"><button class="x" data-fdel="${f.id}" aria-label="Quitar bloque">×</button><input class="fs" type="time" id="fs-${f.id}" data-fid="${f.id}" data-k="start" value="${f.start}" aria-label="Inicio"><input type="time" id="fe-${f.id}" data-fid="${f.id}" data-k="end" value="${f.end}" aria-label="Fin"></div>`).join("")||'<p class="empty">Sin bloques fijos.</p>';
@@ -510,6 +531,7 @@ $("ajustes").addEventListener("change",e=>{
   if(el.dataset.sid){const s=subj(el.dataset.sid);s[k]=Math.max(0,+el.value||0)}
   else if(el.dataset.fid){const f=S.fixed.find(x=>x.id===el.dataset.fid);f[k]=k==="day"?+el.value:el.value}
   else if(el.id==="blockLen")S.block=Math.min(120,Math.max(20,+el.value||50));
+  else if(el.id==="calMin")S.cal=Math.min(60,Math.max(0,Math.round((+el.value||0)/5)*5));
   else if(el.id==="morningAt")S.morningAt=el.value||"07:30";
   else if(el.id==="breakLen")S.brk=Math.min(30,Math.max(0,+el.value||0));
   else return;
@@ -531,7 +553,7 @@ $("resetArea").addEventListener("click",e=>{
 });
 
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-10-30.2";
+const VERSION="2026-10-30.3";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;
