@@ -9,12 +9,8 @@ Planificador semanal de estudio y entrenamiento para Guillermo, opositor a Bombe
 ## Archivos
 
 - `src/app.html`: el código fuente. Es una sola página (HTML + CSS + JS sin librerías) escrita sin `<!doctype>`, `<html>`, `<head>` ni `<body>`, porque también se publica como artifact de Claude, que añade esa cabecera.
-- `index.html`: la misma página con la cabecera HTML completa, para abrirla en el navegador o en GitHub Pages. **Se genera desde `src/app.html`; no la edites a mano.** Después de cambiar `src/app.html`, regénerala:
-
-```bash
-{ printf '<!doctype html>\n<html lang="es">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>\n</head>\n<body>\n'; cat src/app.html; printf '\n</body>\n</html>\n'; } > index.html
-```
-
+- `index.html`: la misma página con la cabecera HTML completa (manifiesto, iconos y metas para instalarla en la pantalla de inicio), para abrirla en el navegador o en GitHub Pages. **Se genera desde `src/app.html`; no la edites a mano.** Después de cambiar `src/app.html`, regénerala con `./build.sh`.
+- `manifest.webmanifest` e `icons/`: nombre, colores e iconos de la app instalada. Los iconos salen del logo de Guillermo (escudo con hacha y ola). El logo de la cabecera va dentro de `src/app.html` como `data:` WebP, porque el artifact no puede cargar imágenes externas.
 - `README.md`: descripción para el usuario. Mantenlo al día si cambia el funcionamiento.
 
 ## Datos

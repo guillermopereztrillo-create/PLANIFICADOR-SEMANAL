@@ -23,4 +23,13 @@ Es una sola página, sin pestañas:
 - Nunca pone nada encima de un bloque fijo y deja 15 min de margen tras entrenar (también después del CrossFit).
 - Si los entrenos no caben en los días con tiempo, el balance de la semana avisa de cuántas sesiones faltan.
 
-El código está en `src/app.html`; `index.html` es la misma página con la cabecera HTML completa.
+## Instalarla en el móvil
+
+Con la web publicada en GitHub Pages, ábrela en el móvil y:
+
+- **iPhone (Safari):** Compartir → «Añadir a pantalla de inicio».
+- **Android (Chrome):** menú ⋮ → «Instalar aplicación» o «Añadir a pantalla de inicio».
+
+Aparece como «Mi semana» con su logo y se abre a pantalla completa.
+
+El código está en `src/app.html`; `index.html` se genera con `./build.sh` y lleva la cabecera HTML completa, el manifiesto y los iconos.
