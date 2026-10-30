@@ -11,6 +11,7 @@ Planificador semanal de estudio y entrenamiento para Guillermo, opositor a Bombe
 - `src/app.html`: el código fuente. Es una sola página (HTML + CSS + JS sin librerías) escrita sin `<!doctype>`, `<html>`, `<head>` ni `<body>`, porque también se publica como artifact de Claude, que añade esa cabecera.
 - `index.html`: la misma página con la cabecera HTML completa (manifiesto, iconos y metas para instalarla en la pantalla de inicio), para abrirla en el navegador o en GitHub Pages. **Se genera desde `src/app.html`; no la edites a mano.** Después de cambiar `src/app.html`, regénerala con `./build.sh`.
 - `manifest.webmanifest` e `icons/`: nombre, colores e iconos de la app instalada. Los iconos salen del logo de Guillermo (escudo con hacha y ola). El logo de la cabecera va dentro de `src/app.html` como `data:` WebP, porque el artifact no puede cargar imágenes externas.
+- `const VERSION` en `src/app.html`: súbela (fecha + número) en cada cambio que se publique. La app instalada la compara con la del servidor al abrirse y se recarga si hay otra, porque GitHub Pages deja la página 10 min en caché.
 - `README.md`: descripción para el usuario. Mantenlo al día si cambia el funcionamiento.
 
 ## Datos

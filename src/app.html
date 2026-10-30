@@ -208,7 +208,7 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
       </section>
       <section class="sec">
         <h3>Datos</h3>
-        <p class="help">Todo se guarda en este navegador.</p>
+        <p class="help">Todo se guarda en este navegador. <span id="version"></span></p>
         <div class="confirm" id="resetArea"><button class="btn line" id="resetBtn">Borrar todos los datos</button></div>
       </section>
     </div>
@@ -512,6 +512,20 @@ $("resetArea").addEventListener("click",e=>{
   else if(e.target.id==="resetYes"){S=defaults();save();a.innerHTML=idle;renderSettings();renderTopics();renderWeek();toast("Datos borrados")}
   else if(e.target.id==="resetNo")a.innerHTML=idle;
 });
+
+/* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
+const VERSION="2026-10-30.2";
+$("version").textContent="Versión "+VERSION+".";
+function checkUpdate(){
+  if(!/github\.io$/.test(location.hostname))return;
+  fetch(location.pathname+"?nocache="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(t=>{
+    const m=/const VERSION="([^"]+)"/.exec(t);if(!m||m[1]===VERSION)return;
+    let n=0;try{n=+sessionStorage.getItem("upd-"+m[1])||0;sessionStorage.setItem("upd-"+m[1],n+1)}catch(e){}
+    if(n<2)location.replace(location.pathname+"?v="+encodeURIComponent(m[1]));
+  }).catch(()=>{});
+}
+checkUpdate();
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkUpdate()});
 
 renderWeek();renderTopics();renderSettings();
 })();
