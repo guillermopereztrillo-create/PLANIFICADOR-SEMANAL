@@ -127,7 +127,8 @@ nav.tabs a[aria-current="page"]{background:var(--surface);color:var(--ink);box-s
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 .rows{display:grid;gap:8px}
 .row{display:grid;gap:8px;align-items:center}
-.row.days{grid-template-columns:44px 1fr 1fr auto}
+.row.days{grid-template-columns:28px minmax(0,1fr) 60px 56px 40px}
+.row.days .toggle{justify-content:center}
 .row.train{grid-template-columns:1fr 70px 70px}
 .row.study{grid-template-columns:1fr 110px}
 .row.fixedr{grid-template-columns:56px 1fr 84px 84px 36px}
@@ -204,8 +205,8 @@ input[type=number]{font-family:var(--f-mono)}
     <div class="cols">
       <section class="card">
         <h2>Tiempo por día</h2>
-        <p class="help">Hora a la que empiezas y horas de estudio de cada día. Un día vacío no se organiza (ni estudio ni entreno). Marca «sin entreno» en los días de descanso físico.</p>
-        <div class="row days rowhead"><span>Día</span><span>Empiezo</span><span>Estudio (h)</span><span></span></div>
+        <p class="help">Hora a la que empiezas, horas de estudio y cuántos temas quieres ver cada día. Un día sin horas no se organiza (ni estudio ni entreno). Con «Temas» vacío cada bloque es un tema nuevo; si pones un número, el tiempo del día se reparte entre esos temas. Marca «Sin entreno» en los días de descanso físico.</p>
+        <div class="row days rowhead"><span>Día</span><span>Empiezo</span><span>Horas</span><span>Temas</span><span title="Sin entreno">Sin entr.</span></div>
         <div class="rows" id="dayRows"></div>
       </section>
       <section class="card">
@@ -278,8 +279,8 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:3,
-    days:DAYS.map((_,i)=>({start:i>=5?"10:00":"16:00",study:null,noTrain:i===6})),
+    v:4,
+    days:DAYS.map((_,i)=>({start:i>=5?"10:00":"16:00",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST)},
     fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
@@ -291,7 +292,8 @@ let S;
 try{S=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){S=null}
 if(S&&S.v===1){const n=defaults();["days","fixed","trainPos","block","brk"].forEach(k=>{if(S[k]!==undefined)n[k]=S[k]});S=n}
 if(S&&S.v===2){S.v=3;S.plans={};S.dirty={};S.days.forEach(d=>d.study=null);S.subjects.forEach(x=>{if(x.id==="dom"&&x.sessions===3)x.sessions=2});S.fixed.forEach(f=>{if(/cross/i.test(f.label)&&f.start==="08:00"){f.start="20:00";f.end="21:00"}})}
-if(!S||S.v!==3)S=defaults();
+if(S&&S.v===3){S.v=4;S.days.forEach(d=>d.topics=null)}
+if(!S||S.v!==4)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -352,14 +354,24 @@ function generate(key){
     if(!hasTime(d))return out;
     let cur=toMin(S.days[d].start||"16:00");
     const trains=tr[d].map(id=>subj(id));
-    const placeTrain=()=>{for(const t of trains){const s=fit(cur,+t.dur,fx);out.push({id:uid(),type:"train",subj:t.id,start:s,end:s+ +t.dur,done:false});cur=s+ +t.dur}
+    const placeTrain=()=>{for(const t of trains){const s=fit(cur,+t.dur,fx);if(s+ +t.dur>23*60+30)continue; // no entrenar más tarde de las 23:30
+      out.push({id:uid(),type:"train",subj:t.id,start:s,end:s+ +t.dur,done:false});cur=s+ +t.dur}
       if(trains.length)cur+=15};
     if(S.trainPos==="before")placeTrain();
     // bloques de estudio
-    let M=+S.days[d].study||0;const lens=[];
-    while(M>0){if(M>=B){lens.push(B);M-=B}else{if(M>=15||!lens.length)lens.push(M);else lens[lens.length-1]+=M;M=0}}
-    let last=null;
-    lens.forEach((len,i)=>{
+    const split=M=>{const lens=[];while(M>0){if(M>=B){lens.push(B);M-=B}else{if(M>=15||!lens.length)lens.push(M);else lens[lens.length-1]+=M;M=0}}return lens};
+    const M=+S.days[d].study||0;
+    // temas del día: vacío = un tema por bloque; con número, el tiempo se reparte entre esos temas (mínimo 15 min cada uno)
+    const nT=Math.min(+S.days[d].topics||0,Math.floor(M/15));
+    let groups;
+    // dentro de un tema, bloques iguales (120 min → 40+40+40)
+    const even=m=>{const n=Math.ceil(m/B),l=Math.round(m/n/5)*5,a=Array(n).fill(l);a[n-1]=m-l*(n-1);return a};
+    if(nT>0){const part=Math.floor(M/nT/5)*5;groups=[];for(let g=0;g<nT;g++)groups.push(even(g<nT-1?part:M-part*(nT-1)))}
+    else groups=split(M).map(l=>[l]);
+    const nb=groups.reduce((a,g)=>a+g.length,0);
+    let last=null,bi=0;
+    groups.forEach(lens=>{
+      const len=lens.reduce((a,b)=>a+b,0);
       let pick=null,pv=-Infinity;
       for(const s of studies){
         let v=(s.weight/wsum)*(total+len)-given[s.id];
@@ -370,11 +382,13 @@ function generate(key){
       given[pick.id]+=len;total+=len;last=pick.id;
       const pend=(S.topics[pick.id]||[]).filter(t=>!t.done);
       const topic=pend.length?pend[ptr[pick.id]++%pend.length].text:"";
-      const s=fit(cur,len,fx);
-      out.push({id:uid(),type:"study",subj:pick.id,topic,start:s,end:s+len,done:false});
-      cur=s+len+(i<lens.length-1?P:0);
+      lens.forEach((l,j)=>{
+        const s=fit(cur,l,fx);
+        out.push({id:uid(),type:"study",subj:pick.id,topic,part:lens.length>1?(j+1)+"/"+lens.length:"",start:s,end:s+l,done:false});
+        cur=s+l+(++bi<nb?P:0);
+      });
     });
-    if(S.trainPos!=="before"){if(lens.length&&trains.length)cur+=15;placeTrain()}
+    if(S.trainPos!=="before"){if(nb&&trains.length)cur+=15;placeTrain()}
     out.forEach(b=>{if(doneSig.has(d+"|"+b.subj+"|"+b.start))b.done=true});
     return out;
   });
@@ -408,7 +422,7 @@ function renderWeek(){
   const mix=(kind)=>S.subjects.filter(s=>s.kind===kind&&per[s.id]).map(s=>`<div><span class="dot" style="background:var(${s.color})"></span><span>${esc(s.name)}</span><span class="mono">${kind==="study"?hm(per[s.id].d)+" / "+hm(per[s.id].p):Math.round(per[s.id].d/(+s.dur||1))+" / "+Math.round(per[s.id].p/(+s.dur||1))}</span></div>`).join("");
   $("summary").innerHTML=
    `<div class="stat"><span class="label">Estudio hecho</span><div class="big">${hm(sd)} <small>de ${hm(sp)}</small></div><div class="bar"><i style="width:${pct(sd,sp)}%"></i></div><div class="mix">${mix("study")}</div></div>`+
-   `<div class="stat"><span class="label">Entrenos hechos</span><div class="big">${td} <small>de ${tp} sesiones</small></div><div class="bar"><i style="width:${pct(td,tp)}%;background:var(--ok)"></i></div><div class="mix">${mix("train")}</div>${miss>0?`<p class="goal" style="margin:0">No caben ${miss} sesi${miss>1?"ones":"ón"} de las ${want} previstas: pon tiempo a más días o quita «sin entreno».</p>`:""}</div>`;
+   `<div class="stat"><span class="label">Entrenos hechos</span><div class="big">${td} <small>de ${tp} sesiones</small></div><div class="bar"><i style="width:${pct(td,tp)}%;background:var(--ok)"></i></div><div class="mix">${mix("train")}</div>${miss>0?`<p class="goal" style="margin:0">No caben ${miss} sesi${miss>1?"ones":"ón"} de las ${want} previstas: pon tiempo a más días o quita «Sin entreno».</p>`:""}</div>`;
 
   // chips
   $("chips").innerHTML=DAYS.map((n,d)=>{const a=plan[d];const tot=a.reduce((x,b)=>x+b.end-b.start,0),dn=a.reduce((x,b)=>x+(b.done?b.end-b.start:0),0);
@@ -422,16 +436,17 @@ function renderWeek(){
     const items=[...fx,...plan[d]].sort((a,b)=>a.start-b.start);
     const st=plan[d].filter(b=>b.type==="study").reduce((x,b)=>x+b.end-b.start,0);
     const nt=plan[d].filter(b=>b.type==="train").length;
+    const ntp=new Set(plan[d].filter(b=>b.type==="study"&&b.topic).map(b=>b.topic)).size;
     let prevEnd=null;
     const li=items.map(b=>{
       let g="";if(prevEnd!==null&&b.start-prevEnd>=5&&b.type!=="fixed")g=`<li class="gap">· ${b.start-prevEnd} min de pausa</li>`;
       prevEnd=Math.max(prevEnd||0,b.end);
       if(b.type==="fixed")return `<li class="blk fixed" style="--c:var(--c-fix)"><div class="body"><span class="t">${fmt(b.start)}–${fmt(b.end)}</span><span class="n">${esc(b.label)}</span><span class="s">Bloque fijo</span></div></li>`;
       const s=subj(b.subj)||{name:"?",color:"--c-fix"};
-      const sub=b.type==="study"?(b.topic?esc(b.topic):"Sin temas pendientes"):(s.goal?"Objetivo: "+esc(s.goal):"Entreno");
+      const sub=b.type==="study"?(b.topic?esc(b.topic)+(b.part?" · parte "+b.part:""):"Sin temas pendientes"):(s.goal?"Objetivo: "+esc(s.goal):"Entreno");
       return g+`<li class="blk${b.done?" done":""}" style="--c:var(${s.color})"><div class="body"><span class="t">${fmt(b.start)}–${fmt(b.end)} · ${b.end-b.start} min</span><span class="n">${esc(s.name)}</span><span class="s">${sub}</span></div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} como hecho">${CHECK}</button></li>`;
     }).join("");
-    return `<article class="day${d===activeDay?" active":""}${d===todayIdx?" today":""}"><div class="dayhead"><h3>${n}${d===todayIdx?'<span class="today-tag">HOY</span>':""}</h3><span class="meta">${dt.getDate()} ${MES[dt.getMonth()]} · ${hm(st)} estudio${nt?" · "+nt+" entreno"+(nt>1?"s":""):""}</span></div>${li?`<ul class="blocks">${li}</ul>`:""}${!hasTime(d)?`<p class="empty">Sin tiempo de estudio puesto. Este día no se organiza hasta que lo indiques en Ajustes.</p>`:(li?"":`<p class="empty">Día libre.</p>`)}</article>`;
+    return `<article class="day${d===activeDay?" active":""}${d===todayIdx?" today":""}"><div class="dayhead"><h3>${n}${d===todayIdx?'<span class="today-tag">HOY</span>':""}</h3><span class="meta">${dt.getDate()} ${MES[dt.getMonth()]} · ${hm(st)} estudio${ntp?" · "+ntp+" tema"+(ntp>1?"s":""):""}${nt?" · "+nt+" entreno"+(nt>1?"s":""):""}</span></div>${li?`<ul class="blocks">${li}</ul>`:""}${!hasTime(d)?`<p class="empty">Sin tiempo de estudio puesto. Este día no se organiza hasta que lo indiques en Ajustes.</p>`:(li?"":`<p class="empty">Día libre.</p>`)}</article>`;
   }).join("");
 }
 
@@ -447,7 +462,7 @@ function renderTopics(){
 /* ------- ajustes ------- */
 const hasTimeVal=d=>(d.study===null||d.study===undefined||d.study==="")?"":+(d.study/60).toFixed(2);
 function renderSettings(){
-  $("dayRows").innerHTML=S.days.map((d,i)=>`<div class="row days"><b style="font-family:var(--f-display);font-size:17px">${D3[i]}</b><input type="time" id="ds-${i}" data-k="start" data-i="${i}" value="${d.start}"><input type="number" id="dh-${i}" data-k="study" data-i="${i}" min="0" max="12" step="0.25" value="${hasTimeVal(d)}" placeholder="—"><label class="toggle"><input type="checkbox" id="dn-${i}" data-k="noTrain" data-i="${i}" ${d.noTrain?"checked":""}>sin entreno</label></div>`).join("");
+  $("dayRows").innerHTML=S.days.map((d,i)=>`<div class="row days"><b style="font-family:var(--f-display);font-size:17px">${D3[i]}</b><input type="time" id="ds-${i}" data-k="start" data-i="${i}" value="${d.start}"><input type="number" id="dh-${i}" data-k="study" data-i="${i}" min="0" max="12" step="0.25" value="${hasTimeVal(d)}" placeholder="—" aria-label="Horas de estudio"><input type="number" id="dt-${i}" data-k="topics" data-i="${i}" min="1" max="12" step="1" value="${d.topics||""}" placeholder="—" aria-label="Temas del día"><label class="toggle"><input type="checkbox" id="dn-${i}" data-k="noTrain" data-i="${i}" ${d.noTrain?"checked":""} aria-label="Sin entreno"></label></div>`).join("");
   $("trainRows").innerHTML=S.subjects.filter(s=>s.kind==="train").map(s=>`<div class="row train"><div style="min-width:0"><div class="nm"><span class="dot" style="background:var(${s.color})"></span>${esc(s.name)}</div><div class="goal">Objetivo <b>${esc(s.goal||"")}</b></div></div><input type="number" id="ts-${s.id}" data-sid="${s.id}" data-k="sessions" min="0" max="7" value="${s.sessions}" aria-label="Sesiones por semana"><input type="number" id="td-${s.id}" data-sid="${s.id}" data-k="dur" min="10" max="180" step="5" value="${s.dur}" aria-label="Minutos por sesión"></div>`).join("");
   $("studyRows").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>`<div class="row study"><div class="nm"><span class="dot" style="background:var(${s.color})"></span>${esc(s.name)}</div><select id="sw-${s.id}" data-sid="${s.id}" data-k="weight" aria-label="Peso"><option value="0">0 · fuera</option>${[1,2,3,4].map(w=>`<option value="${w}" ${+s.weight===w?"selected":""}>${w} · ${["","bajo","normal","alto","máximo"][w]}</option>`).join("")}</select></div>`).join("");
   $("fixedRows").innerHTML=S.fixed.map(f=>`<div class="row fixedr"><select id="fd-${f.id}" data-fid="${f.id}" data-k="day" aria-label="Día">${D3.map((x,i)=>`<option value="${i}" ${+f.day===i?"selected":""}>${x}</option>`).join("")}</select><input type="text" id="fl-${f.id}" data-fid="${f.id}" data-k="label" value="${esc(f.label)}" aria-label="Nombre"><input type="time" id="fs-${f.id}" data-fid="${f.id}" data-k="start" value="${f.start}" aria-label="Inicio"><input type="time" id="fe-${f.id}" data-fid="${f.id}" data-k="end" value="${f.end}" aria-label="Fin"><button class="x" data-fdel="${f.id}" aria-label="Quitar bloque">×</button></div>`).join("")||'<p class="empty">Sin bloques fijos.</p>';
@@ -480,7 +495,7 @@ $("topicCols").addEventListener("submit",e=>{e.preventDefault();const f=e.target
 
 $("view-ajustes").addEventListener("change",e=>{
   const el=e.target,k=el.dataset.k;
-  if(el.dataset.i!==undefined){const d=S.days[+el.dataset.i];if(k==="start")d.start=el.value||"16:00";else if(k==="study")d.study=el.value===""?null:Math.max(0,Math.round((+el.value||0)*60));else if(k==="noTrain")d.noTrain=el.checked}
+  if(el.dataset.i!==undefined){const d=S.days[+el.dataset.i];if(k==="start")d.start=el.value||"16:00";else if(k==="study")d.study=el.value===""?null:Math.max(0,Math.round((+el.value||0)*60));else if(k==="topics")d.topics=el.value===""||+el.value<1?null:Math.min(12,Math.round(+el.value));else if(k==="noTrain")d.noTrain=el.checked}
   else if(el.dataset.sid){const s=subj(el.dataset.sid);s[k]=Math.max(0,+el.value||0)}
   else if(el.dataset.fid){const f=S.fixed.find(x=>x.id===el.dataset.fid);f[k]=k==="day"?+el.value:el.value}
   else if(el.id==="blockLen")S.block=Math.min(120,Math.max(20,+el.value||50));
