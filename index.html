@@ -163,7 +163,7 @@ input[type=number]{font-family:var(--f-mono)}
       <div class="badge" aria-hidden="true">PS</div>
       <div>
         <h1>Parte semanal</h1>
-        <p>Estudio y entrenos · Oposición Bombero Ayto. de Sevilla</p>
+        <p>Oposición Bombero Ayto. de Sevilla · Decreto 36/2025</p>
       </div>
     </div>
     <div class="weeknav">
@@ -195,7 +195,7 @@ input[type=number]{font-family:var(--f-mono)}
   </main>
 
   <main id="view-temario" class="panel" hidden>
-    <p class="help" style="margin:0;color:var(--muted);font-size:13px;max-width:70ch">Cada bloque de estudio toma el siguiente tema pendiente de su materia, en orden. Marca un tema cuando lo termines y desaparece del reparto. Los temas que vienen cargados son de ejemplo: cámbialos por los de tu convocatoria.</p>
+    <p class="help" style="margin:0;color:var(--muted);font-size:13px;max-width:70ch">Temario de Bombero del Decreto 36/2025, de 11 de febrero (Anexo I): 12 temas generales, 33 específicos y 5 propios del servicio que convoca, que fijarán las bases de Sevilla. Cada bloque de estudio toma el siguiente tema pendiente de su materia. Marca un tema cuando lo termines y sale del reparto. Puedes renombrar los propios de Sevilla cuando salgan las bases.</p>
     <div class="cols" id="topicCols"></div>
   </main>
 
@@ -217,8 +217,9 @@ input[type=number]{font-family:var(--f-mono)}
           <div class="seg" id="trainPos"><button data-v="before">Antes</button><button data-v="after">Después</button></div>
         </div>
         <ul class="rules">
-          <li>Dominadas y carrera nunca en días seguidos (48 h de recuperación).</li>
+          <li>Dominadas, 1500 m y 100 m nunca en días seguidos (48 h de recuperación). Evita juntar 1500 m y 100 m el mismo día.</li>
           <li>Días de CrossFit: sin dominadas y, si se puede, sin carrera. Natación sí, como descarga.</li>
+          <li>Marcas del Decreto 36/2025 (Anexo III, hombres): cada prueba puntúa de 0 a 10 y hay que sacar al menos un 5 en todas.</li>
           <li>Máximo dos entrenos por día y 15 min de margen para ducha antes de estudiar.</li>
         </ul>
       </section>
@@ -257,25 +258,29 @@ const D3=["L","M","X","J","V","S","D"];
 const KEY="parte-semanal-v1";
 const uid=()=>Math.random().toString(36).slice(2,9);
 
-const LEG=["Constitución Española de 1978","Estatuto de Autonomía de Andalucía","Ley 7/1985, Bases del Régimen Local","Ley 39/2015, Procedimiento Administrativo Común","Ley 40/2015, Régimen Jurídico del Sector Público","TREBEP (RDL 5/2015)","Ley 2/2002, Gestión de Emergencias en Andalucía","Ley 17/2015, Sistema Nacional de Protección Civil","Ley 31/1995, Prevención de Riesgos Laborales","Ordenanzas municipales de Sevilla"];
-const ESP=["Teoría del fuego y combustión","Agentes extintores","Hidráulica aplicada","Equipos de protección respiratoria","Construcción y patología estructural","Rescate en altura y salvamento","Mercancías peligrosas","Electricidad y riesgo eléctrico","Primeros auxilios y soporte vital","Callejero y geografía de Sevilla"];
+/* Decreto 36/2025, de 11 de febrero (BOJA 17/02/2025) · Anexo I: temario de Bombero */
+const LEG=["T1 · Constitución Española de 1978","T2 · Estatuto de Autonomía de Andalucía","T3 · Ley 7/1985, de Bases del Régimen Local","T4 · Ley 5/2010, de Autonomía Local de Andalucía","T5 · Prevención de riesgos laborales","T6 · Estatuto Básico del Empleado Público","T7 · Ley 5/2023, de Función Pública de Andalucía","T8 · Incompatibilidades y responsabilidad del empleado público","T9 · Fuentes del derecho administrativo","T10 · Hacienda pública y administración tributaria","T11 · Normativa de igualdad de género","T12 · Igualdad y transversalidad en las políticas públicas"];
+const ESP=["T1 · Geografía de Andalucía y riesgos","T2 · Organización y parques de extinción en Andalucía","T3 · Ley 2/2002, de Gestión de Emergencias en Andalucía","T4 · Cartografía, coordenadas y GPS","T5 · Escalas, unidades de medida, calor y temperatura","T6 · Hidráulica, bombas y achique","T7 · Comunicaciones y protocolos de movilización","T8 · Vehículos de emergencia y conducción","T9 · Equipamiento operativo y motosierra","T10 · EPI y equipos de protección respiratoria","T11 · Prevención en equipos de trabajo y EPI","T12 · Teoría del fuego y productos de combustión","T13 · Mecanismos de extinción","T14 · Incendios de interior","T15 · Incendios urbanos y buceo en humo","T16 · Incendios industriales","T17 · Incendios en túneles","T18 · Ventilación de incendios","T19 · Plan INFOCA y fuego forestal","T20 · Rescates en altura y con cuerdas","T21 · Rescate en accidentes de tráfico y excarcelación","T22 · Rescates en ríos, riadas y con animales","T23 · Liberación en ascensores y maquinaria","T24 · Intervención sanitaria, soporte vital y triaje","T25 · Psicología de emergencias","T26 · Edificación y patología","T27 · Código Técnico de la Edificación, DB-SI","T28 · Extintores, hidrantes, BIE y detección","T29 · Apeos, derrumbes y estructuras colapsadas","T30 · Riesgo eléctrico","T31 · Materias y mercancías peligrosas","T32 · Riesgo radiológico","T33 · Gases combustibles y GLP"];
+const SEV=["Propio SPEIS Sevilla 1 · según bases","Propio SPEIS Sevilla 2 · según bases","Propio SPEIS Sevilla 3 · según bases","Propio SPEIS Sevilla 4 · según bases","Propio SPEIS Sevilla 5 · según bases"];
 const TST=["Test mixto + repaso de fallos","Simulacro de examen cronometrado"];
 
 function defaults(){
   const subjects=[
-    {id:"leg",name:"Legislación",kind:"study",color:"--c-leg",weight:2},
-    {id:"esp",name:"Específico bombero",kind:"study",color:"--c-esp",weight:2},
+    {id:"leg",name:"Generales",kind:"study",color:"--c-leg",weight:2},
+    {id:"esp",name:"Específicos",kind:"study",color:"--c-esp",weight:3},
+    {id:"sev",name:"Propios de Sevilla",kind:"study",color:"--c-fix",weight:1},
     {id:"test",name:"Test y repaso",kind:"study",color:"--c-test",weight:1},
-    {id:"nat",name:"Natación",kind:"train",color:"--c-nat",sessions:3,dur:45,goal:"100 m < 1:18"},
-    {id:"car",name:"Carrera",kind:"train",color:"--c-car",sessions:2,dur:40,goal:"1500 m < 4:32"},
-    {id:"dom",name:"Dominadas",kind:"train",color:"--c-dom",sessions:2,dur:20,goal:"máximo de repeticiones"}
+    {id:"nat",name:"Natación 100 m",kind:"train",color:"--c-nat",sessions:3,dur:45,goal:"5 → 1:50 · 10 → 1:18"},
+    {id:"car",name:"Carrera 1500 m",kind:"train",color:"--c-car",sessions:2,dur:40,goal:"5 → 6:06 · 10 → 4:32"},
+    {id:"vel",name:"Velocidad 100 m",kind:"train",color:"--signal",sessions:1,dur:35,goal:"5 → 14,50 s · 10 → 12,20 s"},
+    {id:"dom",name:"Dominadas",kind:"train",color:"--c-dom",sessions:3,dur:20,goal:"5 → 12 rep · 10 → 30 rep"}
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:1,
+    v:2,
     days:DAYS.map((_,i)=>({start:i>=5?"10:00":"16:00",study:i===6?120:180,noTrain:i===6})),
     subjects,
-    topics:{leg:mk(LEG),esp:mk(ESP),test:mk(TST)},
+    topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST)},
     fixed:[{id:uid(),day:0,start:"08:00",end:"09:00",label:"CrossFit"},{id:uid(),day:2,start:"08:00",end:"09:00",label:"CrossFit"}],
     trainPos:"after",block:50,brk:10,
     plans:{},dirty:{}
@@ -283,7 +288,8 @@ function defaults(){
 }
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){S=null}
-if(!S||S.v!==1)S=defaults();
+if(S&&S.v===1){const n=defaults();["days","fixed","trainPos","block","brk"].forEach(k=>{if(S[k]!==undefined)n[k]=S[k]});S=n}
+if(!S||S.v!==2)S=defaults();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 
 /* fechas */
@@ -301,7 +307,7 @@ function assignTraining(){
   const trains=S.subjects.filter(s=>s.kind==="train");
   const crossfit=new Set(S.fixed.filter(f=>/cross/i.test(f.label)).map(f=>+f.day));
   const byDay=DAYS.map(()=>[]);
-  const order=["dom","car","nat"];
+  const order=["dom","car","vel","nat"];
   trains.sort((a,b)=>(order.indexOf(a.id)+9)%9-(order.indexOf(b.id)+9)%9);
   for(const t of trains){
     for(let k=0;k<(t.sessions|0);k++){
@@ -310,8 +316,9 @@ function assignTraining(){
         if(S.days[d].noTrain||byDay[d].includes(t.id)||byDay[d].length>=2)continue;
         let c=byDay[d].length*4;
         const near=[d-1,d+1].filter(x=>x>=0&&x<7&&byDay[x].includes(t.id)).length;
-        if(t.id==="dom"||t.id==="car")c+=near*20;else c+=near*2;
-        if(crossfit.has(d)){if(t.id==="dom")c+=30;else if(t.id==="car")c+=8;}
+        if(t.id!=="nat")c+=near*20;else c+=near*2;
+        if((t.id==="car"&&byDay[d].includes("vel"))||(t.id==="vel"&&byDay[d].includes("car")))c+=12;
+        if(crossfit.has(d)){if(t.id==="dom")c+=30;else if(t.id!=="nat")c+=8;}
         // reparte: preferir días lejos de otras sesiones del mismo tipo
         let dist=7;for(let x=0;x<7;x++)if(byDay[x].includes(t.id))dist=Math.min(dist,Math.abs(x-d));
         c+=(7-dist)*0.5+d*0.01;
