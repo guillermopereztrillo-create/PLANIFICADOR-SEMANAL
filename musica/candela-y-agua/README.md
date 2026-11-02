@@ -4,9 +4,11 @@ Cuatro sevillanas rocieras originales para bailar, en la línea de Los Romeros d
 
 | Archivo | Para qué sirve |
 |---|---|
-| `candela-y-agua.mp3` | Para escucharla (3:34). Maqueta con instrumentos sampleados (banco de sonidos MuseScore General). |
+| `candela-y-agua-cantada.mp3` | **Versión cantada** (3:34): la letra cantada por una voz sintética (solista y segunda voz en terceras) sobre la música. |
+| `candela-y-agua.mp3` | Versión instrumental, con el coro haciendo «aah». Instrumentos sampleados (banco de sonidos MuseScore General). |
 | `candela-y-agua.musicxml` | La partitura: voz con letra y cifrado, segunda voz, gaita rociera y dos trompetas. Se abre con MuseScore, Finale, Sibelius o Dorico. |
 | `candela-y-agua.mid` | Una pista por instrumento, con la letra incluida. Sirve para GarageBand, Logic, Cubase, etc. |
+| `cantar.py` | Genera la versión cantada con `python3 cantar.py`. Necesita además `mbrola` y las voces `mbrola-es2` y `mbrola-es4`. |
 | `componer.py` | El script que genera los tres archivos anteriores con `python3 componer.py`. Para el audio necesita `fluidsynth`, `ffmpeg` y el banco de sonidos MuseScore General (paquete `musescore-general-soundfont-lossless`). |
 
 ## Ficha
@@ -111,7 +113,20 @@ Son cuatro seguidillas de 7-5-7-5 sílabas con estribillo de 5-7-5, una por sevi
 > Cuando apague la noche / la última llama, / vendré por la ribera / con la mañana.
 > *Agua que canta, / candela que se enciende / cuando tú bailas.*
 
+## La versión cantada
+
+La genera `cantar.py` con MBROLA, un sintetizador de voz al que se le dan los sonidos de la letra con su nota y su duración exactas:
+
+- **Pronunciación:** cada sílaba de la partitura se pasa a fonemas en castellano con seseo, como se canta en Sevilla («can-de-la» → *k a n · d e · l a*, «cie-lo» → *s je · l o*).
+- **Consonantes:** las del ataque entran justo antes del tiempo, como hace un cantaor, para que la vocal caiga en su sitio.
+- **Vocales:** sostienen la nota con un vibrato que entra poco a poco. Los melismas son cambios de altura dentro de la misma vocal.
+- **Sinalefas:** «go‿un», «na‿es» se cantan como una sola sílaba que se desliza de una vocal a otra.
+- **Voces:**
+  - el solista (voz `es2`) canta la melodía;
+  - la segunda voz (voz `es4`) le hace terceras por debajo, en el estribillo de la 1.ª sevillana y en las tres siguientes enteras.
+- **Mezcla:** el coro de «aah» desaparece, la gaita baja un poco para dejar sitio a la voz, y las voces llevan algo de eco de sala.
+
 ## Para llevarla a un grupo de verdad
 
-- La maqueta usa instrumentos grabados, pero la voz es un coro sampleado que canta «aah»: ningún banco de sonidos puede cantar la letra. Para la versión final hace falta un cantaor, o cargar la pista de voz del MIDI en un programa de voz sintética.
+- La voz cantada es sintética: se entiende la letra y va afinada y a tiempo, pero suena a máquina. Sirve de guía para que un cantaor la aprenda. Para la versión final hace falta grabar a un cantaor.
 - La melodía suena una octava más baja de lo escrito, para tenor. Para otra voz, transpón todo con el programa de música.
