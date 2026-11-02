@@ -47,10 +47,11 @@ def midi(name):
 VOICING = {  # guitarra 1, posiciones abiertas en Mi (cuerdas de grave a agudo)
     'E': [40, 47, 52, 56, 59, 64], 'A': [45, 52, 57, 61, 64], 'B7': [47, 51, 57, 59, 66],
     'C': [48, 52, 55, 60, 64], 'F#m7': [42, 49, 52, 57, 61, 64],
+    'Am': [45, 52, 57, 60, 64], 'G': [43, 47, 50, 55, 59, 67], 'F': [41, 48, 53, 57, 60, 65],
 }
 HIGH = {  # guitarra 2: acordes arriba del mástil
     'E': [64, 68, 71, 76], 'A': [64, 69, 73, 76], 'B7': [63, 66, 69, 71], 'C': [64, 67, 72, 76],
-    'F#m7': [61, 64, 69, 73],
+    'F#m7': [61, 64, 69, 73], 'Am': [64, 69, 72, 76], 'G': [62, 67, 71, 74], 'F': [65, 69, 72, 77],
 }
 QUAL = {'': [0, 4, 7], 'm': [0, 3, 7], '7': [0, 4, 7, 10], 'm7': [0, 3, 7, 10]}
 
@@ -120,12 +121,25 @@ TERCIO_C = [  # el estribillo, más corto: acaba en la parada
     [(3, 'G5')],
     [(2, 'E5'), (1, 'D5')],
 ]
-FANFARRIA = [[(1, 'A4'), (.5, 'D5'), (.5, 'E5'), (1, 'F#5')], [(1, 'E5'), (1, 'C#5'), (1, 'A4')]]
+# Falseta de la introducción (ya en Mi, sin transportar): cadencia andaluza Lam-Sol-Fa-Mi
+# que desemboca en el Mi mayor del cante. El primer tiempo calla.
+FALSETA = [
+    [(1, 'r'), (.5, 'E5'), (.5, 'F5'), (.5, 'E5'), (.5, 'D5')],
+    [(.5, 'C5'), (.5, 'D5'), (.5, 'B4'), (.5, 'C5'), (1, 'D5')],
+    [(.5, 'C5'), (.5, 'A4'), (.5, 'F4'), (.5, 'A4'), (1, 'C5')],
+    [(1.5, 'B4'), (.5, 'A4'), (.5, 'G#4'), (.5, 'F4')],
+    [(.5, 'E5'), (.5, 'A5'), (.5, 'C6'), (.5, 'B5'), (.5, 'A5'), (.5, 'G5')],
+    [(.5, 'F5'), (.5, 'E5'), (.5, 'D5'), (.5, 'C5'), (.5, 'B4'), (.5, 'A4')],
+    [(1, 'G#4'), (2, 'r')],
+]
+# Pasada (ya en Mi): cadencia frigia Fa-Mi
+FANFARRIA = [[(1, 'A4'), (.5, 'C5'), (.5, 'B4'), (1, 'A4')], [(1, 'G#4'), (1, 'B4'), (1, 'E5')]]
+PASADA_GAITA = [[(3, 'r')], [(.5, 'G#5'), (.5, 'B5'), (.5, 'E6'), (.5, 'D6'), (1, 'B5')]]
 
-INTRO_CHORDS = ['E', 'E', 'A', 'B7', 'E', 'B7', 'B7']
+INTRO_CHORDS = ['Am', 'G', 'F', 'E', 'Am', 'F', 'E']
 SALIDA_CHORDS = ['E', 'E', 'B7', 'B7', 'B7', 'E']
 TERCIO_CHORDS = ['E', 'E', 'A', 'B7', 'B7', 'E', 'A', 'B7', 'E', 'C', 'B7', 'E']
-PASADA_CHORDS = ['E', 'B7']
+PASADA_CHORDS = ['F', 'E']
 TERCIO_C_CHORDS = ['A', 'C', 'B7', 'E', 'A', 'B7', 'F#m7', 'B7', 'E']
 
 # forma de una sevillana, en compases desde su comienzo
@@ -261,9 +275,21 @@ def fill(bar, trk, vel, beat0=1, octave=0):
 
 
 # ---------------------------------------------------------------- guitarras
-# Rasgueo medido en «Las Palmas» (fuerza media de los golpes por corchea):
-#   1: 1.00 · y: 0.28 · 2: 0.38 · y: 0.52 · 3: 0.58 · y: 0.42
-PATRON = [(0, 'down', 1.15), (.5, 'up', .85), (1, 'down', .48), (1.5, 'up', .9), (2, 'down', .72), (2.5, 'up', .9)]
+# Compás de 3/4 (¡UN!-dos-tres): golpe en el 1, el 3 marcado y corcheas seguidas,
+# según lo medido en «Las Palmas» (1: 1.00 · y: 0.28 · 2: 0.38 · y: 0.52 · 3: 0.58 · y: 0.42)
+PATRON = [(0, 'down', 1.15), (.5, 'up', .58), (1, 'down', .5), (1.5, 'up', .74), (2, 'down', .86), (2.5, 'up', .6)]
+# Aire de 6/8: las seis corcheas en dos grupos de tres (¡UN!-y-dos ¡Y!-tres-y). El 1 sigue mandando.
+PATRON_68 = [(0, 'down', 1.15), (.5, 'up', .4), (1, 'down', .5), (1.5, 'down', .98), (2, 'up', .45), (2.5, 'down', .55)]
+
+
+def seis_por_ocho(bar):
+    """Compases en que la guitarra se va al 6/8 mientras las palmas siguen en 3/4: el compás
+    central de cada verso, el primero de cada pasada y el penúltimo de la introducción."""
+    rel = bar % LEN
+    for s0, length in ((I_SALIDA, 6), (I_T1, 12), (I_T2, 12), (I_T3, 9)):
+        if s0 <= rel < s0 + length:
+            return (rel - s0) % 3 == 1
+    return rel in (I_INTRO + 5, I_P1, I_P2)
 
 
 def rasgueo(trk, bar, vel, high=False, lag=0.0):
@@ -273,7 +299,7 @@ def rasgueo(trk, bar, vel, high=False, lag=0.0):
     v = ch.high if high else ch.voicing
     first = bar % LEN == I_INTRO                  # el primer tiempo de la introducción calla
     shape = 1 + .06 * math.sin(2 * math.pi * (bar % 6) / 6)     # el pulso respira un poco
-    for off, direction, f in PATRON:
+    for off, direction, f in (PATRON_68 if seis_por_ocho(bar) else PATRON):
         if first and off == 0:
             continue
         if off == 0 and bar % 2 == 0 and not high:   # abanico rápido que acaba EN el 1
@@ -295,7 +321,7 @@ def acompanamiento_suave(bar, vel):
 # ---------------------------------------------------------------- percusión rociera
 def palmas(bar, vel=1.0):
     t0 = bar * BAR
-    for b, v in ((0, 112), (1, 40), (2, 58)):
+    for b, v in ((0, 116), (1, 32), (2, 46)):
         if not (bar % LEN == I_INTRO and b == 0):
             perc.append(('palma', t0 + b, v * vel))
             perc.append(('palma2', t0 + b + .012, v * vel * .8))   # un segundo palmero, algo detrás
@@ -307,7 +333,20 @@ def castanuelas(bar, vel=1.0):
         for k, off in enumerate((-.24, -.18, -.12, -.06)):        # carretilla que llega al 1
             perc.append(('casta', t0 + off, (54 + 8 * k) * vel))
         perc.append(('casta', t0, 104 * vel))
-    perc.extend([('casta', t0 + 1.5, 56 * vel), ('casta', t0 + 2, 74 * vel)])
+    if seis_por_ocho(bar):
+        perc.extend([('casta', t0 + 1.5, 80 * vel), ('casta', t0 + 2.5, 50 * vel)])
+    else:
+        perc.extend([('casta', t0 + 1.5, 50 * vel), ('casta', t0 + 2, 58 * vel)])
+
+
+def golpe(bar, vel=1.0):
+    """Golpe flamenco con el anular en la tapa de la guitarra, con el rasgueo del 1
+    (y en el «y» del 2 cuando el compás va a 6/8)."""
+    t0 = bar * BAR
+    if bar % LEN != I_INTRO:
+        perc.append(('golpe', t0, 92 * vel))
+    if seis_por_ocho(bar):
+        perc.append(('golpe', t0 + 1.5, 70 * vel))
 
 
 def tamboril(bar, vel=1.0):
@@ -317,13 +356,13 @@ def tamboril(bar, vel=1.0):
         perc.append(('tamboril', t0, 100 * vel))
         perc.append(('tamboril_bombo', t0, 90 * vel))
     perc.extend([('tamboril', t0 + 1.5, 38 * vel), ('tamboril', t0 + 1.75, 46 * vel),
-                 ('tamboril', t0 + 2, 54 * vel), ('tamboril', t0 + 2.5, 42 * vel)])
+                 ('tamboril', t0 + 2, 40 * vel), ('tamboril', t0 + 2.5, 42 * vel)])
 
 
 def pandereta(bar, vel=1.0):
     """Pandereta: sacude en las corcheas, con el golpe en el 1 y el acento del rasgueo."""
     t0 = bar * BAR
-    for off, v in ((0, 104), (.5, 38), (1, 40), (1.5, 52), (2, 56), (2.5, 44)):
+    for off, v in ((0, 108), (.5, 32), (1, 30), (1.5, 46), (2, 40), (2.5, 34)):
         if not (bar % LEN == I_INTRO and off == 0):
             perc.append(('pandereta', t0 + off, v * vel))
 
@@ -360,18 +399,18 @@ def sevillana(k):
         doblar((t2 + t3 + [last]) if k < 3 else (t1 + t2 + t3 + [last]), 'mandolina', 70 + 3 * k, 0)
 
     # introducción: gaita y guitarra 2 con el tema; mandolina desde la segunda
-    put_line('gtr2', s0, INTRO, 86)
-    put_line('gaita', s0, INTRO, 88, transpose=T + 12)
+    put_line('gtr2', s0, FALSETA, 90, transpose=0)
+    if k in (0, 3):
+        put_line('gaita', s0 + 4, FALSETA[4:], 82, transpose=12)
     if k >= 1:
-        put_line('mandolina', s0, INTRO, 74)
+        put_line('mandolina', s0 + 4, FALSETA[4:], 74, transpose=0)
 
     # pasadas: gaita y mandolina; las trompetas solo en la tercera y la cuarta
     for p in (s0 + I_P1, s0 + I_P2):
-        put_line('gaita', p, [[(3, 'r')], [(.5, 'E6'), (.5, 'F#6'), (.5, 'E6'), (.5, 'C#6'), (1, 'A5')]], 86,
-                 transpose=T)
-        put_line('mandolina', p, FANFARRIA, 76)
+        put_line('gaita', p, PASADA_GAITA, 86, transpose=0)
+        put_line('mandolina', p, FANFARRIA, 76, transpose=0)
         if k >= 2:
-            harmonize(put_line('trompeta1', p, FANFARRIA, 80 + 4 * k), 'trompeta2', 8)
+            harmonize(put_line('trompeta1', p, FANFARRIA, 80 + 4 * k, transpose=0), 'trompeta2', 8)
 
     # punteos de la guitarra 2 cuando el cante sostiene una nota larga
     for rel in (I_T1 + 4, I_T1 + 10, I_T2 + 4, I_T2 + 10, I_SALIDA + 4, I_T3 + 1, I_T3 + 7):
@@ -386,8 +425,7 @@ def sevillana(k):
             notes.append(N('bajo', bar * BAR, 2.5, root, 64))
         else:
             start = 1 if bar == s0 else 0
-            notes.append(N('bajo', bar * BAR + start, 1.8 - start, root, 84))
-            notes.append(N('bajo', bar * BAR + 2, .9, root + 7 if root + 7 <= 52 else root - 5, 66))
+            notes.append(N('bajo', bar * BAR + start, 2.6 - start, root, 84))   # solo en el 1
 
     # guitarras: las dos rasguean el compás; la 2 se calla cuando puntea
     filled = {int(n.t // BAR) for n in notes if n.trk == 'gtr2'}
@@ -407,6 +445,7 @@ def sevillana(k):
         if part == 'Salida':
             continue
         palmas(bar, .85 if part == 'Primer tercio' and k == 0 else 1.0)
+        golpe(bar, .8 if part.endswith('tercio') else 1.0)
         tamboril(bar, 1.0 if part in ('Introducción', 'Pasada') else .75)
         if k >= 1 or part in ('Pasada', 'Tercer tercio'):
             pandereta(bar, .9 if part.endswith('tercio') else 1.0)
@@ -444,7 +483,7 @@ INSTRUMENTS = [
     ('bajo', 'Contrabajo', 7, 0, 32, 80, 64, 16),
     ('trompeta', 'Trompetas', 8, 0, 56, 80, 80, 56),
 ]
-DRUMS = {'palma': (39, 1.0), 'palma2': (39, .9), 'casta': (85, 1.0), 'tamboril': (38, .62),
+DRUMS = {'palma': (39, 1.0), 'palma2': (39, .9), 'casta': (85, 1.0), 'tamboril': (38, .62), 'golpe': (37, .55),
          'tamboril_bombo': (41, .6), 'pandereta': (54, .8)}
 TREMOLO = {'mandolina'}
 

@@ -8,12 +8,12 @@ Cuatro sevillanas rocieras originales para bailar, en la línea de Los Romeros d
 | `candela-y-agua.mp3` | Versión instrumental, con el coro haciendo «aah». Instrumentos sampleados (banco de sonidos MuseScore General). |
 | `candela-y-agua.musicxml` | La partitura: voz con letra y cifrado, segunda voz, gaita rociera y dos trompetas. Se abre con MuseScore, Finale, Sibelius o Dorico. |
 | `candela-y-agua.mid` | Una pista por instrumento, con la letra incluida. Sirve para GarageBand, Logic, Cubase, etc. |
-| `cantar.py` | Genera la versión cantada con `python3 cantar.py`. Necesita además `mbrola` y las voces `mbrola-es2` y `mbrola-es4`. |
+| `cantar.py` | Genera la versión cantada con `python3 cantar.py`. Necesita además `mbrola` y las voces `mbrola-es1`, `mbrola-es2` y `mbrola-es4`. |
 | `componer.py` | El script que genera los tres archivos anteriores con `python3 componer.py`. Para el audio necesita `fluidsynth`, `ffmpeg` y el banco de sonidos MuseScore General (paquete `musescore-general-soundfont-lossless`). |
 
 ## Ficha
 
-- **Compás:** 3/4 con el acento en el 1, a ♩ = 174.
+- **Compás:** 3/4 con el acento fuerte siempre en el 1 (¡UN!-dos-tres), a ♩ = 174. La guitarra se va a veces al aire de 6/8.
 - **Tonalidad:** Mi mayor.
 - **Instrumentos rocieros, de principio a fin:**
   - **Gaita rociera:** lleva la melodía del cante entera, una octava por encima, además del tema de la introducción y las pasadas.
@@ -45,10 +45,10 @@ Una sevillana tiene siempre la misma medida, porque cada parte del baile cae en 
 
 | Compases | Parte | Qué canta | Qué suena |
 |---|---|---|---|
-| 1–7 | **Introducción** (7) | — | La guitarra rasguea y la gaita y la guitarra 2 tocan el tema. **El primer tiempo calla**, como es costumbre. |
+| 1–7 | **Introducción** (7) | — | Falseta flamenca de la guitarra 2 sobre la cadencia andaluza (Lam – Sol – Fa – Mi) que desemboca en el Mi mayor del cante. **El primer tiempo calla**, como es costumbre. |
 | 8–13 | **Salida** (6) | Versos 1-2 | La voz casi sola. La guitarra solo marca el 1 y el 3, sin palmas. |
 | 14–25 | **Primer tercio** (12) | Versos 1-2-3-4 | El compás completo: las dos guitarras, tamboril y palmas. La gaita dobla el cante. |
-| 26–27 | **Pasada** (2) | — | Rasgueo fuerte, gaita, bandurria y tamboril. En la 3.ª y la 4.ª, también trompetas. |
+| 26–27 | **Pasada** (2) | — | Cadencia frigia Fa – Mi con rasgueo fuerte, gaita, bandurria y tamboril. En la 3.ª y la 4.ª, también trompetas. |
 | 28–39 | **Segundo tercio** (12) | Versos 3-4-3-4 | Como el primero, pero la segunda mitad sube. |
 | 40–41 | **Pasada** (2) | — | Igual que la primera. |
 | 42–50 | **Tercer tercio** (9) | Estribillo 5-6-7 | El estribillo. |
@@ -65,28 +65,40 @@ Cada verso dura 3 compases. La sílaba acentuada cae siempre en un primer tiempo
 | 3.ª | Igual, y las trompetas entran en las pasadas. |
 | 4.ª | Todo junto: la bandurria dobla el cante desde el primer tercio. |
 
-## El compás de la guitarra
+## El compás: 3/4 con aire de 6/8
+
+Se cuenta de tres en tres, con el acento fuerte siempre en el 1: **¡UN!**-dos-tres, **¡UN!**-dos-tres. La guitarra alterna dos formas de repartir las seis corcheas del compás:
 
 ```
-corchea:   1        y      2      y      3      y
-          GOLPE   arriba  abajo  ARRIBA  ABAJO  arriba
-          (abanico que acaba en el 1)
+corchea:            1      y      2      y      3      y
+3/4 (¡UN!-dos-tres) GOLPE  arriba abajo  arriba ABAJO  arriba
+6/8 (¡UN!-y-dos ¡Y!-tres-y)
+                    GOLPE  arriba abajo  GOLPE  arriba abajo
 ```
 
-- Al final de cada verso se quita el último «y» y el 3 queda seco, como remate.
-- Las palmas marcan sobre todo el 1, más suave el 3 y muy poco el 2.
-- Las castañuelas hacen la carretilla que llega al 1 y luego tocan el «y» del 2 y el 3.
+- **En qué compases va a 6/8:**
+  - el del medio de cada verso;
+  - el primero de cada pasada;
+  - el penúltimo de la introducción.
+- **El cruce de ritmos:** en esos compases las palmas siguen en 3/4 mientras la guitarra y las castañuelas se van al 6/8. Se cruzan dos ritmos, que es lo que le da a la sevillana su aire alegre.
+- **Sonido flamenco:**
+  - abanico rápido que acaba justo en el 1;
+  - golpe con el anular en la tapa de la guitarra en el 1 (y en el «y» del 2 en los compases de 6/8);
+  - remate seco en el 3 al final de cada verso.
+- **Las frases se marcan solas:** cada verso dura 3 compases (3/4, 6/8 y remate), así que el baile sabe siempre dónde está.
+- **Comprobado en la grabación:** midiendo la fuerza de cada corchea, el 1 es el golpe más fuerte en todos los compases. En los de 6/8, el segundo acento de la guitarra cae en el «y» del 2.
 
 ## Armonía
 
 ```
-Introducción   | E | E | A | B7 | E | B7 | B7 |
+Introducción   | Am | G | F | E | Am | F | E |      (cadencia andaluza)
 Salida         | E | E | B7 | B7 | B7 | E |
 Tercios 1 y 2  | E | E | A | B7 | B7 | E | A | B7 | E | C | B7 | E |
 Tercer tercio  | A | C | B7 | E | A | B7 | F#m7 | B7 | E |  ‖ E (parada)
+Pasadas        | F | E |                                  (cadencia frigia)
 ```
 
-Es la armonía de las sevillanas rocieras: tónica, dominante y subdominante. El color propio lo pone el **Do mayor** (♭VI). Aparece en el último verso de cada tercio y al empezar el estribillo, y le da un tono más oscuro antes de volver a Mi.
+El cante va en la armonía mayor de las sevillanas rocieras: tónica, dominante y subdominante. La introducción y las pasadas le dan el color flamenco con la cadencia andaluza y la frigia, que caen en el mismo acorde de Mi. El color propio lo pone el **Do mayor** (♭VI). Aparece en el último verso de cada tercio y al empezar el estribillo, y le da un tono más oscuro antes de volver a Mi.
 
 ## Letra
 
@@ -124,6 +136,7 @@ La genera `cantar.py` con MBROLA, un sintetizador de voz al que se le dan los so
 - **Voces:**
   - el solista (voz `es2`) canta la melodía;
   - la segunda voz (voz `es4`) le hace terceras por debajo, en el estribillo de la 1.ª sevillana y en las tres siguientes enteras.
+- **Jaleos:** «¡Olé!» tras cada parada, «¡Arsa!» y «¡Eso es!» en las pasadas, y «¡Vamos allá!» antes de la cuarta, con una tercera voz (`es1`).
 - **Mezcla:** el coro de «aah» desaparece, la gaita baja un poco para dejar sitio a la voz, y las voces llevan algo de eco de sala.
 
 ## Para llevarla a un grupo de verdad

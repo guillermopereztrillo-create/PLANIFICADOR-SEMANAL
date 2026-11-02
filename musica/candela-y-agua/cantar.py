@@ -7,7 +7,7 @@ un cantaor, y la vocal sostiene la nota con su vibrato. Los melismas son cambios
 de altura dentro de la misma vocal.
 
 Uso:  python3 cantar.py [carpeta_salida]
-Necesita: mbrola, las voces mbrola-es2 (solista) y mbrola-es4 (segunda voz),
+Necesita: mbrola, las voces mbrola-es2 (solista), mbrola-es4 (segunda voz) y mbrola-es1 (jaleos),
 fluidsynth, ffmpeg y el banco de sonidos MuseScore General.
 """
 import math
@@ -215,6 +215,44 @@ def linea_pho(trk, octava=-12, vib=.016):
     return '\n'.join(lines) + '\n'
 
 
+# ---------------------------------------------------------------- jaleos
+JALEOS = {  # fonema, ms, (Hz al empezar, Hz al acabar)
+    '¡Olé!': [('o', 110, (200, 235)), ('l', 55, (240, 250)), ('e', 340, (300, 205))],
+    '¡Arsa!': [('a', 140, (210, 255)), ('r', 40, (255, 255)), ('s', 110, None), ('a', 280, (285, 190))],
+    '¡Eso es!': [('e', 110, (220, 240)), ('s', 90, None), ('o', 140, (250, 255)), ('e', 120, (270, 230)),
+                 ('s', 150, None)],
+    '¡Vamos allá!': [('b', 45, (190, 190)), ('a', 140, (200, 220)), ('m', 70, (220, 220)), ('o', 110, (225, 225)),
+                     ('s', 80, None), ('a', 90, (230, 240)), ('L', 70, (250, 250)), ('a', 320, (300, 200))],
+}
+
+
+def jaleos_pho():
+    """Jaleos de los palmeros: «¡Olé!» tras cada parada, «¡Arsa!» y «¡Eso es!» en las pasadas."""
+    marcas = []
+    for k in range(C.N_SEV):
+        s0 = k * C.LEN
+        marcas.append(((s0 + C.I_PARADA) * C.BAR + 1.0, '¡Olé!'))
+        if k >= 1:
+            marcas.append(((s0 + C.I_P1) * C.BAR + 1.6, '¡Arsa!'))
+        if k >= 2:
+            marcas.append(((s0 + C.I_P2) * C.BAR + 1.6, '¡Eso es!'))
+        if k == 3:
+            marcas.append((s0 * C.BAR + .4, '¡Vamos allá!'))
+    lines, t = [], 0.0
+    for beat, texto in sorted(marcas):
+        a = beat * SPB
+        ms = int(round((a - t) * 1000))
+        while ms > 0:
+            lines.append(f'_ {min(ms, 10000)}')
+            ms -= 10000
+        t = a
+        for ph, d, f in JALEOS[texto]:
+            lines.append(f'{ph} {d}' + (f' 0 {f[0]} 100 {f[1]}' if f else ''))
+            t += d / 1000
+    lines.append('_ 500')
+    return '\n'.join(lines) + '\n'
+
+
 def sintetiza(pho, voz, wav):
     if voz == 'es4':                 # a esta voz le faltan /w/ y /j/ tras consonante: se cantan como u, i breves
         out, prev = [], '_'
@@ -245,16 +283,20 @@ def main(out):
     # 2) voces
     sintetiza(linea_pho('voz', -12, .018), 'es2', base + '-voz.wav')
     sintetiza(linea_pho('voz2', -12, .012), 'es4', base + '-voz2.wav')
+    sintetiza(jaleos_pho(), 'es1', base + '-jaleos.wav')
     # 3) mezcla: voces al frente, con algo de sala
     filtro = (
         '[1:a]aresample=44100,highpass=f=90,equalizer=f=3000:t=q:w=1.2:g=3,'
         'aecho=0.8:0.6:45|95:0.22|0.14,volume=2.4,pan=stereo|c0=0.98*c0|c1=0.9*c0[v1];'
         '[2:a]aresample=44100,highpass=f=90,aecho=0.8:0.6:55|110:0.22|0.14,volume=1.25,'
         'pan=stereo|c0=0.75*c0|c1=1.0*c0[v2];'
-        '[0:a][v1][v2]amix=inputs=3:normalize=0,loudnorm=I=-14:TP=-1.2:LRA=11[m]'
+        '[3:a]aresample=44100,highpass=f=120,aecho=0.8:0.5:70|140:0.3|0.2,volume=1.1,'
+        'pan=stereo|c0=0.55*c0|c1=1.0*c0[v3];'
+        '[0:a][v1][v2][v3]amix=inputs=4:normalize=0,loudnorm=I=-14:TP=-1.2:LRA=11[m]'
     )
     subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', base + '-acompanamiento.wav',
-                    '-i', base + '-voz.wav', '-i', base + '-voz2.wav', '-filter_complex', filtro,
+                    '-i', base + '-voz.wav', '-i', base + '-voz2.wav', '-i', base + '-jaleos.wav',
+                    '-filter_complex', filtro,
                     '-map', '[m]', '-ar', '44100', base + '-cantada.wav'], check=True)
     subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', base + '-cantada.wav', '-codec:a', 'libmp3lame',
                     '-b:a', '192k', '-metadata', 'title=Candela y agua (cantada)', base + '-cantada.mp3'], check=True)
