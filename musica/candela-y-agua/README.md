@@ -4,29 +4,30 @@ Una sevillana original. Toma de Los Romeros de la Puebla la idea de fondo: guita
 
 | Archivo | Para qué sirve |
 |---|---|
-| `candela-y-agua.mp3` | Para escucharla. Es una maqueta sintetizada (1:50). |
-| `candela-y-agua.musicxml` | La partitura: voz con letra y cifrado, segunda voz y flauta. Se abre con MuseScore, Finale, Sibelius o Dorico. |
+| `candela-y-agua.mp3` | Para escucharla (1:53). Maqueta con instrumentos sampleados (banco de sonidos MuseScore General). |
+| `candela-y-agua.musicxml` | La partitura: voz con letra y cifrado, segunda voz, gaita rociera y dos trompetas. Se abre con MuseScore, Finale, Sibelius o Dorico. |
 | `candela-y-agua.mid` | Una pista por instrumento, con la letra incluida. Sirve para GarageBand, Logic, Cubase, etc. |
-| `componer.py` | El script que genera los tres archivos anteriores con `python3 componer.py`. Solo necesita numpy. |
+| `componer.py` | El script que genera los tres archivos anteriores con `python3 componer.py`. Para el audio necesita `fluidsynth`, `ffmpeg` y el banco de sonidos MuseScore General (paquete `musescore-general-soundfont-lossless`). |
 
 ## Ficha
 
 - **Compás:** 3/4, a ♩ = 190. Cada copla se baila con su remate.
 - **Tonalidad:** Re mayor. La tercera copla sube un tono, a Mi mayor.
-- **Instrumentos:** voz solista (tenor), segunda voz, guitarra flamenca, flauta travesera, bandurria en trémolo, violonchelo, contrabajo, cajón, palmas (sordas, claras y a contratiempo) y castañuelas.
+- **Instrumentos:** voz y segunda voz (coro), dos guitarras flamencas (rasgueado y punteo o contestaciones), gaita rociera con tamboril, dos trompetas, mandolina en trémolo, cuerdas, violonchelo, contrabajo, cajón, palmas (sordas, claras y a contratiempo) y castañuelas.
 
 ## Forma
 
 | Compases | Sección | Qué pasa |
 |---|---|---|
-| 1–12 | **Introducción** | La guitarra arpegia sola sobre un pedal de Re (D – E/D) con color **lidio** (el Sol♯). En el compás 5 entra la flauta con el tema y en el 9 la bandurria, las castañuelas y las palmas. |
-| 13–16 | **Salida** | Un «¡Ay!» melismático de la voz, con la guitarra. |
-| 17–42 | **Copla 1** | Voz sola, guitarra, contrabajo, violonchelo y palmas sordas. Los rellenos son punteos de guitarra. |
-| 43–50 | **Pasada** | La flauta toma el tema una octava más arriba, doblada por la bandurria. Entra el cajón. |
-| 51–76 | **Copla 2** | Palmas claras. En el estribillo entran la segunda voz y el contracanto largo de la flauta. |
-| 77–84 | **Pasada que modula** | Es el mismo tema, pero el último compás va a Si7 para llevar a Mi. |
-| 85–110 | **Copla 3 (en Mi)** | Todo el grupo: dos voces de principio a fin, palmas a contratiempo y castañuelas en el estribillo. |
-| 111–113 | **Remate** | C – B7 – E. Corte seco en el primer tiempo, como se para el baile. |
+| 1–4 | **Llamada de gaita** | La gaita rociera sola con el tamboril, como abre un camino del Rocío. |
+| 5–16 | **Introducción** | La guitarra 2 arpegia sola sobre un pedal de Re (D – E/D) con color **lidio** (el Sol♯). En el compás 9 entran la guitarra 1 rasgueando y la gaita con el tema, y en el 13 la mandolina, las castañuelas y las palmas. |
+| 17–20 | **Salida** | Un «¡Ay!» melismático de la voz, con las guitarras. |
+| 21–46 | **Copla 1** | Voz, guitarra rasgueada, contrabajo, violonchelo y palmas sordas. Los rellenos son punteos de la guitarra 2. |
+| 47–54 | **Pasada** | Dos trompetas en terceras toman el tema, con la mandolina. Entran el cajón y el tamboril. |
+| 55–80 | **Copla 2** | Palmas claras y contestaciones de la guitarra 2. En el estribillo entran la segunda voz y las cuerdas, y la gaita hace los rellenos. |
+| 81–88 | **Pasada que modula** | Gaita, trompetas y mandolina juntas. El último compás va a Si7 para llevar a Mi. |
+| 89–114 | **Copla 3 (en Mi)** | Todo el grupo: dos voces, cuerdas, palmas a contratiempo, castañuelas en el estribillo, rellenos de trompetas, y las trompetas doblando la voz en la última repetición. |
+| 115–117 | **Remate** | C – B7 – E con trompetas, gaita y mandolina. Corte seco en el primer tiempo, como se para el baile. |
 
 Cada copla dura 26 compases y se divide en frases de **6 + 6 + 8 + 6**: versos 1-2, versos 3-4, estribillo, y repetición de los dos últimos versos más aguda. En los compases en que la voz sostiene la nota, un instrumento hace un relleno.
 
@@ -47,7 +48,7 @@ Repetición   | Bb   | C    | A7   | Em7  | A7   | D    |
    - el **Si♭ mayor (♭VI)**, que aparece al empezar el estribillo y oscurece el final: «Si-re-na‿y **a**-gua» cae sobre un Fa natural.
 2. **El B7 del verso 3** (dominante secundaria hacia Mim) mete un Re♯ cromático en la guitarra.
 3. **Las frases son de 6 y 8 compases**, no de 4.
-4. **La instrumentación** no es la del grupo: la flauta y la bandurria en trémolo llevan el tema, el violonchelo hace un contracanto grave y el cajón no entra hasta la segunda copla. La copla 1 es casi desnuda y la 3 suena con todo el grupo.
+4. **La instrumentación** mezcla lo rociero con lo de banda: gaita y tamboril abren la canción, las trompetas en terceras llevan las pasadas y la mandolina hace trémolos. El violonchelo lleva un contracanto grave y el cajón no entra hasta la primera pasada. La copla 1 es casi desnuda y la 3 suena con todo el grupo.
 5. **Sube un tono para la tercera copla** con una pasada que modula, y **remata con ♭VI–V–I** (C–B7–E) en vez del cierre frigio habitual.
 
 ## Letra
@@ -98,5 +99,5 @@ La partitura completa con todas las sílabas está en `candela-y-agua.musicxml`.
 
 ## Para llevarla a un grupo de verdad
 
-- La maqueta está hecha con síntesis, sin muestras de instrumentos reales, así que las voces son una aproximación. Sirve para oír la forma, la armonía y los arreglos. Para una versión final, carga el MIDI en tu programa de música con buenos instrumentos virtuales o dale la partitura a los músicos.
+- La maqueta usa instrumentos grabados, pero la voz es un coro sampleado que canta «aah»: ningún banco de sonidos puede cantar la letra. Para la versión final hace falta un cantaor, o cargar la pista de voz del MIDI en un programa de voz sintética.
 - La tonalidad está pensada para tenor. Para otra voz, transpón todo con el programa o cambia en `componer.py` el transporte de cada copla (`(S_C1, 0), (S_C2, 0), (S_C3, 2)`).
