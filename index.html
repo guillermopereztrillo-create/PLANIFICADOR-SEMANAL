@@ -103,6 +103,9 @@ h1{font-size:34px;font-weight:800;font-stretch:118%;line-height:1;letter-spacing
 .blk .nm{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:7px}
 .sw{width:9px;height:9px;border-radius:50%;flex:none}
 .blk .tp{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.chg{border:0;background:none;padding:0;margin:0;text-align:left;cursor:pointer;font:inherit;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.chg .ci{color:var(--focus);font-weight:600;white-space:nowrap}
+.chgsel{width:100%;margin-top:4px;font-size:14px;background:var(--bg);border:1px solid var(--focus);border-radius:8px;padding:7px 8px}
 .blk.fixed .nm{font-family:var(--f-display);font-stretch:110%;letter-spacing:.02em;text-transform:uppercase;font-size:14px}
 .blk.fixed .fx{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);justify-self:center}
 .blk.done .nm,.blk.done .tp{text-decoration:line-through;opacity:.5}
@@ -480,7 +483,7 @@ function renderWeek(){
       if(b.type==="fixed")return `<li class="blk fixed"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(--c-fix)"></i>${esc(b.label)}</span></div><span class="fx">Fijo</span></li>`;
       const s=subj(b.subj)||{name:"?",color:"--c-fix"};
       const sub=b.type==="study"?(b.topic?esc(b.topic)+(b.part?" · parte "+b.part:""):"Sin temas pendientes"):(s.goal?goalHtml(s.goal).replace(/<\/?b>/g,""):"Entreno");
-      return `<li class="blk${b.done?" done":""}"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span><span class="tp">${sub}</span></div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} de las ${fmt(b.start)} como hecho">${CHECK}</button></li>`;
+      return `<li class="blk${b.done?" done":""}"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span>${b.type==="study"&&b.topic&&!b.done&&(S.topics[b.subj]||[]).filter(t=>!t.done).length>1?`<button class="tp chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el tema de ${esc(s.name)} de las ${fmt(b.start)}">${sub} <span class="ci">· Cambiar</span></button>`:`<span class="tp">${sub}</span>`}</div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} de las ${fmt(b.start)} como hecho">${CHECK}</button></li>`;
     }).join("");
     const h=hasTime(d),t=day.topics;
     return `<li class="day${d===todayIdx?" today":""}">
@@ -528,7 +531,31 @@ $("prevWeek").onclick=()=>{offset--;renderWeek()};
 $("nextWeek").onclick=()=>{offset++;renderWeek()};
 $("thisWeek").onclick=()=>{offset=0;renderWeek()};
 
+// cambiar tema: el elegido ocupa el sitio de este bloque y el de este bloque pasa al sitio del elegido
+// (se intercambian en el orden del temario y la semana se reorganiza)
+function swapTopic(subjId,fromText,toId){
+  const list=S.topics[subjId]||[];
+  const i=list.findIndex(t=>t.text===fromText&&!t.done),j=list.findIndex(t=>t.id===toId);
+  if(i<0||j<0||i===j)return false;
+  [list[i],list[j]]=[list[j],list[i]];return true;
+}
+$("week").addEventListener("change",e=>{
+  const sel=e.target.closest(".chgsel");if(!sel)return;
+  const blk=S.plans[iso(monday(offset))][+sel.dataset.d].find(x=>x.id===sel.dataset.chg);
+  if(blk&&swapTopic(blk.subj,blk.topic,sel.value)){renderTopics();changed();toast("Tema cambiado y semana reorganizada")}else renderWeek();
+});
+$("week").addEventListener("focusout",e=>{const sel=e.target.closest(".chgsel");if(sel)setTimeout(()=>{if(document.activeElement!==sel&&sel.isConnected)renderWeek()},150)});
 $("week").addEventListener("click",e=>{
+  const cg=e.target.closest(".chg");
+  if(cg){
+    const blk=S.plans[iso(monday(offset))][+cg.dataset.d].find(x=>x.id===cg.dataset.chg);if(!blk)return;
+    const pend=(S.topics[blk.subj]||[]).filter(t=>!t.done);
+    const sel=document.createElement("select");
+    sel.className="chgsel";sel.id="chg-"+blk.id;sel.dataset.chg=blk.id;sel.dataset.d=cg.dataset.d;sel.setAttribute("aria-label","Elegir otro tema");
+    sel.innerHTML=pend.map(t=>`<option value="${t.id}"${t.text===blk.topic?" selected":""}>${esc(t.text)}</option>`).join("");
+    cg.replaceWith(sel);sel.focus();try{sel.showPicker&&sel.showPicker()}catch(err){}
+    return;
+  }
   const tk=e.target.closest(".tick");
   if(tk){const blk=S.plans[iso(monday(offset))][+tk.dataset.d].find(x=>x.id===tk.dataset.id);if(blk){blk.done=!blk.done;save();renderWeek()}return}
   const b=e.target.closest("[data-act]");if(!b)return;
@@ -576,7 +603,7 @@ $("resetArea").addEventListener("click",e=>{
 });
 
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-10-30.5";
+const VERSION="2026-11-03.1";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;

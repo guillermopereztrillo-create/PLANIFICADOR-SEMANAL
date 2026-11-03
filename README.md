@@ -9,6 +9,7 @@ Abre `index.html` en el navegador (o actívalo en GitHub Pages: *Settings → Pa
 Es una sola página, sin pestañas:
 
 - **La semana**: una tarjeta por día. Con los botones − y + pones las horas de estudio y cuántos temas quieres ver ese día, y debajo a qué hora empiezas por la mañana y por la tarde («Auto» = un tema por bloque). La semana se reorganiza sola al cambiar algo y conserva los bloques ya marcados como hechos. Un día sin horas solo lleva el callejero.
+- **Cambiar tema**: en cada bloque de estudio pulsa «Cambiar» y elige otro tema pendiente de esa materia. El elegido ocupa ese hueco y el que había pasa al sitio donde estaba el elegido; la semana se reorganiza sola. También sirve para el callejero.
 - **Temario** (plegable): el de Bombero del Decreto 36/2025, de 11 de febrero (Anexo I): 12 temas generales, 33 específicos y 5 propios del SPEIS de Sevilla, más bloques de test y repaso y el callejero de Sevilla por distritos. Marca los temas terminados o añade los tuyos.
 - **Ajustes** (plegable): sesiones y minutos de las cuatro pruebas físicas del Anexo III (dominadas, 100 m lisos, 1500 m y 100 m natación, con las marcas del 5 y del 10), días sin entreno, entreno antes o después del estudio, cuándo correr (temprano o por la noche), peso de cada materia, duración de bloques y pausas, y bloques fijos (CrossFit lunes y miércoles de 20:00 a 21:00 ya viene cargado).
 
