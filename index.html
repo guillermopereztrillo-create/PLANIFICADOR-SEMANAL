@@ -215,8 +215,9 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
       </section>
       <section class="sec">
         <h3>Callejero de Sevilla</h3>
+        <div class="pills" id="calMode" role="group" aria-label="Cómo avanzar por los distritos"><button class="pill" data-cm="week">Un distrito por semana</button><button class="pill" data-cm="day">Uno distinto cada día</button></div>
         <div class="two"><label for="calPct">Parte del estudio (%)<input type="number" id="calPct" min="0" max="50" step="5"></label><label for="calFree">Días sin horas (min)<input type="number" id="calFree" min="0" max="180" step="15"></label></div>
-        <p class="help">Todos los días hay callejero. En los días con horas de estudio se lleva esa parte de las horas (con un 25 %, de 4 h sale 1 h) y abre la mañana. En los días sin horas va solo, con los minutos indicados. Cada día toca un distrito de Sevilla; márcalos en el Temario cuando los domines.</p>
+        <p class="help">Todos los días hay callejero. Con «Un distrito por semana» repasas el mismo toda la semana y la siguiente pasas al próximo. En los días con horas de estudio se lleva esa parte de las horas (con un 25 %, de 4 h sale 1 h) y abre la mañana. En los días sin horas va solo, con los minutos indicados. Cada día toca un distrito de Sevilla; márcalos en el Temario cuando los domines.</p>
       </section>
       <section class="sec">
         <h3>Peso de cada materia</h3>
@@ -271,11 +272,11 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:8,
+    v:9,
     days:DAYS.map((_,i)=>({am:i>=5?"10:00":"09:00",pm:i>=5?"17:00":"16:30",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST),cal:mk(CAL)},
-    calPct:25,calFree:60,
+    calPct:25,calFree:60,calWeekly:true,calStart:null,
     fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
     trainPos:"after",outdoor:"morning",morningAt:"07:30",block:50,brk:10,
     plans:{},dirty:{}
@@ -293,7 +294,8 @@ if(S&&S.v===6){S.v=7;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
 // v8: mañana y tarde en vez de una sola hora de inicio; callejero como parte del estudio
 if(S&&S.v===7){S.v=8;S.days.forEach((d,i)=>{const st=d.start||"16:00";if(toMin(st)<13*60){d.am=st;d.pm=i>=5?"17:00":"16:30"}else{d.am=i>=5?"10:00":"09:00";d.pm=st}delete d.start});
   S.calPct=+S.cal===0?0:25;S.calFree=+S.cal===0?0:60;delete S.cal;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
-if(!S||S.v!==8)S=defaults();
+if(S&&S.v===8){S.v=9;S.calWeekly=true;S.calStart=null;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
+if(!S||S.v!==9)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -366,8 +368,14 @@ function generate(key){
     // callejero: todos los días; un tema por día, en uno o varios bloques
     const calItems=len=>{
       if(len<=0)return [];
-      const pend=(S.topics.cal||[]).filter(t=>!t.done);
-      const topic=pend.length?pend[ptr.cal++%pend.length].text:"Repaso general del callejero";
+      const list=S.topics.cal||[],pend=list.filter(t=>!t.done);
+      let topic="Repaso general del callejero";
+      if(pend.length&&S.calWeekly){
+        // un distrito por semana: se avanza un puesto del temario cada semana desde que se activó, saltando los ya dominados
+        if(!S.calStart)S.calStart=iso(monday(0));
+        const wk=Math.round((new Date(key+"T12:00:00")-new Date(S.calStart+"T12:00:00"))/(7*864e5)),n=list.length;
+        for(let k=0;k<n;k++){const t=list[(((wk+k)%n)+n)%n];if(!t.done){topic=t.text;break}}
+      }else if(pend.length)topic=pend[ptr.cal++%pend.length].text;
       const ls=even(len);return ls.map((l,j)=>({subj:"cal",topic,part:ls.length>1?(j+1)+"/"+ls.length:"",len:l}));
     };
     const placeItems=(items,at)=>{let c=at;items.forEach((it,k)=>{const s=fit(c,it.len,fx);out.push({id:uid(),type:"study",subj:it.subj,topic:it.topic,part:it.part,start:s,end:s+it.len,done:false});c=s+it.len+(k<items.length-1?P:0)});return c};
@@ -517,6 +525,7 @@ function renderSettings(){
   document.querySelectorAll("#trainPos .pill").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===S.trainPos));
   document.querySelectorAll("#outdoor .pill").forEach(b=>b.setAttribute("aria-pressed",b.dataset.o===(S.outdoor||"morning")));
   $("morningAt").value=S.morningAt||"07:30";
+  document.querySelectorAll("#calMode .pill").forEach(b=>b.setAttribute("aria-pressed",(b.dataset.cm==="week")===!!S.calWeekly));
   $("calPct").value=S.calPct??25;$("calFree").value=S.calFree??60;
   $("studyRows").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>`<div class="row weight"><div class="nm2"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</div><select id="sw-${s.id}" data-sid="${s.id}" data-k="weight" aria-label="Peso de ${esc(s.name)}"><option value="0">0 · fuera</option>${[1,2,3,4].map(w=>`<option value="${w}" ${+s.weight===w?"selected":""}>${w} · ${["","bajo","normal","alto","máximo"][w]}</option>`).join("")}</select></div>`).join("");
   $("blockLen").value=S.block;$("breakLen").value=S.brk;
@@ -591,6 +600,7 @@ $("ajustes").addEventListener("click",e=>{
   const nt=e.target.closest("[data-nt]"),tp=e.target.closest("#trainPos [data-v]"),od=e.target.closest("#outdoor [data-o]"),fd=e.target.closest("[data-fdel]");
   if(nt){const d=S.days[+nt.dataset.nt];d.noTrain=!d.noTrain;nt.setAttribute("aria-pressed",d.noTrain);changed()}
   else if(od){S.outdoor=od.dataset.o;renderSettings();changed()}
+  else if(e.target.closest("#calMode [data-cm]")){S.calWeekly=e.target.closest("[data-cm]").dataset.cm==="week";renderSettings();changed()}
   else if(tp){S.trainPos=tp.dataset.v;renderSettings();changed()}
   else if(fd){S.fixed=S.fixed.filter(f=>f.id!==fd.dataset.fdel);renderSettings();changed()}
 });
@@ -603,7 +613,7 @@ $("resetArea").addEventListener("click",e=>{
 });
 
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-11-03.1";
+const VERSION="2026-11-03.2";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;

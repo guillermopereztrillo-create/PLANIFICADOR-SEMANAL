@@ -15,7 +15,7 @@ Es una sola página, sin pestañas:
 
 ## Cómo organiza la semana
 
-- **Todos los días** hay **callejero de Sevilla**. En los días con horas de estudio se lleva una cuarta parte (de 4 h, 1 h de callejero y 3 h para lo demás) y abre la mañana; en los días sin horas va solo 1 h. Recorre los 11 distritos, las rondas y avenidas y los edificios clave. Se ajusta en Ajustes.
+- **Todos los días** hay **callejero de Sevilla**. En los días con horas de estudio se lleva una cuarta parte (de 4 h, 1 h de callejero y 3 h para lo demás) y abre la mañana; en los días sin horas va solo 1 h. Recorre los 11 distritos, las rondas y avenidas y los edificios clave: por defecto **un mismo distrito toda la semana** y el siguiente la semana después (en Ajustes se puede cambiar a uno distinto cada día). Se ajusta en Ajustes.
 - El estudio se reparte **entre mañana y tarde**: cada día tiene su hora de empezar por la mañana y por la tarde (déjala vacía si esa franja no puedes). Con 2 h o más, la mitad va por la mañana (hasta las 14:00) y el resto por la tarde.
 - Reparte el estudio en bloques (50 min + 10 de pausa por defecto) alternando materias según su peso, con el reparto equilibrado en toda la semana.
 - Si indicas cuántos temas quieres estudiar un día, reparte ese tiempo a partes iguales entre esos temas (mínimo 15 min por tema); si lo dejas vacío, cada bloque es un tema nuevo.
