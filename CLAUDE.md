@@ -16,7 +16,7 @@ Planificador semanal de estudio y entrenamiento para Guillermo, opositor a Bombe
 
 ## Datos
 
-- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `9`).
+- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `10`).
 - Si cambias la forma de los datos, sube `v` y añade una migración desde la versión anterior que conserve lo que el usuario ya ha configurado (días, bloques fijos, temas marcados).
 - Envuelve cada lectura y escritura de `localStorage` en `try/catch`.
 
@@ -41,7 +41,8 @@ Estas marcas salen de resúmenes de academias, no del BOJA original. Si el usuar
 - Cada bloque de estudio toma el siguiente tema pendiente de su materia. Si el usuario fija cuántos temas quiere estudiar ese día (`days[i].topics`), el tiempo del día se reparte entre esos temas (mínimo 15 min cada uno) y un tema puede ocupar varios bloques seguidos; vacío (`null`) = un tema por bloque. Con 2 temas, uno es de Generales y otro de Específicos (el más atrasado de los dos va primero).
 - **Callejero de Sevilla**: materia `cal` de tipo `daily`, fuera del reparto por pesos. Va **todos los días**, automáticamente. En días con horas se lleva `S.calPct` % del estudio (25 % por defecto: de 4 h, 1 h de callejero y 3 h para lo demás) y abre la primera sesión; en días sin horas va solo, `S.calFree` minutos (60 por defecto). Con `S.calWeekly` (por defecto) va **el mismo distrito toda la semana**: la semana N desde `S.calStart` toma el puesto N de `S.topics.cal`, saltando los marcados como hechos, así que «Cambiar» en un bloque de callejero cambia el distrito de toda la semana. Sin `calWeekly`, cada día toma el siguiente distrito pendiente (11 distritos, rondas y avenidas, edificios singulares). Si dura más de un bloque se parte en bloques iguales; si están todos hechos, «Repaso general del callejero». No cuenta como tema del día.
 - **Mañana y tarde**: cada día tiene hora de inicio de mañana (`am`, 09:00 entre semana y 10:00 el fin de semana) y de tarde (`pm`, 16:30 y 17:00). Vacía = no se estudia en esa franja. Con 2 h o más y las dos franjas, la mitad del estudio va por la mañana (sin pasar de las 14:00, hora de comer) y el resto por la tarde; con menos de 2 h, todo por la tarde. Natación y dominadas «antes» van al principio de la primera sesión y «después» al final de la última.
-- Entrenos por defecto: natación 3×45 min, carrera 1500 m 2×40, velocidad 100 m 1×35, dominadas 2×20.
+- Entrenos por defecto (lo pidió Guillermo: 2 días de CrossFit, 3 de carrera, 1 de natación y 2 de dominadas): natación 1×45 min, carrera 1500 m 2×40, velocidad 100 m 1×35 (1500 m + 100 m = 3 días de carrera), dominadas 2×20.
+- **Cambiar entreno**: «Cambiar» en un entreno no hecho deja elegir otro. Se guarda el reparto de esa semana en `S.trainPlan[semana]` (array de 7 días con ids): el día pasa a tener el elegido y el día más cercano que lo tenía recibe el anterior. `generate` usa ese reparto en vez de `assignTraining()`. Se borra (`resetTrainPlan`) al cambiar sesiones o minutos de entrenos, días sin entreno o bloques fijos.
 - Dominadas, 1500 m y 100 m nunca van en días seguidos, y se evita juntar 1500 m y 100 m el mismo día. Como máximo hay 2 entrenos por día, con 15 min de margen tras entrenar (también tras el CrossFit). Ningún entreno acaba después de las 23:30.
 - **CrossFit: lunes y miércoles de 20:00 a 21:00**, como bloque fijo. Esos días no se añade ningún otro entreno (si no cabe, se avisa de las sesiones que faltan).
 - Se evita correr (1500 m o 100 m) dos días seguidos.

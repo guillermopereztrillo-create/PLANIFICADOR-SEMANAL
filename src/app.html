@@ -248,18 +248,18 @@ function defaults(){
     {id:"sev",name:"Propios de Sevilla",kind:"study",color:"--c-fix",weight:1},
     {id:"test",name:"Test y repaso",kind:"study",color:"--c-test",weight:1},
     {id:"cal",name:"Callejero de Sevilla",kind:"daily",color:"--c-cal"},
-    {id:"nat",name:"Natación 100 m",kind:"train",color:"--c-nat",sessions:3,dur:45,goal:"5 → 1:50 · 10 → 1:18"},
+    {id:"nat",name:"Natación 100 m",kind:"train",color:"--c-nat",sessions:1,dur:45,goal:"5 → 1:50 · 10 → 1:18"},
     {id:"car",name:"Carrera 1500 m",kind:"train",color:"--c-car",sessions:2,dur:40,goal:"5 → 6:06 · 10 → 4:32"},
     {id:"vel",name:"Velocidad 100 m",kind:"train",color:"--signal",sessions:1,dur:35,goal:"5 → 14,50 s · 10 → 12,20 s"},
     {id:"dom",name:"Dominadas",kind:"train",color:"--c-dom",sessions:2,dur:20,goal:"5 → 12 rep · 10 → 30 rep"}
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:9,
+    v:10,
     days:DAYS.map((_,i)=>({am:i>=5?"10:00":"09:00",pm:i>=5?"17:00":"16:30",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST),cal:mk(CAL)},
-    calPct:25,calFree:60,calWeekly:true,calStart:null,
+    calPct:25,calFree:60,calWeekly:true,calStart:null,trainPlan:{},
     fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
     trainPos:"after",outdoor:"morning",morningAt:"07:30",block:50,brk:10,
     plans:{},dirty:{}
@@ -278,7 +278,9 @@ if(S&&S.v===6){S.v=7;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
 if(S&&S.v===7){S.v=8;S.days.forEach((d,i)=>{const st=d.start||"16:00";if(toMin(st)<13*60){d.am=st;d.pm=i>=5?"17:00":"16:30"}else{d.am=i>=5?"10:00":"09:00";d.pm=st}delete d.start});
   S.calPct=+S.cal===0?0:25;S.calFree=+S.cal===0?0:60;delete S.cal;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
 if(S&&S.v===8){S.v=9;S.calWeekly=true;S.calStart=null;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
-if(!S||S.v!==9)S=defaults();
+// v10: reparto de entrenos pedido por Guillermo (carrera 3 días, natación 1, dominadas 2) y entrenos elegidos a mano por semana
+if(S&&S.v===9){S.v=10;const set={nat:1,car:2,vel:1,dom:2};S.subjects.forEach(x=>{if(x.id in set)x.sessions=set[x.id]});S.trainPlan={};Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
+if(!S||S.v!==10)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -335,7 +337,8 @@ function generate(key){
   const wsum=studies.reduce((a,s)=>a+ +s.weight,0)||1;
   const given={};studies.forEach(s=>given[s.id]=0);let total=0;
   const ptr={cal:0};studies.forEach(s=>ptr[s.id]=0);
-  const tr=assignTraining();
+  // si el usuario ha cambiado algún entreno esta semana, se respeta su reparto
+  const tr=(S.trainPlan&&S.trainPlan[key])||assignTraining();
   const B=Math.max(15,+S.block||50),P=Math.max(0,+S.brk||0);
   const plan=DAYS.map((_,d)=>{
     const out=[],fx=fixedFor(d);
@@ -474,7 +477,7 @@ function renderWeek(){
       if(b.type==="fixed")return `<li class="blk fixed"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(--c-fix)"></i>${esc(b.label)}</span></div><span class="fx">Fijo</span></li>`;
       const s=subj(b.subj)||{name:"?",color:"--c-fix"};
       const sub=b.type==="study"?(b.topic?esc(b.topic)+(b.part?" · parte "+b.part:""):"Sin temas pendientes"):(s.goal?goalHtml(s.goal).replace(/<\/?b>/g,""):"Entreno");
-      return `<li class="blk${b.done?" done":""}"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span>${b.type==="study"&&b.topic&&!b.done&&(S.topics[b.subj]||[]).filter(t=>!t.done).length>1?`<button class="tp chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el tema de ${esc(s.name)} de las ${fmt(b.start)}">${sub} <span class="ci">· Cambiar</span></button>`:`<span class="tp">${sub}</span>`}</div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} de las ${fmt(b.start)} como hecho">${CHECK}</button></li>`;
+      return `<li class="blk${b.done?" done":""}"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span>${b.type==="study"&&b.topic&&!b.done&&(S.topics[b.subj]||[]).filter(t=>!t.done).length>1?`<button class="tp chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el tema de ${esc(s.name)} de las ${fmt(b.start)}">${sub} <span class="ci">· Cambiar</span></button>`:(b.type==="train"&&!b.done?`<button class="tp chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el entreno de las ${fmt(b.start)}">${sub} <span class="ci">· Cambiar</span></button>`:`<span class="tp">${sub}</span>`)}</div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} de las ${fmt(b.start)} como hecho">${CHECK}</button></li>`;
     }).join("");
     const h=hasTime(d),t=day.topics;
     return `<li class="day${d===todayIdx?" today":""}">
@@ -531,9 +534,20 @@ function swapTopic(subjId,fromText,toId){
   if(i<0||j<0||i===j)return false;
   [list[i],list[j]]=[list[j],list[i]];return true;
 }
+// cambiar entreno: este día pasa a tener el elegido y el día que lo tenía (el más cercano) recibe el que había aquí
+function swapTrain(key,d,from,to){
+  const by=((S.trainPlan||{})[key]||assignTraining()).map(a=>a.slice());
+  const i=by[d].indexOf(from);if(i<0||by[d].includes(to))return false;
+  let e=-1,best=9;by.forEach((a,x)=>{if(x!==d&&a.includes(to)&&!a.includes(from)&&Math.abs(x-d)<best){best=Math.abs(x-d);e=x}});
+  by[d][i]=to;if(e>=0)by[e][by[e].indexOf(to)]=from;
+  (S.trainPlan=S.trainPlan||{})[key]=by;return true;
+}
+// al cambiar sesiones, días sin entreno o bloques fijos se vuelve al reparto automático
+const resetTrainPlan=()=>{S.trainPlan={}};
 $("week").addEventListener("change",e=>{
   const sel=e.target.closest(".chgsel");if(!sel)return;
-  const blk=S.plans[iso(monday(offset))][+sel.dataset.d].find(x=>x.id===sel.dataset.chg);
+  const key=iso(monday(offset)),blk=S.plans[key][+sel.dataset.d].find(x=>x.id===sel.dataset.chg);
+  if(blk&&blk.type==="train"){if(swapTrain(key,+sel.dataset.d,blk.subj,sel.value)){S.dirty[key]=1;save();renderWeek();toast("Entreno cambiado y semana reorganizada")}else renderWeek();return}
   if(blk&&swapTopic(blk.subj,blk.topic,sel.value)){renderTopics();changed();toast("Tema cambiado y semana reorganizada")}else renderWeek();
 });
 $("week").addEventListener("focusout",e=>{const sel=e.target.closest(".chgsel");if(sel)setTimeout(()=>{if(document.activeElement!==sel&&sel.isConnected)renderWeek()},150)});
@@ -541,8 +555,16 @@ $("week").addEventListener("click",e=>{
   const cg=e.target.closest(".chg");
   if(cg){
     const blk=S.plans[iso(monday(offset))][+cg.dataset.d].find(x=>x.id===cg.dataset.chg);if(!blk)return;
-    const pend=(S.topics[blk.subj]||[]).filter(t=>!t.done);
     const sel=document.createElement("select");
+    if(blk.type==="train"){
+      const today=S.plans[iso(monday(offset))][+cg.dataset.d].filter(x=>x.type==="train").map(x=>x.subj);
+      const opts=S.subjects.filter(x=>x.kind==="train"&&(x.id===blk.subj||!today.includes(x.id)));
+      sel.className="chgsel";sel.id="chg-"+blk.id;sel.dataset.chg=blk.id;sel.dataset.d=cg.dataset.d;sel.setAttribute("aria-label","Elegir otro entreno");
+      sel.innerHTML=opts.map(x=>`<option value="${x.id}"${x.id===blk.subj?" selected":""}>${esc(x.name)}</option>`).join("");
+      cg.replaceWith(sel);sel.focus();try{sel.showPicker&&sel.showPicker()}catch(err){}
+      return;
+    }
+    const pend=(S.topics[blk.subj]||[]).filter(t=>!t.done);
     sel.className="chgsel";sel.id="chg-"+blk.id;sel.dataset.chg=blk.id;sel.dataset.d=cg.dataset.d;sel.setAttribute("aria-label","Elegir otro tema");
     sel.innerHTML=pend.map(t=>`<option value="${t.id}"${t.text===blk.topic?" selected":""}>${esc(t.text)}</option>`).join("");
     cg.replaceWith(sel);sel.focus();try{sel.showPicker&&sel.showPicker()}catch(err){}
@@ -569,8 +591,8 @@ $("topicSecs").addEventListener("submit",e=>{e.preventDefault();const f=e.target
 
 $("ajustes").addEventListener("change",e=>{
   const el=e.target,k=el.dataset.k;
-  if(el.dataset.sid){const s=subj(el.dataset.sid);s[k]=Math.max(0,+el.value||0)}
-  else if(el.dataset.fid){const f=S.fixed.find(x=>x.id===el.dataset.fid);f[k]=k==="day"?+el.value:el.value}
+  if(el.dataset.sid){const s=subj(el.dataset.sid);s[k]=Math.max(0,+el.value||0);if(s.kind==="train")resetTrainPlan()}
+  else if(el.dataset.fid){resetTrainPlan();const f=S.fixed.find(x=>x.id===el.dataset.fid);f[k]=k==="day"?+el.value:el.value}
   else if(el.id==="blockLen")S.block=Math.min(120,Math.max(20,+el.value||50));
   else if(el.id==="calPct")S.calPct=Math.min(50,Math.max(0,Math.round(+el.value||0)));
   else if(el.id==="calFree")S.calFree=Math.min(180,Math.max(0,Math.round((+el.value||0)/5)*5));
@@ -581,13 +603,13 @@ $("ajustes").addEventListener("change",e=>{
 });
 $("ajustes").addEventListener("click",e=>{
   const nt=e.target.closest("[data-nt]"),tp=e.target.closest("#trainPos [data-v]"),od=e.target.closest("#outdoor [data-o]"),fd=e.target.closest("[data-fdel]");
-  if(nt){const d=S.days[+nt.dataset.nt];d.noTrain=!d.noTrain;nt.setAttribute("aria-pressed",d.noTrain);changed()}
+  if(nt){resetTrainPlan();const d=S.days[+nt.dataset.nt];d.noTrain=!d.noTrain;nt.setAttribute("aria-pressed",d.noTrain);changed()}
   else if(od){S.outdoor=od.dataset.o;renderSettings();changed()}
   else if(e.target.closest("#calMode [data-cm]")){S.calWeekly=e.target.closest("[data-cm]").dataset.cm==="week";renderSettings();changed()}
   else if(tp){S.trainPos=tp.dataset.v;renderSettings();changed()}
-  else if(fd){S.fixed=S.fixed.filter(f=>f.id!==fd.dataset.fdel);renderSettings();changed()}
+  else if(fd){resetTrainPlan();S.fixed=S.fixed.filter(f=>f.id!==fd.dataset.fdel);renderSettings();changed()}
 });
-$("addFixed").onclick=()=>{S.fixed.push({id:uid(),day:1,start:"09:00",end:"10:00",label:"Nuevo bloque"});renderSettings();changed()};
+$("addFixed").onclick=()=>{resetTrainPlan();S.fixed.push({id:uid(),day:1,start:"09:00",end:"10:00",label:"Nuevo bloque"});renderSettings();changed()};
 $("resetArea").addEventListener("click",e=>{
   const a=$("resetArea"),idle='<button class="btn line" id="resetBtn">Borrar todos los datos</button>';
   if(e.target.id==="resetBtn")a.innerHTML='<span>Se borrarán horas, temas marcados, ajustes y semanas.</span><button class="btn" id="resetYes">Sí, borrar</button><button class="btn line" id="resetNo">Cancelar</button>';
@@ -596,7 +618,7 @@ $("resetArea").addEventListener("click",e=>{
 });
 
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-11-03.2";
+const VERSION="2026-11-03.3";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;
