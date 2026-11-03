@@ -46,6 +46,7 @@ Estas marcas salen de resúmenes de academias, no del BOJA original. Si el usuar
 - **CrossFit: lunes y miércoles de 20:00 a 21:00**, como bloque fijo. Esos días no se añade ningún otro entreno (si no cabe, se avisa de las sesiones que faltan).
 - Se evita correr (1500 m o 100 m) dos días seguidos.
 - Carrera y 100 m son al aire libre y nunca van a mediodía por el calor de Sevilla. Por defecto van temprano (`morningAt`, 07:30) si terminan con 15 min de margen antes de la primera sesión de estudio; si no, o si el usuario elige `outdoor: "evening"`, van por la noche: no antes de las 21:00 de junio a septiembre, 20:00 en mayo y octubre, 19:00 el resto del año. Natación y dominadas siguen `trainPos` (antes o después del estudio).
+- **Cambiar tema**: en un bloque de estudio no hecho, «Cambiar» abre la lista de temas pendientes de esa materia. Al elegir uno se intercambian los dos en el orden de `S.topics[materia]` y se regenera la semana: el elegido queda en ese bloque y el anterior pasa al sitio que tenía el elegido.
 - Nunca se coloca nada encima de un bloque fijo.
 - Cualquier cambio reorganiza al momento la semana visible (y las futuras ya generadas). Se conservan los bloques ya marcados como hechos: se reconocen por día, materia, tema y parte, no por la hora.
 
