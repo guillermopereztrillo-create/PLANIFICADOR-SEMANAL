@@ -58,6 +58,7 @@ Estas marcas salen de resúmenes de academias, no del BOJA original. Si el usuar
 - Una sola página sin pestañas: cabecera con la semana, balance, una tarjeta por día (horas y temas con botones − / + dentro de la propia tarjeta) y, al final, «Temario» y «Ajustes» como secciones plegables.
 - Pensada sobre todo para el móvil: debe funcionar a 400 px de ancho sin scroll horizontal.
 - Tema claro y oscuro con variables CSS en `:root`. Azul marino y amarillo reflectante (franja de alta visibilidad en la cabecera). Fuentes Archivo (títulos), Public Sans (texto) y JetBrains Mono (horas). Los colores de cada materia se guardan en los datos como nombre de variable (`--c-leg`, `--c-esp`, `--c-fix`, `--c-test`, `--c-nat`, `--c-car`, `--signal`, `--c-dom`): no los renombres.
+- En los bloques de estudio manda el tema que toca (texto grande); la materia va encima en pequeño y en mayúsculas. En los entrenos y bloques fijos el nombre sigue siendo lo principal.
 - Textos de la interfaz en español, claros y directos.
 
 ## Comprobar

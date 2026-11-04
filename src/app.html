@@ -89,7 +89,12 @@ h1{font-size:34px;font-weight:800;font-stretch:118%;line-height:1;letter-spacing
 .chg{border:0;background:none;padding:0;margin:0;cursor:pointer;font:inherit;font-size:13px;color:var(--focus);font-weight:600;white-space:nowrap}
 .blk.study .bd{cursor:pointer}
 .nm.opentech{border:0;background:none;padding:0;margin:0;font:inherit;font-weight:600;font-size:14.5px;color:inherit;cursor:pointer;text-align:left}
-.nm .tk{font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--focus);white-space:nowrap}
+.nm .tk{font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--focus);white-space:nowrap;text-transform:none}
+/* en los bloques de estudio manda el tema que toca; la materia va encima en pequeño */
+.blk.study .nm.opentech{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.blk.study .nm .sw{width:8px;height:8px}
+.blk.study .tp{font-size:15.5px;font-weight:600;line-height:1.3;color:var(--ink)}
+.blk.study .tp .chg{font-size:13px}
 .chgsel{display:block;width:100%;margin-top:4px;font-size:14px;background:var(--bg);border:1px solid var(--focus);border-radius:8px;padding:7px 8px}
 .blk.fixed .nm{font-family:var(--f-display);font-stretch:110%;letter-spacing:.02em;text-transform:uppercase;font-size:14px}
 .blk.fixed .fx{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);justify-self:center}
@@ -707,7 +712,7 @@ function renderTech(){
     <div class="timer"><span class="ph" id="pomoPh">${ph}</span><span class="clock" id="pomoClock">${clk}</span>
       <div class="row2">${mine&&pomo.i>=pomo.segs.length?(blk.done?"":`<button class="btn" data-pomo="done">Marcar bloque como hecho</button>`):`<button class="btn" data-pomo="go">${mine&&pomo.running?"Pausar":mine?"Seguir":"Empezar"}</button>`}${mine?`<button class="btn line" data-pomo="reset">Reiniciar</button>`:""}</div></div>`;
   const items=[["Pomodoro",pomoBody,true],...list.map(x=>[x[0],`<p>${x[1]}</p>`,false])];
-  $("techBody").innerHTML=`<div class="shhead"><div><h2 id="techTitle">${esc(s.name)}</h2><p>${blk.topic?esc(blk.topic)+(blk.part?" · parte "+blk.part:"")+" · ":""}${fmt(blk.start)}–${fmt(blk.end)}</p></div><button class="nb" data-pomo="close" aria-label="Cerrar">✕</button></div>
+  $("techBody").innerHTML=`<div class="shhead"><div><h2 id="techTitle">${esc(blk.topic||s.name)}</h2><p>${blk.topic?esc(s.name)+(blk.part?" · parte "+blk.part:"")+" · ":""}${fmt(blk.start)}–${fmt(blk.end)}</p></div><button class="nb" data-pomo="close" aria-label="Cerrar">✕</button></div>
     <div class="techs">${items.map((it,k)=>`<div class="tech"><button aria-expanded="${k===openTechIdx}" data-techi="${k}">${it[0]}${it[2]?'<span class="rec">Recomendada</span>':""}</button>${k===openTechIdx?`<div class="tb">${it[1]}</div>`:""}</div>`).join("")}</div>`;
 }
 function pomoTick(){
@@ -751,7 +756,7 @@ $("techSheet").addEventListener("close",()=>{techCtx=null;pomoTick()});
 $("pomoPill").onclick=()=>{for(const [d,arr] of (S.plans[iso(monday(offset))]||[]).entries()){if(arr.some(x=>x.id===pomo.blk)){openTech(d,pomo.blk);return}}};
 
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-11-04.2";
+const VERSION="2026-11-04.3";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;
