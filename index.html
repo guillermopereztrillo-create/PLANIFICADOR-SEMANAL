@@ -220,6 +220,11 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
         <p class="help">Todos los días hay callejero. Con «Un distrito por semana» repasas el mismo toda la semana y la siguiente pasas al próximo. En los días con horas de estudio se lleva esa parte de las horas (con un 25 %, de 4 h sale 1 h) y abre la mañana. En los días sin horas va solo, con los minutos indicados. Cada día toca un distrito de Sevilla; márcalos en el Temario cuando los domines.</p>
       </section>
       <section class="sec">
+        <h3>Temas propios de Sevilla</h3>
+        <div class="pills" id="sevOn" role="group" aria-label="Temas propios de Sevilla en la semana"><button class="pill" data-sev="0">Fuera de la semana</button><button class="pill" data-sev="1">Incluir en la semana</button></div>
+        <p class="help">Los 5 temas propios del SPEIS de Sevilla dependen de las bases. Mientras estén fuera no se reparten en la semana; cuando salgan las bases, renómbralos en el Temario y pulsa «Incluir en la semana».</p>
+      </section>
+      <section class="sec">
         <h3>Peso de cada materia</h3>
         <div id="studyRows" style="display:grid;gap:8px"></div>
         <div class="two">
@@ -272,11 +277,11 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:10,
+    v:11,
     days:DAYS.map((_,i)=>({am:i>=5?"10:00":"09:00",pm:i>=5?"17:00":"16:30",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST),cal:mk(CAL)},
-    calPct:25,calFree:60,calWeekly:true,calStart:null,trainPlan:{},
+    calPct:25,calFree:60,calWeekly:true,calStart:null,trainPlan:{},sevOn:false,
     fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
     trainPos:"after",outdoor:"morning",morningAt:"07:30",block:50,brk:10,
     plans:{},dirty:{}
@@ -297,7 +302,9 @@ if(S&&S.v===7){S.v=8;S.days.forEach((d,i)=>{const st=d.start||"16:00";if(toMin(s
 if(S&&S.v===8){S.v=9;S.calWeekly=true;S.calStart=null;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
 // v10: reparto de entrenos pedido por Guillermo (carrera 3 días, natación 1, dominadas 2) y entrenos elegidos a mano por semana
 if(S&&S.v===9){S.v=10;const set={nat:1,car:2,vel:1,dom:2};S.subjects.forEach(x=>{if(x.id in set)x.sessions=set[x.id]});S.trainPlan={};Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
-if(!S||S.v!==10)S=defaults();
+// v11: los temas propios de Sevilla quedan fuera de la semana hasta que se activen en Ajustes
+if(S&&S.v===10){S.v=11;S.sevOn=false;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
+if(!S||S.v!==11)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -350,7 +357,7 @@ function generate(key){
   // un bloque hecho se reconoce por día, materia y tema (no por la hora, que puede moverse al reorganizar)
   const sig=(d,b)=>[d,b.subj,b.topic||"",b.part||""].join("|");
   if(old)old.forEach((arr,d)=>arr.forEach(b=>{if(b.done)doneSig.add(sig(d,b))}));
-  const studies=S.subjects.filter(s=>s.kind==="study"&&s.weight>0);
+  const studies=S.subjects.filter(s=>s.kind==="study"&&s.weight>0&&(s.id!=="sev"||S.sevOn));
   const wsum=studies.reduce((a,s)=>a+ +s.weight,0)||1;
   const given={};studies.forEach(s=>given[s.id]=0);let total=0;
   const ptr={cal:0};studies.forEach(s=>ptr[s.id]=0);
@@ -517,7 +524,7 @@ function renderTemSum(){
 function renderTopics(){
   $("topicSecs").innerHTML=S.subjects.filter(s=>s.kind!=="train").map(s=>{
     const list=S.topics[s.id]||[],left=list.filter(t=>!t.done).length;
-    return `<section class="sec"><h3><span class="nm2" style="text-transform:uppercase;letter-spacing:.06em;font-weight:700"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span><span>${left} pendientes</span></h3>
+    return `<section class="sec"><h3><span class="nm2" style="text-transform:uppercase;letter-spacing:.06em;font-weight:700"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span><span>${s.id==="sev"&&!S.sevOn?"fuera de la semana":left+" pendientes"}</span></h3>
     <ul class="topics">${list.map(t=>`<li class="${t.done?"done":""}"><input type="checkbox" id="tp-${t.id}" data-s="${s.id}" data-t="${t.id}" ${t.done?"checked":""} aria-label="Tema terminado"><span>${esc(t.text)}</span><button class="x" data-del="${t.id}" data-s="${s.id}" aria-label="Quitar tema">×</button></li>`).join("")||'<li><span></span><span class="empty">Sin temas todavía.</span><span></span></li>'}</ul>
     <form class="addrow" data-s="${s.id}"><input type="text" id="add-${s.id}" placeholder="Añadir tema" aria-label="Nuevo tema de ${esc(s.name)}"><button class="btn line">Añadir</button></form></section>`}).join("");
   renderTemSum();
@@ -530,6 +537,7 @@ function renderSettings(){
   $("morningAt").value=S.morningAt||"07:30";
   document.querySelectorAll("#calMode .pill").forEach(b=>b.setAttribute("aria-pressed",(b.dataset.cm==="week")===!!S.calWeekly));
   $("calPct").value=S.calPct??25;$("calFree").value=S.calFree??60;
+  document.querySelectorAll("#sevOn .pill").forEach(b=>b.setAttribute("aria-pressed",(b.dataset.sev==="1")===!!S.sevOn));
   $("studyRows").innerHTML=S.subjects.filter(s=>s.kind==="study").map(s=>`<div class="row weight"><div class="nm2"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</div><select id="sw-${s.id}" data-sid="${s.id}" data-k="weight" aria-label="Peso de ${esc(s.name)}"><option value="0">0 · fuera</option>${[1,2,3,4].map(w=>`<option value="${w}" ${+s.weight===w?"selected":""}>${w} · ${["","bajo","normal","alto","máximo"][w]}</option>`).join("")}</select></div>`).join("");
   $("blockLen").value=S.block;$("breakLen").value=S.brk;
   $("fixedRows").innerHTML=S.fixed.map(f=>`<div class="row fixedr"><select id="fd-${f.id}" data-fid="${f.id}" data-k="day" aria-label="Día">${D3.map((x,i)=>`<option value="${i}" ${+f.day===i?"selected":""}>${x}</option>`).join("")}</select><input class="fl" type="text" id="fl-${f.id}" data-fid="${f.id}" data-k="label" value="${esc(f.label)}" aria-label="Nombre"><button class="x" data-fdel="${f.id}" aria-label="Quitar bloque">×</button><input class="fs" type="time" id="fs-${f.id}" data-fid="${f.id}" data-k="start" value="${f.start}" aria-label="Inicio"><input type="time" id="fe-${f.id}" data-fid="${f.id}" data-k="end" value="${f.end}" aria-label="Fin"></div>`).join("")||'<p class="empty">Sin bloques fijos.</p>';
@@ -622,6 +630,7 @@ $("ajustes").addEventListener("click",e=>{
   const nt=e.target.closest("[data-nt]"),tp=e.target.closest("#trainPos [data-v]"),od=e.target.closest("#outdoor [data-o]"),fd=e.target.closest("[data-fdel]");
   if(nt){resetTrainPlan();const d=S.days[+nt.dataset.nt];d.noTrain=!d.noTrain;nt.setAttribute("aria-pressed",d.noTrain);changed()}
   else if(od){S.outdoor=od.dataset.o;renderSettings();changed()}
+  else if(e.target.closest("#sevOn [data-sev]")){S.sevOn=e.target.closest("[data-sev]").dataset.sev==="1";renderSettings();renderTopics();changed();toast(S.sevOn?"Propios de Sevilla incluidos en la semana":"Propios de Sevilla fuera de la semana")}
   else if(e.target.closest("#calMode [data-cm]")){S.calWeekly=e.target.closest("[data-cm]").dataset.cm==="week";renderSettings();changed()}
   else if(tp){S.trainPos=tp.dataset.v;renderSettings();changed()}
   else if(fd){resetTrainPlan();S.fixed=S.fixed.filter(f=>f.id!==fd.dataset.fdel);renderSettings();changed()}
@@ -635,7 +644,7 @@ $("resetArea").addEventListener("click",e=>{
 });
 
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-11-03.3";
+const VERSION="2026-11-04.1";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;

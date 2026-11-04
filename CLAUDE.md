@@ -16,7 +16,7 @@ Planificador semanal de estudio y entrenamiento para Guillermo, opositor a Bombe
 
 ## Datos
 
-- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `10`).
+- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `11`).
 - Si cambias la forma de los datos, sube `v` y añade una migración desde la versión anterior que conserve lo que el usuario ya ha configurado (días, bloques fijos, temas marcados).
 - Envuelve cada lectura y escritura de `localStorage` en `try/catch`.
 
@@ -37,6 +37,7 @@ Estas marcas salen de resúmenes de academias, no del BOJA original. Si el usuar
 ## Reglas del organizador
 
 - **Un día sin horas de estudio no se organiza**: ni estudio ni entrenos, solo el rato diario de callejero. Las horas empiezan vacías y solo las pone el usuario.
+- **Propios de Sevilla fuera por ahora**: con `S.sevOn` en `false` (por defecto) la materia `sev` no entra en el reparto. En Ajustes, «Incluir en la semana» la activa con su peso.
 - El estudio va en bloques (50 min + 10 de pausa por defecto) y alterna materias según su peso: Generales 2, Específicos 3, Propios de Sevilla 1, Test y repaso 1. El reparto se equilibra en toda la semana.
 - Cada bloque de estudio toma el siguiente tema pendiente de su materia. Si el usuario fija cuántos temas quiere estudiar ese día (`days[i].topics`), el tiempo del día se reparte entre esos temas (mínimo 15 min cada uno) y un tema puede ocupar varios bloques seguidos; vacío (`null`) = un tema por bloque. Con 2 temas, uno es de Generales y otro de Específicos (el más atrasado de los dos va primero).
 - **Callejero de Sevilla**: materia `cal` de tipo `daily`, fuera del reparto por pesos. Va **todos los días**, automáticamente. En días con horas se lleva `S.calPct` % del estudio (25 % por defecto: de 4 h, 1 h de callejero y 3 h para lo demás) y abre la primera sesión; en días sin horas va solo, `S.calFree` minutos (60 por defecto). Con `S.calWeekly` (por defecto) va **el mismo distrito toda la semana**: la semana N desde `S.calStart` toma el puesto N de `S.topics.cal`, saltando los marcados como hechos, así que «Cambiar» en un bloque de callejero cambia el distrito de toda la semana. Sin `calWeekly`, cada día toma el siguiente distrito pendiente (11 distritos, rondas y avenidas, edificios singulares). Si dura más de un bloque se parte en bloques iguales; si están todos hechos, «Repaso general del callejero». No cuenta como tema del día.
