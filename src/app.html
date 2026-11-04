@@ -401,7 +401,7 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:13,
+    v:14,
     days:DAYS.map((_,i)=>({am:i>=5?"10:00":"09:00",pm:i>=5?"17:00":"16:30",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST),cal:mk(CAL)},
@@ -430,7 +430,11 @@ if(S&&S.v===9){S.v=10;const set={nat:1,car:2,vel:1,dom:2};S.subjects.forEach(x=>
 if(S&&S.v===10){S.v=11;S.sevOn=false;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
 if(S&&S.v===11){S.v=12;S.pomo={work:25,brk:5}}
 if(S&&S.v===12){S.v=13;S.game={min:0,spent:0,owned:[],claimed:{},manual:[],log:[]}}
-if(!S||S.v!==13)S=defaults();
+// juego desde cero: sin monedas ni compras; el estudio ya marcado como hecho no vuelve a dar monedas
+function freshGame(){const g={min:0,spent:0,owned:[],claimed:{},manual:[],log:[]};for(const [wk,plan] of Object.entries(S.plans||{}))plan.forEach((arr,d)=>arr.forEach(b=>{if(b.type==="study"&&b.done)g.claimed[[wk,d,b.subj,b.topic||"",b.part||""].join("|")]=1}));return g}
+// v14: Guillermo pidió empezar el juego de cero tras sus compras de prueba
+if(S&&S.v===13){S.v=14;S.game=freshGame();save()}
+if(!S||S.v!==14)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -979,6 +983,7 @@ function renderGame(){
     h+=`<div class="gcard"><span class="lab">Añadir estudio a mano</span><p class="help">Para lo que estudies fuera del plan.</p>
       <div class="addman"><div class="step"><button data-man="-" aria-label="Menos minutos">−</button><span class="val"><b id="manMin">${gMan} min</b></span><button data-man="+" aria-label="Más minutos">+</button></div><input type="text" id="manLabel" placeholder="Qué has estudiado" aria-label="Qué has estudiado"><button class="btn" data-man="add">Añadir</button></div></div>`;
     const log=G().log.slice(-6).reverse();
+    h+=`<div class="confirm" id="gReset">${gResetAsk?'<span>Se borran monedas, compras e historial. Lo ya estudiado no vuelve a dar monedas.</span><button class="btn small" data-greset="yes">Sí, reiniciar</button><button class="btn line small" data-greset="no">Cancelar</button>':'<button class="btn line small" data-greset="ask">Reiniciar el juego</button>'}</div>`;
     if(log.length)h+=`<div class="gcard"><span class="lab">Últimas recompensas</span><ul class="glist">${log.map(l=>{const d=new Date(l.t);return `<li><span><b>+${l.coins} monedas</b><small>${d.getDate()} ${MES[d.getMonth()]} · ${hm(l.min)} de estudio</small></span></li>`}).join("")}</ul></div>`;
   }else{
     h=`<div class="shop">${SHOP.slice().sort((a,b)=>(!owns("obra")?(b.id==="obra")-(a.id==="obra"):0)||a.cost-b.cost).map(x=>{
@@ -988,7 +993,7 @@ function renderGame(){
   }
   $("gPanel").innerHTML=h;
 }
-let gMan=60;
+let gMan=60,gResetAsk=false;
 function showView(){
   const game=location.hash==="#parque";
   $("viewPlan").hidden=game;$("viewGame").hidden=!game;
@@ -1007,6 +1012,8 @@ $("viewGame").addEventListener("click",e=>{
   const b=e.target.closest("[data-buy]");
   if(b){const x=SHOP.find(y=>y.id===b.dataset.buy);if(!x||owns(x.id)||coins()<x.cost)return;
     G().owned.push(x.id);G().spent+=x.cost;save();gFresh=x.id;gTab="parque";renderGame();toast(`¡${x.name} añadido a tu parque!`);return}
+  const rs=e.target.closest("[data-greset]");
+  if(rs){const a=rs.dataset.greset;gResetAsk=a==="ask";if(a==="yes"){S.game=freshGame();save();gTab="parque";gFresh=null;toast("Juego reiniciado: empiezas de cero")}renderGame();return}
   const m=e.target.closest("[data-man]");
   if(m){const a=m.dataset.man;
     if(a==="+")gMan=Math.min(480,gMan+15);else if(a==="-")gMan=Math.max(15,gMan-15);
@@ -1015,7 +1022,7 @@ $("viewGame").addEventListener("click",e=>{
 });
 
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-11-05.1";
+const VERSION="2026-11-05.2";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;
