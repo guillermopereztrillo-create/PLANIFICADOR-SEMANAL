@@ -8,7 +8,7 @@
 :root{
   --bg:#EDF0F4; --surface:#FFFFFF; --sunk:#E2E7EE; --ink:#14243A; --muted:#58687D; --line:#D2D9E3;
   --hivis:#F2C200; --on-hivis:#14243A; --silver:#B8C1CD; --ok:#1E7A4C; --focus:#2F5FD0;
-  --c-leg:#2F5FD0; --c-esp:#D03A28; --c-fix:#6A7686; --c-test:#A87400; --c-nat:#0C88A3; --c-car:#2E8A3D; --signal:#DB7500; --c-dom:#7849C0; --c-cal:#B0407A;
+  --c-leg:#2F5FD0; --c-esp:#D03A28; --c-fix:#6A7686; --c-test:#A87400; --c-nat:#0C88A3; --c-car:#2E8A3D; --signal:#DB7500; --c-dom:#7849C0; --c-cal:#B0407A; --c-clase:#0F7B6C;
   --sky:#BFDDF2; --sun:#F6C445; --hill:#A4CC9C; --grass:#80B56E; --road:#5B6470; --lane:#F2F2F2; --brick:#C8402E; --roofc:#3A4351; --door:#DCE1E8; --doorline:#B5BDC8; --glass:#9FC3DD; --lit:#FFD866; --steel:#8F9AA8; --water:#3FA7D6; --wheel:#22272E; --leaf:#3E8E4F; --trunk:#7A5634; --coin:#E8B100;
   --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -17,13 +17,13 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0C141F; --surface:#142030; --sunk:#1B283A; --ink:#E5EBF2; --muted:#93A1B4; --line:#25354A;
   --hivis:#F5C842; --on-hivis:#0C141F; --silver:#56657A; --ok:#4BC283; --focus:#7FA3F2;
-  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA; --c-cal:#E57FAE;
+  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA; --c-cal:#E57FAE; --c-clase:#3CC7B1;
   --sky:#0E1A2C; --sun:#E6EBF2; --hill:#1D3326; --grass:#26432F; --road:#2B323C; --lane:#7D8794; --brick:#8E3326; --roofc:#141A22; --door:#465060; --doorline:#36404C; --glass:#2B3F55; --lit:#FFCF4D; --steel:#5E6876; --water:#1F6F99; --wheel:#0A0D11; --leaf:#24573A; --trunk:#4E3826; --coin:#F5C842;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0C141F; --surface:#142030; --sunk:#1B283A; --ink:#E5EBF2; --muted:#93A1B4; --line:#25354A;
   --hivis:#F5C842; --on-hivis:#0C141F; --silver:#56657A; --ok:#4BC283; --focus:#7FA3F2;
-  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA; --c-cal:#E57FAE;
+  --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA; --c-cal:#E57FAE; --c-clase:#3CC7B1;
   --sky:#0E1A2C; --sun:#E6EBF2; --hill:#1D3326; --grass:#26432F; --road:#2B323C; --lane:#7D8794; --brick:#8E3326; --roofc:#141A22; --door:#465060; --doorline:#36404C; --glass:#2B3F55; --lit:#FFCF4D; --steel:#5E6876; --water:#1F6F99; --wheel:#0A0D11; --leaf:#24573A; --trunk:#4E3826; --coin:#F5C842;
   color-scheme:dark}
 
@@ -70,6 +70,11 @@ h1{font-size:34px;font-weight:800;font-stretch:118%;line-height:1;letter-spacing
 .tag{font-family:var(--f-body);font-size:11px;font-weight:700;letter-spacing:.06em;background:var(--hivis);color:var(--on-hivis);padding:2px 7px;border-radius:999px;align-self:center}
 .times{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .times label{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:12px;color:var(--muted);min-width:0}
+.cls{display:grid;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr) 30px;gap:6px;align-items:center;padding:6px 8px;border-radius:10px;background:color-mix(in srgb,var(--c-clase) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--c-clase) 45%,var(--line))}
+.cls .clab{font-size:12px;font-weight:700;color:var(--c-clase);letter-spacing:.04em;text-transform:uppercase}
+.cls input{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:4px 6px;font-family:var(--f-mono);font-size:13px;width:100%;min-width:0}
+.addcls{justify-self:start;border:1px dashed color-mix(in srgb,var(--c-clase) 60%,var(--line));background:transparent;color:var(--c-clase);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.blk.clase .nm{font-family:var(--f-display);font-stretch:110%;letter-spacing:.02em;text-transform:uppercase;font-size:14px}
 .times input{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:4px 6px;font-family:var(--f-mono);font-size:13px;width:100%;max-width:104px;min-width:0}
 .ctrls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .step{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;background:var(--sunk);border-radius:10px;padding:4px;min-width:0}
@@ -408,11 +413,11 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:14,
+    v:15,
     days:DAYS.map((_,i)=>({am:i>=5?"10:00":"09:00",pm:i>=5?"17:00":"16:30",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST),cal:mk(CAL)},
-    calPct:25,calFree:60,calWeekly:true,calStart:null,trainPlan:{},sevOn:false,pomo:{work:25,brk:5},game:{min:0,spent:0,owned:[],claimed:{},manual:[],log:[]},
+    calPct:25,calFree:60,calWeekly:true,calStart:null,trainPlan:{},sevOn:false,pomo:{work:25,brk:5},game:{min:0,spent:0,owned:[],claimed:{},manual:[],log:[]},classes:{},
     fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
     trainPos:"after",outdoor:"morning",morningAt:"07:30",block:50,brk:10,
     plans:{},dirty:{}
@@ -441,7 +446,9 @@ if(S&&S.v===12){S.v=13;S.game={min:0,spent:0,owned:[],claimed:{},manual:[],log:[
 function freshGame(){const g={min:0,spent:0,owned:[],claimed:{},manual:[],log:[]};for(const [wk,plan] of Object.entries(S.plans||{}))plan.forEach((arr,d)=>arr.forEach(b=>{if(b.type==="study"&&b.done)g.claimed[[wk,d,b.subj,b.topic||"",b.part||""].join("|")]=1}));return g}
 // v14: Guillermo pidió empezar el juego de cero tras sus compras de prueba
 if(S&&S.v===13){S.v=14;S.game=freshGame();save()}
-if(!S||S.v!==14)S=defaults();
+// v15: clases de la oposición por semana (los días cambian cada semana)
+if(S&&S.v===14){S.v=15;S.classes={}}
+if(!S||S.v!==15)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -503,6 +510,8 @@ function generate(key){
   const B=Math.max(15,+S.block||50),P=Math.max(0,+S.brk||0);
   const plan=DAYS.map((_,d)=>{
     const out=[],fx=fixedFor(d);
+    const cls=((S.classes||{})[key]||{})[d];
+    if(cls&&cls.start&&cls.end&&toMin(cls.end)>toMin(cls.start)){const cs=toMin(cls.start),ce=toMin(cls.end);fx.push([cs,ce+10]);out.push({id:uid(),type:"class",subj:"clase",topic:"",part:"",start:cs,end:ce,done:false})}
     // dentro de un tema, bloques iguales (60 min → 60, 120 → 60+60, 150 → 50+50+50)
     const even=m=>{const n=Math.ceil(m/(B*1.25)),l=Math.round(m/n/5)*5,a=Array(n).fill(l);a[n-1]=m-l*(n-1);return a};
     const split=M=>{const lens=[];while(M>0){if(M>=B){lens.push(B);M-=B}else{if(M>=15||!lens.length)lens.push(M);else lens[lens.length-1]+=M;M=0}}return lens};
@@ -575,7 +584,10 @@ function generate(key){
     let lastEnd;
     if(use.length===2){
       const morning=[];let c=first,st=0;
-      while(items.length&&st<total2/2-10&&c+items[0].len<=14*60){const it=items.shift();morning.push(it);st+=it.len;c+=it.len+P}
+      // con clase por la tarde, la mañana se lleva lo que no quepa en la tarde antes de las 21:00
+      let target=total2/2;
+      if(cls&&toMin(cls.end)>use[1]){const cs=toMin(cls.start),ce=toMin(cls.end)+10,frac=B/(B+P);const cap=(Math.max(0,cs-use[1])+Math.max(0,21*60-Math.max(ce,use[1])))*frac;target=Math.max(target,total2-cap)}
+      while(items.length&&st<target-10&&c+items[0].len<=14*60){const it=items.shift();morning.push(it);st+=it.len;c+=it.len+P}
       placeItems(morning,first);
       lastEnd=placeItems(items,use[1]);
       if(!items.length)lastEnd=out.reduce((a,b)=>Math.max(a,b.end),first);
@@ -636,11 +648,12 @@ function renderWeek(){
     const items=[...fx,...plan[d]].sort((a,b)=>a.start-b.start);
     const li=items.map(b=>{
       if(b.type==="fixed")return `<li class="blk fixed"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(--c-fix)"></i>${esc(b.label)}</span></div><span class="fx">Fijo</span></li>`;
+      if(b.type==="class")return `<li class="blk clase${b.done?" done":""}"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(--c-clase)"></i>Clase de la oposición</span><span class="tp">${fmt(b.start)}–${fmt(b.end)} · cuenta como estudio</span></div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar la clase como hecha">${CHECK}</button></li>`;
       const s=subj(b.subj)||{name:"?",color:"--c-fix"};
       const sub=b.type==="study"?(b.topic?esc(b.topic)+(b.part?" · parte "+b.part:""):"Sin temas pendientes"):(s.goal?goalHtml(s.goal).replace(/<\/?b>/g,""):"Entreno");
       return `<li class="blk${b.done?" done":""}${b.type==="study"?" study":""}" data-blk="${b.id}" data-d="${d}"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd">${b.type==="study"?`<button class="nm opentech" data-tech="${b.id}" data-d="${d}" aria-label="Técnicas de estudio para ${esc(s.name)} de las ${fmt(b.start)}"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)} <span class="tk">Técnicas ›</span></button>`:`<span class="nm"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span>`}<span class="tp">${sub}${b.type==="study"&&b.topic&&!b.done&&(S.topics[b.subj]||[]).filter(t=>!t.done).length>1?` <button class="chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el tema de ${esc(s.name)} de las ${fmt(b.start)}">· Cambiar</button>`:(b.type==="train"&&!b.done?` <button class="chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el entreno de las ${fmt(b.start)}">· Cambiar</button>`:"")}</span></div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} de las ${fmt(b.start)} como hecho">${CHECK}</button></li>`;
     }).join("");
-    const h=hasTime(d),t=day.topics;
+    const h=hasTime(d),t=day.topics,cl=((S.classes||{})[key]||{})[d];
     return `<li class="day${d===todayIdx?" today":""}">
       <div class="dh"><h2>${n}<span class="date">${dt.getDate()} ${MES[dt.getMonth()]}</span>${d===todayIdx?'<span class="tag">HOY</span>':""}</h2>
 </div>
@@ -649,6 +662,7 @@ function renderWeek(){
         <div class="step${t?"":" unset"}"><button data-act="t-" data-d="${d}" aria-label="Menos temas el ${n.toLowerCase()}">−</button><span class="val"><b>${t?t+" tema"+(t>1?"s":""):"Auto"}</b><span>${t?"para el día":"1 tema por bloque"}</span></span><button data-act="t+" data-d="${d}" aria-label="Más temas el ${n.toLowerCase()}">+</button></div>
       </div>
       <div class="times"><label for="dam-${d}">Mañana<input type="time" id="dam-${d}" data-d="${d}" data-k="am" value="${day.am||""}"></label><label for="dpm-${d}">Tarde<input type="time" id="dpm-${d}" data-d="${d}" data-k="pm" value="${day.pm||""}"></label></div>
+      ${cl?`<div class="cls"><span class="clab">Clase</span><input type="time" id="dcs-${d}" data-d="${d}" data-cls="start" value="${cl.start}" aria-label="Hora de inicio de la clase del ${n.toLowerCase()}"><span aria-hidden="true">–</span><input type="time" id="dce-${d}" data-d="${d}" data-cls="end" value="${cl.end}" aria-label="Hora de fin de la clase del ${n.toLowerCase()}"><button class="x" data-clsdel="${d}" aria-label="Quitar la clase del ${n.toLowerCase()}">×</button></div>`:`<button class="addcls" data-clsadd="${d}">+ Añadir clase de la oposición</button>`}
       ${li?`<ol class="blocks">${li}</ol>`:""}${h?(plan[d].length?"":'<p class="empty">Sin bloques este día.</p>'):(plan[d].length?'<p class="empty">Solo callejero. Pon horas de estudio para organizar el resto.</p>':'<p class="empty">Sin organizar: pon tus horas de estudio.</p>')}
     </li>`;
   }).join("");
@@ -733,6 +747,10 @@ $("week").addEventListener("click",e=>{
     cg.replaceWith(sel);sel.focus();try{sel.showPicker&&sel.showPicker()}catch(err){}
     return;
   }
+  const ca=e.target.closest("[data-clsadd]"),cd=e.target.closest("[data-clsdel]");
+  if(ca||cd){const key=iso(monday(offset)),cs=(S.classes=S.classes||{})[key]=S.classes[key]||{};
+    if(ca)cs[+ca.dataset.clsadd]={start:"17:00",end:"19:00"};else delete cs[+cd.dataset.clsdel];
+    changed();toast(ca?"Clase añadida: ajusta la hora de inicio y de fin":"Clase quitada");return}
   const tk=e.target.closest(".tick");
   if(tk){const blk=S.plans[iso(monday(offset))][+tk.dataset.d].find(x=>x.id===tk.dataset.id);if(blk){blk.done=!blk.done;save();renderWeek();renderGameCard()}return}
   const b=e.target.closest("[data-act]");if(!b)return;
@@ -746,7 +764,9 @@ $("week").addEventListener("click",e=>{
   if(focusId){const f=[...document.querySelectorAll("#week [data-act]")].find(x=>x.getAttribute("aria-label")===focusId);f&&f.focus()}
 });
 // hora vacía = ese día no se estudia en esa franja
-$("week").addEventListener("change",e=>{const el=e.target;if(el.type!=="time")return;S.days[+el.dataset.d][el.dataset.k]=el.value||"";changed()});
+$("week").addEventListener("change",e=>{const el=e.target;if(el.type!=="time")return;
+  if(el.dataset.cls){const key=iso(monday(offset)),c=((S.classes||{})[key]||{})[+el.dataset.d];if(c&&el.value){c[el.dataset.cls]=el.value;if(toMin(c.end)<=toMin(c.start))toast("La clase tiene que terminar después de empezar");changed()}return}
+  S.days[+el.dataset.d][el.dataset.k]=el.value||"";changed()});
 
 $("topicSecs").addEventListener("change",e=>{const c=e.target;if(c.type!=="checkbox")return;const t=S.topics[c.dataset.s].find(x=>x.id===c.dataset.t);t.done=c.checked;c.closest("li").classList.toggle("done",c.checked);changed()});
 $("topicSecs").addEventListener("click",e=>{const b=e.target.closest("[data-del]");if(!b)return;S.topics[b.dataset.s]=S.topics[b.dataset.s].filter(t=>t.id!==b.dataset.del);renderTopics();changed()});
@@ -902,9 +922,9 @@ const owns=id=>G().owned.includes(id);
 function pendingStudy(){
   const items=[];
   for(const [wk,plan] of Object.entries(S.plans))plan.forEach((arr,d)=>arr.forEach(b=>{
-    if(b.type!=="study"||!b.done)return;
+    if((b.type!=="study"&&b.type!=="class")||!b.done)return;
     const k=[wk,d,b.subj,b.topic||"",b.part||""].join("|");
-    if(!G().claimed[k])items.push({k,min:b.end-b.start,label:(subj(b.subj)||{name:"Estudio"}).name,topic:b.topic||"",date:dayDate(wk,d)});
+    if(!G().claimed[k])items.push({k,min:b.end-b.start,label:b.type==="class"?"Clase de la oposición":(subj(b.subj)||{name:"Estudio"}).name,topic:b.topic||"",date:dayDate(wk,d)});
   }));
   G().manual.filter(m=>!m.claimed).forEach(m=>items.push({k:"m|"+m.id,min:m.min,label:"Añadido a mano",topic:m.label||"",date:new Date(m.t)}));
   return items.sort((a,b)=>a.date-b.date);
@@ -1203,7 +1223,7 @@ function buildPark(host,fresh){
 window.addEventListener("resize",()=>{const h=$("park3d");if(P3&&h&&h.isConnected&&!h.classList.contains("flat")){const W=h.clientWidth,H=Math.round(W*0.9);P3.renderer.setSize(W,H);P3.camera.aspect=W/H;P3.camera.updateProjectionMatrix()}});
 
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-11-05.3";
+const VERSION="2026-11-06.1";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;
