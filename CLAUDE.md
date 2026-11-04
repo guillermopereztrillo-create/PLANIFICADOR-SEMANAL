@@ -16,7 +16,7 @@ Planificador semanal de estudio y entrenamiento para Guillermo, opositor a Bombe
 
 ## Datos
 
-- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `12`).
+- Todo se guarda en `localStorage` con la clave `parte-semanal-v1`. El objeto lleva un campo `v` (ahora `13`).
 - Si cambias la forma de los datos, sube `v` y añade una migración desde la versión anterior que conserve lo que el usuario ya ha configurado (días, bloques fijos, temas marcados).
 - Envuelve cada lectura y escritura de `localStorage` en `try/catch`.
 
@@ -50,6 +50,7 @@ Estas marcas salen de resúmenes de academias, no del BOJA original. Si el usuar
 - Carrera y 100 m son al aire libre y nunca van a mediodía por el calor de Sevilla. Por defecto van temprano (`morningAt`, 07:30) si terminan con 15 min de margen antes de la primera sesión de estudio; si no, o si el usuario elige `outdoor: "evening"`, van por la noche: no antes de las 21:00 de junio a septiembre, 20:00 en mayo y octubre, 19:00 el resto del año. Natación y dominadas siguen `trainPos` (antes o después del estudio).
 - **Cambiar tema**: en un bloque de estudio no hecho, «Cambiar» abre la lista de temas pendientes de esa materia. Al elegir uno se intercambian los dos en el orden de `S.topics[materia]` y se regenera la semana: el elegido queda en ese bloque y el anterior pasa al sitio que tenía el elegido.
 - **Técnicas de estudio**: pinchar en un bloque de estudio (fuera de «Cambiar» y del círculo) abre `#techSheet` con técnicas según la materia (`TECH.general`, `TECH.test`, `TECH.cal`). El Pomodoro va primero: `S.pomo` guarda los minutos de estudio y descanso (25/5) para todos los bloques, se muestra el reparto del bloque y hay temporizador (un solo pomodoro activo, sigue en una píldora flotante al cerrar la hoja). No cambia el plan de la semana.
+- **Juego «Mi parque de bomberos»**: vista aparte en `#parque` (el planificador es `#viewPlan`, el juego `#viewGame`; se entra por la tarjeta `#gameCard`). Datos en `S.game` = {min, spent, owned, claimed, manual, log}. Monedas = `floor(min/6) - spent` (10 por hora). Por reclamar: bloques de estudio hechos de cualquier semana cuya clave `semana|día|materia|tema|parte` no esté en `claimed`, más el estudio añadido a mano sin reclamar. `SHOP` tiene 19 mejoras (10–200 monedas); todo pide antes la obra del parque. `sceneSVG()` dibuja solo lo comprado con colores de variables (`--sky`, `--brick`…; en oscuro es de noche). Rangos en `RANKS` según monedas invertidas.
 - Nunca se coloca nada encima de un bloque fijo.
 - Cualquier cambio reorganiza al momento la semana visible (y las futuras ya generadas). Se conservan los bloques ya marcados como hechos: se reconocen por día, materia, tema y parte, no por la hora.
 

@@ -9,6 +9,7 @@
   --bg:#EDF0F4; --surface:#FFFFFF; --sunk:#E2E7EE; --ink:#14243A; --muted:#58687D; --line:#D2D9E3;
   --hivis:#F2C200; --on-hivis:#14243A; --silver:#B8C1CD; --ok:#1E7A4C; --focus:#2F5FD0;
   --c-leg:#2F5FD0; --c-esp:#D03A28; --c-fix:#6A7686; --c-test:#A87400; --c-nat:#0C88A3; --c-car:#2E8A3D; --signal:#DB7500; --c-dom:#7849C0; --c-cal:#B0407A;
+  --sky:#BFDDF2; --sun:#F6C445; --hill:#A4CC9C; --grass:#80B56E; --road:#5B6470; --lane:#F2F2F2; --brick:#C8402E; --roofc:#3A4351; --door:#DCE1E8; --doorline:#B5BDC8; --glass:#9FC3DD; --lit:#FFD866; --steel:#8F9AA8; --water:#3FA7D6; --wheel:#22272E; --leaf:#3E8E4F; --trunk:#7A5634; --coin:#E8B100;
   --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
@@ -17,11 +18,13 @@
   --bg:#0C141F; --surface:#142030; --sunk:#1B283A; --ink:#E5EBF2; --muted:#93A1B4; --line:#25354A;
   --hivis:#F5C842; --on-hivis:#0C141F; --silver:#56657A; --ok:#4BC283; --focus:#7FA3F2;
   --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA; --c-cal:#E57FAE;
+  --sky:#0E1A2C; --sun:#E6EBF2; --hill:#1D3326; --grass:#26432F; --road:#2B323C; --lane:#7D8794; --brick:#8E3326; --roofc:#141A22; --door:#465060; --doorline:#36404C; --glass:#2B3F55; --lit:#FFCF4D; --steel:#5E6876; --water:#1F6F99; --wheel:#0A0D11; --leaf:#24573A; --trunk:#4E3826; --coin:#F5C842;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0C141F; --surface:#142030; --sunk:#1B283A; --ink:#E5EBF2; --muted:#93A1B4; --line:#25354A;
   --hivis:#F5C842; --on-hivis:#0C141F; --silver:#56657A; --ok:#4BC283; --focus:#7FA3F2;
   --c-leg:#7FA3F2; --c-esp:#F07261; --c-fix:#95A1B1; --c-test:#E2AE3A; --c-nat:#46BCD6; --c-car:#6CC77A; --signal:#F29A3A; --c-dom:#AD8BEA; --c-cal:#E57FAE;
+  --sky:#0E1A2C; --sun:#E6EBF2; --hill:#1D3326; --grass:#26432F; --road:#2B323C; --lane:#7D8794; --brick:#8E3326; --roofc:#141A22; --door:#465060; --doorline:#36404C; --glass:#2B3F55; --lit:#FFCF4D; --steel:#5E6876; --water:#1F6F99; --wheel:#0A0D11; --leaf:#24573A; --trunk:#4E3826; --coin:#F5C842;
   color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -149,6 +152,97 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
 .addrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
 .confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:500;z-index:20}
+
+/* juego: mi parque de bomberos */
+.gamecard{display:grid;grid-template-columns:44px minmax(0,1fr) 20px;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--ink);color:var(--surface);text-decoration:none;box-shadow:inset 4px 0 0 var(--hivis)}
+.gamecard .gc-ico{width:44px;height:44px;border-radius:12px;background:var(--hivis);display:grid;place-items:center}
+.gamecard .gc-ico .sico{stroke:var(--on-hivis);width:26px;height:26px}
+.gamecard .gc-tx{display:grid;gap:2px;min-width:0}
+.gamecard .gc-tx b{font-family:var(--f-display);font-stretch:112%;font-size:17px}
+.gamecard .gc-tx span{font-size:13px;opacity:.85}
+.gamecard em{font-style:normal;color:var(--hivis);font-weight:600}
+.gamecard .gc-go{font-size:26px;line-height:1}
+.view{display:grid;gap:16px;min-width:0}
+.ghead{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ghead h1{font-size:28px}
+a.nb{display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)}
+.coins{display:inline-flex;align-items:center;gap:6px;background:var(--hivis);color:var(--on-hivis);font-family:var(--f-display);font-stretch:110%;font-weight:800;font-size:20px;padding:6px 14px;border-radius:999px}
+.coins.bump{animation:bump .6s ease}
+@keyframes bump{30%{transform:scale(1.18)}}
+.coin{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--coin);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--coin) 60%,#000 40%)}
+.coins .coin{width:16px;height:16px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.grank{display:grid;gap:6px}
+.grank .rk{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.grank .rk b{font-family:var(--f-display);font-stretch:110%;font-size:18px;color:var(--ink)}
+.grank .bar i{background:var(--hivis)}
+.gtabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--sunk);padding:4px;border-radius:12px}
+.gtabs button{border:0;background:transparent;border-radius:9px;padding:9px 6px;font-weight:600;font-size:14px;color:var(--muted)}
+.gtabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .1)}
+#gPanel{display:grid;gap:12px}
+.gcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:10px;min-width:0}
+.gcard .lab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sceneCard{padding:0;overflow:hidden}
+.scene{display:block;width:100%;height:auto}
+.gmsg{margin:0;font-size:14px;color:var(--muted)}
+.gmsg b{color:var(--ink)}
+.lnk{border:0;background:none;padding:0;font:inherit;color:var(--focus);font-weight:600;text-decoration:underline;cursor:pointer}
+.claim .big{font-size:15px;color:var(--muted)}
+.claim .big b{font-family:var(--f-display);font-stretch:112%;font-size:30px;color:var(--ink)}
+.claimbtn{justify-self:start;font-size:16px;padding:11px 20px;background:var(--hivis);color:var(--on-hivis)}
+.btn:disabled{opacity:.45;cursor:default}
+.glist{list-style:none;margin:0;padding:0;display:grid}
+.glist li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.glist li:first-child{border-top:0}
+.glist li span:first-child{display:grid;min-width:0}
+.glist small{font-size:12px;color:var(--muted)}
+.addman{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:8px;align-items:center}
+@media (max-width:420px){.addman{grid-template-columns:1fr auto}.addman input{grid-column:1/-1;grid-row:2}}
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;align-content:start}
+.item .ihead{display:flex;gap:10px;align-items:center}
+.item .ihead div{display:grid}
+.item .ihead small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.item p{margin:0;font-size:13px;color:var(--muted)}
+.item .ifoot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.item .price{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-display);font-stretch:110%;font-weight:800;font-size:18px}
+.item.owned{border-color:var(--ok)}
+.tag2{font-size:12px;font-weight:600;color:var(--muted)}
+.item.owned .tag2{color:var(--ok)}
+.btn.small{padding:7px 14px;font-size:13px}
+.sico{width:30px;height:30px;flex:none;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.g-sky{fill:var(--sky)}.g-sun{fill:var(--sun)}.g-hill{fill:var(--hill)}.g-grass{fill:var(--grass)}.g-road{fill:var(--road)}
+.g-lane{stroke:var(--lane);stroke-width:1.2;stroke-dasharray:8 7;fill:none}
+.g-trunk{fill:var(--trunk)}.g-leaf{fill:var(--leaf)}.g-flower{fill:var(--c-cal)}
+.g-gym{fill:var(--c-leg)}.g-roof{fill:var(--roofc)}.g-glass{fill:var(--glass)}.g-lit{fill:var(--lit)}.g-door2{fill:var(--roofc)}
+.g-bar{stroke:var(--lit);stroke-width:1.6;fill:none}
+.g-poolrim{fill:var(--door)}.g-water{fill:var(--water)}.g-wave{stroke:#fff;stroke-opacity:.6;stroke-width:1;fill:none}
+.g-fence{stroke:var(--trunk);stroke-width:2;fill:none}
+.g-signboard{fill:var(--hivis)}.g-signtext{fill:var(--on-hivis);font:700 6.5px var(--f-body)}
+.g-brick{fill:var(--brick)}.g-signbg{fill:var(--roofc)}
+.g-sign{fill:#fff;font:700 7.5px var(--f-body);letter-spacing:.06em}
+.g-door{fill:var(--door)}.g-doorline{stroke:var(--doorline);stroke-width:1;fill:none}
+.g-bay{fill:#fff;font:700 6px var(--f-mono)}
+.g-heli{fill:var(--roofc);stroke:var(--hivis);stroke-width:1.4}.g-helih{fill:var(--hivis);font:800 7px var(--f-body)}
+.g-brass{stroke:#D6A73A;stroke-width:2;fill:none}.g-brass2{fill:#D6A73A}
+.g-rack{fill:var(--roofc)}.g-hose{fill:none;stroke:var(--c-esp);stroke-width:2}.g-hose2{fill:none;stroke:var(--hivis);stroke-width:2}
+.g-helmet{fill:var(--hivis)}
+.g-pole{stroke:var(--steel);stroke-width:1.6;fill:none}.g-flag{fill:var(--hivis)}
+.g-tower{fill:var(--steel)}.g-rope{stroke:var(--c-esp);stroke-width:1;fill:none}
+.g-drone{fill:var(--steel)}.g-droneline{stroke:var(--steel);stroke-width:1.4;fill:none}.g-led{fill:var(--c-esp)}
+.g-lamp{fill:var(--lit)}
+.g-truck{fill:var(--c-esp)}.g-nrbq{fill:var(--hivis)}.g-stripe{fill:#fff;fill-opacity:.85}
+.g-beacon{fill:#2F7BFF}.g-wheel{fill:var(--wheel)}.g-ladder{stroke:var(--steel);stroke-width:1.4;fill:none}
+.g-tool{fill:var(--roofc)}.g-haz{fill:#fff;stroke:var(--on-hivis);stroke-width:1}.g-tank{fill:var(--roofc)}
+.scene .pop{animation:pop .8s cubic-bezier(.2,1.4,.4,1) both;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes pop{0%{transform:scale(.2);opacity:0}100%{transform:none;opacity:1}}
+.scene .wave{animation:wave 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:0 50%}
+@keyframes wave{50%{transform:scaleX(.85) skewY(4deg)}}
+.scene .hover{animation:hover 2.6s ease-in-out infinite}
+@keyframes hover{50%{transform:translateY(-4px)}}
+.scene .g-beacon{animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{fill:var(--c-esp)}}
+@media (prefers-reduced-motion:reduce){.scene *{animation:none!important}.coins.bump{animation:none}}
 /* técnicas de estudio y pomodoro */
 dialog.sheet{border:0;padding:0;background:var(--surface);color:var(--ink);border-radius:16px;width:min(560px,calc(100% - 24px));max-height:calc(100% - 24px);box-shadow:0 20px 50px rgb(0 0 0 / .35)}
 dialog.sheet::backdrop{background:rgb(8 14 24 / .55)}
@@ -182,6 +276,7 @@ dialog.sheet::backdrop{background:rgb(8 14 24 / .55)}
 </style>
 
 <div class="wrap">
+<div id="viewPlan" class="view">
   <header class="top">
     <span class="eyebrow">Oposición Bombero · Ayto. de Sevilla</span>
     <div class="titlerow">
@@ -198,6 +293,7 @@ dialog.sheet::backdrop{background:rgb(8 14 24 / .55)}
 
   <p class="hint" id="hint" hidden>Pon con + las horas de estudio de cada día. Hasta entonces solo verás el callejero diario. Ajusta en cada día a qué hora empiezas por la mañana y por la tarde.</p>
   <section class="meters" id="meters" aria-label="Balance de la semana"></section>
+  <a class="gamecard" id="gameCard" href="#parque" aria-label="Ir al juego Mi parque de bomberos"></a>
   <ol class="days" id="week"></ol>
 
   <details class="fold" id="foldTemario">
@@ -264,6 +360,14 @@ dialog.sheet::backdrop{background:rgb(8 14 24 / .55)}
     </div>
   </details>
 </div>
+<section id="viewGame" class="view" hidden>
+  <header class="ghead"><a class="nb" href="#semana" aria-label="Volver al planificador">‹ Planificador</a><span class="coins" id="gCoins"></span></header>
+  <h1>Mi parque de bomberos</h1>
+  <div class="grank" id="gRank"></div>
+  <div class="gtabs" id="gTabs" role="tablist" aria-label="Secciones del juego"><button role="tab" data-gt="parque">Mi parque</button><button role="tab" data-gt="registro">Registrar</button><button role="tab" data-gt="tienda">Tienda</button></div>
+  <div id="gPanel"></div>
+</section>
+</div>
 <div class="toast" id="toast" role="status" hidden></div>
 <button class="pomopill" id="pomoPill" hidden></button>
 <dialog class="sheet" id="techSheet" aria-labelledby="techTitle"><div class="sh" id="techBody"></div></dialog>
@@ -297,11 +401,11 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:12,
+    v:13,
     days:DAYS.map((_,i)=>({am:i>=5?"10:00":"09:00",pm:i>=5?"17:00":"16:30",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST),cal:mk(CAL)},
-    calPct:25,calFree:60,calWeekly:true,calStart:null,trainPlan:{},sevOn:false,pomo:{work:25,brk:5},
+    calPct:25,calFree:60,calWeekly:true,calStart:null,trainPlan:{},sevOn:false,pomo:{work:25,brk:5},game:{min:0,spent:0,owned:[],claimed:{},manual:[],log:[]},
     fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
     trainPos:"after",outdoor:"morning",morningAt:"07:30",block:50,brk:10,
     plans:{},dirty:{}
@@ -325,7 +429,8 @@ if(S&&S.v===9){S.v=10;const set={nat:1,car:2,vel:1,dom:2};S.subjects.forEach(x=>
 // v11: los temas propios de Sevilla quedan fuera de la semana hasta que se activen en Ajustes
 if(S&&S.v===10){S.v=11;S.sevOn=false;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
 if(S&&S.v===11){S.v=12;S.pomo={work:25,brk:5}}
-if(!S||S.v!==12)S=defaults();
+if(S&&S.v===12){S.v=13;S.game={min:0,spent:0,owned:[],claimed:{},manual:[],log:[]}}
+if(!S||S.v!==13)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -618,7 +723,7 @@ $("week").addEventListener("click",e=>{
     return;
   }
   const tk=e.target.closest(".tick");
-  if(tk){const blk=S.plans[iso(monday(offset))][+tk.dataset.d].find(x=>x.id===tk.dataset.id);if(blk){blk.done=!blk.done;save();renderWeek()}return}
+  if(tk){const blk=S.plans[iso(monday(offset))][+tk.dataset.d].find(x=>x.id===tk.dataset.id);if(blk){blk.done=!blk.done;save();renderWeek();renderGameCard()}return}
   const b=e.target.closest("[data-act]");if(!b)return;
   const day=S.days[+b.dataset.d],a=b.dataset.act,m=+day.study||0,had=hasTime(+b.dataset.d);
   if(a==="h+")day.study=had?Math.min(720,Math.floor(m/30)*30+30):60;
@@ -661,7 +766,7 @@ $("addFixed").onclick=()=>{resetTrainPlan();S.fixed.push({id:uid(),day:1,start:"
 $("resetArea").addEventListener("click",e=>{
   const a=$("resetArea"),idle='<button class="btn line" id="resetBtn">Borrar todos los datos</button>';
   if(e.target.id==="resetBtn")a.innerHTML='<span>Se borrarán horas, temas marcados, ajustes y semanas.</span><button class="btn" id="resetYes">Sí, borrar</button><button class="btn line" id="resetNo">Cancelar</button>';
-  else if(e.target.id==="resetYes"){S=defaults();save();a.innerHTML=idle;renderSettings();renderTopics();renderWeek();toast("Datos borrados")}
+  else if(e.target.id==="resetYes"){S=defaults();save();a.innerHTML=idle;renderSettings();renderTopics();renderWeek();renderGameCard();toast("Datos borrados")}
   else if(e.target.id==="resetNo")a.innerHTML=idle;
 });
 
@@ -755,8 +860,162 @@ $("techSheet").addEventListener("click",e=>{
 $("techSheet").addEventListener("close",()=>{techCtx=null;pomoTick()});
 $("pomoPill").onclick=()=>{for(const [d,arr] of (S.plans[iso(monday(offset))]||[]).entries()){if(arr.some(x=>x.id===pomo.blk)){openTech(d,pomo.blk);return}}};
 
+/* ------- juego: mi parque de bomberos ------- */
+// 10 monedas por hora de estudio (1 moneda cada 6 min). Cuentan los bloques de estudio marcados como hechos y el estudio añadido a mano.
+const COIN_MIN=6;
+const SHOP=[
+  {id:"obra",name:"Obra del parque",cost:20,cat:"Edificio",desc:"El edificio principal con cuatro cocheras. Sin él no hay parque."},
+  {id:"mangueras",name:"Mangueras",cost:20,cat:"Material",desc:"Tramos de 25 y 45 mm enrollados y listos para salir."},
+  {id:"gimnasio",name:"Gimnasio",cost:20,cat:"Edificio",desc:"Barra de dominadas y pesas para no perder la forma en la guardia."},
+  {id:"bandera",name:"Mástil y bandera",cost:10,cat:"Decoración",desc:"La bandera del parque ondeando en la entrada."},
+  {id:"arboles",name:"Árboles y jardín",cost:10,cat:"Decoración",desc:"Un poco de sombra para el patio, que en Sevilla hace falta."},
+  {id:"farolas",name:"Farolas",cost:15,cat:"Decoración",desc:"Luz en la explanada para las salidas de noche."},
+  {id:"barra",name:"Barra de descenso",cost:25,cat:"Edificio",desc:"De los dormitorios a las cocheras en segundos."},
+  {id:"epi",name:"Equipos de protección",cost:30,cat:"Material",desc:"Cascos, chaquetones y equipos de respiración (ERA)."},
+  {id:"cocina",name:"Cocina y comedor",cost:30,cat:"Edificio",desc:"Enciende la planta de arriba: comida de guardia para todo el turno."},
+  {id:"dormitorios",name:"Dormitorios",cost:40,cat:"Edificio",desc:"Para las guardias de 24 horas. Más luces en la planta de arriba."},
+  {id:"torre",name:"Torre de prácticas",cost:60,cat:"Edificio",desc:"Para entrenar rescates en altura y maniobras con cuerdas."},
+  {id:"dron",name:"Dron de reconocimiento",cost:70,cat:"Vehículo",desc:"Vista desde el aire de incendios e inundaciones."},
+  {id:"piscina",name:"Piscina de rescate",cost:80,cat:"Edificio",desc:"Para preparar los 100 m y los rescates acuáticos."},
+  {id:"bul",name:"Bomba urbana ligera",cost:90,cat:"Vehículo",desc:"La BUL: ágil para el casco antiguo y sus calles estrechas."},
+  {id:"rescate",name:"Vehículo de rescate",cost:110,cat:"Vehículo",desc:"Excarcelación, apeos y rescates técnicos."},
+  {id:"bup",name:"Bomba urbana pesada",cost:120,cat:"Vehículo",desc:"La BUP: más agua y más bomba para incendios grandes."},
+  {id:"nrbq",name:"Furgón NRBQ",cost:140,cat:"Vehículo",desc:"Mercancías peligrosas y riesgo químico."},
+  {id:"escala",name:"Autoescala",cost:150,cat:"Vehículo",desc:"La escalera de 30 m para rescates en altura."},
+  {id:"helipuerto",name:"Helipuerto",cost:200,cat:"Edificio",desc:"La joya del parque: el sello de un parque de primera."}
+];
+const RANKS=[[0,"Aspirante"],[20,"Bombero en prácticas"],[100,"Bombero"],[250,"Cabo"],[450,"Sargento"],[700,"Suboficial"],[1000,"Oficial"],[1240,"Jefe de parque"]];
+const G=()=>S.game||(S.game={min:0,spent:0,owned:[],claimed:{},manual:[],log:[]});
+const coins=()=>Math.floor(G().min/COIN_MIN)-G().spent;
+const owns=id=>G().owned.includes(id);
+function pendingStudy(){
+  const items=[];
+  for(const [wk,plan] of Object.entries(S.plans))plan.forEach((arr,d)=>arr.forEach(b=>{
+    if(b.type!=="study"||!b.done)return;
+    const k=[wk,d,b.subj,b.topic||"",b.part||""].join("|");
+    if(!G().claimed[k])items.push({k,min:b.end-b.start,label:(subj(b.subj)||{name:"Estudio"}).name,topic:b.topic||"",date:dayDate(wk,d)});
+  }));
+  G().manual.filter(m=>!m.claimed).forEach(m=>items.push({k:"m|"+m.id,min:m.min,label:"Añadido a mano",topic:m.label||"",date:new Date(m.t)}));
+  return items.sort((a,b)=>a.date-b.date);
+}
+function rankOf(spent){let r=RANKS[0],next=null;for(let i=0;i<RANKS.length;i++){if(spent>=RANKS[i][0]){r=RANKS[i];next=RANKS[i+1]||null}}return {name:r[1],from:r[0],next}}
+
+// dibujo del parque: solo aparece lo comprado
+function sceneSVG(fresh){
+  const has=owns,P=id=>id===fresh?' class="pop"':"";
+  let g='<rect class="g-sky" width="360" height="240"/><circle class="g-sun" cx="44" cy="34" r="14"/>'+
+    '<path class="g-hill" d="M0 178 Q50 150 105 172 T215 166 T360 158 V240 H0Z"/>'+
+    '<rect class="g-grass" y="188" width="360" height="52"/><rect class="g-road" y="222" width="360" height="18"/>'+
+    '<path class="g-lane" d="M0 231H360"/>';
+  if(has("arboles"))g+=`<g${P("arboles")}>`+[[22,170],[350,176]].map(([x,y])=>`<rect class="g-trunk" x="${x-2}" y="${y}" width="4" height="${190-y}"/><circle class="g-leaf" cx="${x}" cy="${y-6}" r="12"/><circle class="g-leaf" cx="${x+7}" cy="${y-1}" r="8"/>`).join("")+'<rect class="g-flower" x="74" y="190" width="60" height="3" rx="1.5"/><rect class="g-flower" x="220" y="190" width="60" height="3" rx="1.5"/></g>';
+  if(has("gimnasio"))g+=`<g${P("gimnasio")}><rect class="g-gym" x="6" y="148" width="54" height="42"/><rect class="g-roof" x="3" y="143" width="60" height="6"/><rect class="g-glass" x="12" y="158" width="16" height="12"/><rect class="g-glass" x="38" y="158" width="16" height="12"/><rect class="g-door2" x="27" y="174" width="12" height="16"/><text class="g-sign" x="33" y="156" text-anchor="middle">GYM</text><path class="g-bar" d="M14 164h12M17 161v6M23 161v6"/></g>`;
+  if(has("piscina"))g+=`<g${P("piscina")}><rect class="g-poolrim" x="4" y="196" width="60" height="22" rx="3"/><rect class="g-water" x="7" y="199" width="54" height="16" rx="2"/><path class="g-wave" d="M11 205q4-3 8 0t8 0 8 0 8 0 8 0"/></g>`;
+  if(!has("obra")){
+    g+='<g><path class="g-fence" d="M78 188V160M108 188V160M138 188V160M168 188V160M198 188V160M228 188V160M258 188V160M78 166H258M78 180H258"/>'+
+      '<rect class="g-signboard" x="128" y="134" width="82" height="24" rx="2"/><path class="g-fence" d="M150 158v30M188 158v30"/>'+
+      '<text class="g-signtext" x="169" y="144" text-anchor="middle">SOLAR DEL FUTURO</text><text class="g-signtext" x="169" y="153" text-anchor="middle">PARQUE DE BOMBEROS</text></g>';
+  }else{
+    g+=`<g${P("obra")}><rect class="g-brick" x="72" y="112" width="210" height="78"/><rect class="g-roof" x="68" y="104" width="218" height="9"/>`+
+      '<rect class="g-signbg" x="122" y="116" width="110" height="12" rx="2"/><text class="g-sign" x="177" y="125" text-anchor="middle">PARQUE DE BOMBEROS</text>';
+    for(let i=0;i<8;i++){const x=80+i*25.5,lit=(i<4&&has("cocina"))||(i>=4&&has("dormitorios"));g+=`<rect class="${lit?"g-lit":"g-glass"}" x="${x}" y="132" width="14" height="9" rx="1"/>`}
+    for(let i=0;i<4;i++){const x=78+i*51;g+=`<rect class="g-door" x="${x}" y="148" width="45" height="42"/><path class="g-doorline" d="M${x} 156h45M${x} 164h45M${x} 172h45M${x} 180h45"/><text class="g-bay" x="${x+22.5}" y="146" text-anchor="middle">${i+1}</text>`}
+    g+='</g>';
+    if(has("helipuerto"))g+=`<g${P("helipuerto")}><ellipse class="g-heli" cx="177" cy="103" rx="26" ry="5"/><text class="g-helih" x="177" y="105.5" text-anchor="middle">H</text></g>`;
+    if(has("barra"))g+=`<g${P("barra")}><path class="g-brass" d="M76 132V188"/><circle class="g-brass2" cx="76" cy="131" r="2"/></g>`;
+  }
+  if(has("mangueras"))g+=`<g${P("mangueras")}><rect class="g-rack" x="284" y="146" width="14" height="30" rx="2"/><circle class="g-hose" cx="291" cy="154" r="5"/><circle class="g-hose" cx="291" cy="154" r="2.5"/><circle class="g-hose2" cx="291" cy="168" r="5"/><circle class="g-hose2" cx="291" cy="168" r="2.5"/></g>`;
+  if(has("epi"))g+=`<g${P("epi")}><rect class="g-rack" x="284" y="178" width="14" height="10" rx="1"/>${[287,291,295].map(x=>`<path class="g-helmet" d="M${x-2.2} 184a2.2 2.2 0 0 1 4.4 0z"/>`).join("")}</g>`;
+  if(has("bandera"))g+=`<g${P("bandera")}><path class="g-pole" d="M304 190V112"/><path class="g-flag wave" d="M304 113h20l-4 6 4 6h-20z"/></g>`;
+  if(has("torre"))g+=`<g${P("torre")}><rect class="g-tower" x="314" y="74" width="30" height="116"/><rect class="g-roof" x="311" y="69" width="36" height="6"/>${[84,104,124,144,164].map(y=>`<rect class="g-glass" x="320" y="${y}" width="7" height="10"/><rect class="g-glass" x="331" y="${y}" width="7" height="10"/>`).join("")}<path class="g-rope" d="M344 80V188"/></g>`;
+  if(has("dron"))g+=`<g${P("dron")}><g class="hover"><rect class="g-drone" x="320" y="48" width="18" height="5" rx="2"/><path class="g-droneline" d="M316 47h8M334 47h8M320 50v-3M338 50v-3"/><circle class="g-led" cx="329" cy="53" r="1.3"/></g></g>`;
+  if(has("farolas"))g+=`<g${P("farolas")}>${[66,290].map(x=>`<path class="g-pole" d="M${x} 221V196"/><path class="g-pole" d="M${x} 197h5"/><circle class="g-lamp" cx="${x+6}" cy="198.5" r="2.4"/>`).join("")}</g>`;
+  const truck=(x,id,kind)=>{
+    const body=kind==="nrbq"?"g-nrbq":"g-truck";
+    let t=`<g${P(id)}><rect class="${body}" x="${x}" y="198" width="${kind==="nrbq"?40:46}" height="16" rx="2"/><rect class="${body}" x="${x+(kind==="nrbq"?28:34)}" y="192" width="12" height="9" rx="2"/><rect class="g-glass" x="${x+(kind==="nrbq"?31:37)}" y="194" width="7" height="5" rx="1"/>`+
+      `<rect class="g-stripe" x="${x}" y="206" width="${kind==="nrbq"?40:46}" height="2.5"/><rect class="g-beacon" x="${x+(kind==="nrbq"?30:36)}" y="190" width="6" height="2" rx="1"/>`+
+      `<circle class="g-wheel" cx="${x+9}" cy="215" r="4"/><circle class="g-wheel" cx="${x+(kind==="nrbq"?32:37)}" cy="215" r="4"/>`;
+    if(kind==="escala")t+=`<path class="g-ladder" d="M${x+2} 196L${x+42} 186M${x+2} 199L${x+42} 189"/>${[8,16,24,32].map(o=>`<path class="g-ladder" d="M${x+2+o} ${196-o/4}v3"/>`).join("")}`;
+    if(kind==="rescate")t+=`<rect class="g-tool" x="${x+4}" y="200" width="24" height="5" rx="1"/>`;
+    if(kind==="nrbq")t+=`<path class="g-haz" d="M${x+14} 199l5 5-5 5-5-5z"/>`;
+    if(kind==="bup")t+=`<rect class="g-tank" x="${x+4}" y="195" width="26" height="4" rx="1"/>`;
+    return t+"</g>";
+  };
+  if(has("bul"))g+=truck(77,"bul","bul");
+  if(has("bup"))g+=truck(128,"bup","bup");
+  if(has("escala"))g+=truck(179,"escala","escala");
+  if(has("rescate"))g+=truck(230,"rescate","rescate");
+  if(has("nrbq"))g+=truck(300,"nrbq","nrbq");
+  return `<svg class="scene" viewBox="0 0 360 240" role="img" aria-label="Tu parque de bomberos con ${G().owned.length} mejoras">${g}</svg>`;
+}
+function shopIcon(cat){
+  const p={"Edificio":'<path d="M3 20V9l9-5 9 5v11M8 20v-6h8v6"/>',"Vehículo":'<path d="M2 16V9h12v7M14 11h4l3 3v2M2 16h19"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>',"Material":'<path d="M12 4a8 8 0 1 0 0 16 8 8 0 1 0 0-16zM12 8a4 4 0 1 0 0 8 4 4 0 1 0 0-8z"/>',"Decoración":'<path d="M12 21v-6M12 15c-4 0-6-3-6-6a6 6 0 0 1 12 0c0 3-2 6-6 6z"/>'}[cat];
+  return `<svg class="sico" viewBox="0 0 24 24" aria-hidden="true">${p}</svg>`;
+}
+let gTab="parque",gFresh=null;
+function renderGameCard(){
+  const pend=pendingStudy().reduce((a,x)=>a+x.min,0),gain=Math.floor((G().min+pend)/COIN_MIN)-Math.floor(G().min/COIN_MIN);
+  $("gameCard").innerHTML=`<span class="gc-ico" aria-hidden="true">${shopIcon("Edificio")}</span><span class="gc-tx"><b>Mi parque de bomberos</b><span>${coins()} monedas · ${G().owned.length} de ${SHOP.length} mejoras${gain?` · <em>${gain} monedas por reclamar</em>`:""}</span></span><span class="gc-go" aria-hidden="true">›</span>`;
+}
+function renderGame(){
+  const c=coins(),r=rankOf(G().spent);
+  $("gCoins").innerHTML=`<span class="coin" aria-hidden="true"></span>${c}<span class="sr"> monedas</span>`;
+  $("gRank").innerHTML=`<div class="rk"><b>${r.name}</b><span>${r.next?`${r.next[0]-G().spent} monedas invertidas para ${r.next[1]}`:"Has completado el parque"}</span></div><div class="bar"><i style="width:${r.next?Math.round((G().spent-r.from)/(r.next[0]-r.from)*100):100}%"></i></div>`;
+  document.querySelectorAll("#gTabs [data-gt]").forEach(b=>b.setAttribute("aria-selected",b.dataset.gt===gTab));
+  let h="";
+  if(gTab==="parque"){
+    h=`<div class="gcard sceneCard">${sceneSVG(gFresh)}</div>`;
+    if(!owns("obra"))h+=`<p class="gmsg">${c>=20?'Ya tienes monedas para empezar. Ve a la <button class="lnk" data-gt="tienda">Tienda</button> y compra la obra del parque.':'Estudia y reclama tus monedas en <button class="lnk" data-gt="registro">Registrar</button>. Con 20 monedas (2 h de estudio) compras la obra del parque.'}</p>`;
+    else{
+      const nextItem=SHOP.filter(x=>!owns(x.id)).sort((a,b)=>a.cost-b.cost)[0];
+      h+=`<p class="gmsg">${G().owned.length} de ${SHOP.length} mejoras.${nextItem?` Lo próximo más barato: <b>${esc(nextItem.name)}</b> por ${nextItem.cost} monedas${nextItem.cost>c?`, te faltan ${nextItem.cost-c} (${hm((nextItem.cost-c)*COIN_MIN)} de estudio)`:""}.`:" ¡Parque completo!"}</p>`;
+    }
+  }else if(gTab==="registro"){
+    const pend=pendingStudy(),tot=pend.reduce((a,x)=>a+x.min,0),gain=Math.floor((G().min+tot)/COIN_MIN)-Math.floor(G().min/COIN_MIN);
+    const into=(G().min+tot)%COIN_MIN;
+    h=`<div class="gcard claim"><span class="lab">Por reclamar</span><div class="big"><b>${hm(tot)}</b> de estudio</div>
+      <button class="btn claimbtn" data-claim ${gain||tot?"":"disabled"}>${gain?`Reclamar ${gain} moneda${gain>1?"s":""}`:tot?"Guardar el tiempo":"Nada por reclamar"}</button>
+      <p class="help">10 monedas por hora de estudio (2 h = 20 monedas). Cuentan los bloques de estudio que marcas como hechos en el planificador y lo que añadas aquí.${into?` Llevas ${into} min hacia la próxima moneda.`:""}</p></div>`;
+    h+=pend.length?`<ul class="glist">${pend.slice(-12).reverse().map(x=>`<li><span><b>${esc(x.topic||x.label)}</b><small>${esc(x.label)} · ${x.date.getDate()} ${MES[x.date.getMonth()]}</small></span><span class="mono">${x.min} min</span></li>`).join("")}</ul>${pend.length>12?`<p class="help">Y ${pend.length-12} más.</p>`:""}`:`<p class="gmsg">Marca como hechos tus bloques de estudio en el planificador y aparecerán aquí.</p>`;
+    h+=`<div class="gcard"><span class="lab">Añadir estudio a mano</span><p class="help">Para lo que estudies fuera del plan.</p>
+      <div class="addman"><div class="step"><button data-man="-" aria-label="Menos minutos">−</button><span class="val"><b id="manMin">${gMan} min</b></span><button data-man="+" aria-label="Más minutos">+</button></div><input type="text" id="manLabel" placeholder="Qué has estudiado" aria-label="Qué has estudiado"><button class="btn" data-man="add">Añadir</button></div></div>`;
+    const log=G().log.slice(-6).reverse();
+    if(log.length)h+=`<div class="gcard"><span class="lab">Últimas recompensas</span><ul class="glist">${log.map(l=>{const d=new Date(l.t);return `<li><span><b>+${l.coins} monedas</b><small>${d.getDate()} ${MES[d.getMonth()]} · ${hm(l.min)} de estudio</small></span></li>`}).join("")}</ul></div>`;
+  }else{
+    h=`<div class="shop">${SHOP.slice().sort((a,b)=>(!owns("obra")?(b.id==="obra")-(a.id==="obra"):0)||a.cost-b.cost).map(x=>{
+      const own=owns(x.id),lock=x.id!=="obra"&&!owns("obra"),can=!own&&!lock&&c>=x.cost;
+      return `<div class="item${own?" owned":""}"><div class="ihead">${shopIcon(x.cat)}<div><b>${esc(x.name)}</b><small>${x.cat}</small></div></div><p>${esc(x.desc)}</p>
+        <div class="ifoot"><span class="price"><span class="coin" aria-hidden="true"></span>${x.cost}</span>${own?'<span class="tag2">En tu parque</span>':lock?'<span class="tag2">Primero la obra</span>':`<button class="btn small" data-buy="${x.id}" ${can?"":"disabled"}>${can?"Comprar":`Faltan ${x.cost-c}`}</button>`}</div></div>`}).join("")}</div>`;
+  }
+  $("gPanel").innerHTML=h;
+}
+let gMan=60;
+function showView(){
+  const game=location.hash==="#parque";
+  $("viewPlan").hidden=game;$("viewGame").hidden=!game;
+  if(game){renderGame();window.scrollTo(0,0)}else renderGameCard();
+}
+window.addEventListener("hashchange",showView);
+$("viewGame").addEventListener("click",e=>{
+  const t=e.target.closest("[data-gt]");if(t){gTab=t.dataset.gt;gFresh=null;renderGame();return}
+  if(e.target.closest("[data-claim]")){
+    const pend=pendingStudy();if(!pend.length)return;
+    const tot=pend.reduce((a,x)=>a+x.min,0),before=coins();
+    pend.forEach(x=>{if(x.k.startsWith("m|")){const m=G().manual.find(y=>"m|"+y.id===x.k);if(m)m.claimed=true}else G().claimed[x.k]=1});
+    G().min+=tot;const gain=coins()-before;G().log.push({t:Date.now(),min:tot,coins:gain});save();renderGame();
+    const el=$("gCoins");el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump");
+    toast(gain?`+${gain} monedas para tu parque`:"Tiempo guardado");return}
+  const b=e.target.closest("[data-buy]");
+  if(b){const x=SHOP.find(y=>y.id===b.dataset.buy);if(!x||owns(x.id)||coins()<x.cost)return;
+    G().owned.push(x.id);G().spent+=x.cost;save();gFresh=x.id;gTab="parque";renderGame();toast(`¡${x.name} añadido a tu parque!`);return}
+  const m=e.target.closest("[data-man]");
+  if(m){const a=m.dataset.man;
+    if(a==="+")gMan=Math.min(480,gMan+15);else if(a==="-")gMan=Math.max(15,gMan-15);
+    else{G().manual.push({id:uid(),t:Date.now(),min:gMan,label:($("manLabel").value||"").trim(),claimed:false});save();toast(`${hm(gMan)} añadidos. Reclámalos arriba`)}
+    renderGame()}
+});
+
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-11-04.3";
+const VERSION="2026-11-05.1";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;
@@ -769,6 +1028,6 @@ function checkUpdate(){
 checkUpdate();
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkUpdate()});
 
-renderWeek();renderTopics();renderSettings();
+renderWeek();renderTopics();renderSettings();showView();
 })();
 </script>
