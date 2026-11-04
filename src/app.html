@@ -86,9 +86,11 @@ h1{font-size:34px;font-weight:800;font-stretch:118%;line-height:1;letter-spacing
 .blk .nm{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:7px}
 .sw{width:9px;height:9px;border-radius:50%;flex:none}
 .blk .tp{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
-.chg{border:0;background:none;padding:0;margin:0;text-align:left;cursor:pointer;font:inherit;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
-.chg .ci{color:var(--focus);font-weight:600;white-space:nowrap}
-.chgsel{width:100%;margin-top:4px;font-size:14px;background:var(--bg);border:1px solid var(--focus);border-radius:8px;padding:7px 8px}
+.chg{border:0;background:none;padding:0;margin:0;cursor:pointer;font:inherit;font-size:13px;color:var(--focus);font-weight:600;white-space:nowrap}
+.blk.study .bd{cursor:pointer}
+.nm.opentech{border:0;background:none;padding:0;margin:0;font:inherit;font-weight:600;font-size:14.5px;color:inherit;cursor:pointer;text-align:left}
+.nm .tk{font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--focus);white-space:nowrap}
+.chgsel{display:block;width:100%;margin-top:4px;font-size:14px;background:var(--bg);border:1px solid var(--focus);border-radius:8px;padding:7px 8px}
 .blk.fixed .nm{font-family:var(--f-display);font-stretch:110%;letter-spacing:.02em;text-transform:uppercase;font-size:14px}
 .blk.fixed .fx{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);justify-self:center}
 .blk.done .nm,.blk.done .tp{text-decoration:line-through;opacity:.5}
@@ -142,6 +144,34 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
 .addrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
 .confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:500;z-index:20}
+/* técnicas de estudio y pomodoro */
+dialog.sheet{border:0;padding:0;background:var(--surface);color:var(--ink);border-radius:16px;width:min(560px,calc(100% - 24px));max-height:calc(100% - 24px);box-shadow:0 20px 50px rgb(0 0 0 / .35)}
+dialog.sheet::backdrop{background:rgb(8 14 24 / .55)}
+.sh{padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:14px}
+.shhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.shhead h2{font-size:21px;font-weight:700;font-stretch:112%}
+.shhead p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.techs{display:grid;gap:6px}
+.tech{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tech>button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;border:0;background:var(--bg);padding:11px 12px;text-align:left;font-weight:600;font-size:15px}
+.tech>button .rec{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:var(--hivis);color:var(--on-hivis);padding:2px 7px;border-radius:999px;margin-left:8px}
+.tech>button::after{content:"+";font-size:20px;line-height:1;color:var(--muted)}
+.tech>button[aria-expanded="true"]::after{content:"−"}
+.tech .tb{padding:10px 12px 12px;display:grid;gap:10px;font-size:14px}
+.tech .tb p{margin:0;max-width:62ch}
+.pomoset{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pomoset .lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:4px;display:block}
+.segs{display:flex;gap:3px;height:12px;border-radius:4px;overflow:hidden}
+.segs i{display:block;height:100%}
+.segs i.w{background:var(--c-esp)}
+.segs i.b{background:var(--ok)}
+.segs i.on{outline:2px solid var(--ink);outline-offset:-2px}
+.segtxt{font-size:13px;color:var(--muted)}
+.timer{display:grid;justify-items:center;gap:6px;padding:12px;background:var(--sunk);border-radius:12px}
+.timer .ph{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.timer .clock{font-family:var(--f-mono);font-size:44px;font-variant-numeric:tabular-nums;line-height:1}
+.timer .row2{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.pomopill{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;border:0;border-radius:999px;background:var(--ink);color:var(--surface);padding:10px 16px;font-weight:600;font-size:14px;font-family:var(--f-mono);box-shadow:0 6px 18px rgb(0 0 0 / .25)}
 @media (max-width:420px){ h1{font-size:30px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -230,6 +260,8 @@ input[type=number],input[type=time]{font-family:var(--f-mono);font-size:14px}
   </details>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
+<button class="pomopill" id="pomoPill" hidden></button>
+<dialog class="sheet" id="techSheet" aria-labelledby="techTitle"><div class="sh" id="techBody"></div></dialog>
 
 <script>
 (function(){
@@ -260,11 +292,11 @@ function defaults(){
   ];
   const mk=a=>a.map(t=>({id:uid(),text:t,done:false}));
   return {
-    v:11,
+    v:12,
     days:DAYS.map((_,i)=>({am:i>=5?"10:00":"09:00",pm:i>=5?"17:00":"16:30",study:null,topics:null,noTrain:i===6})),
     subjects,
     topics:{leg:mk(LEG),esp:mk(ESP),sev:mk(SEV),test:mk(TST),cal:mk(CAL)},
-    calPct:25,calFree:60,calWeekly:true,calStart:null,trainPlan:{},sevOn:false,
+    calPct:25,calFree:60,calWeekly:true,calStart:null,trainPlan:{},sevOn:false,pomo:{work:25,brk:5},
     fixed:[{id:uid(),day:0,start:"20:00",end:"21:00",label:"CrossFit"},{id:uid(),day:2,start:"20:00",end:"21:00",label:"CrossFit"}],
     trainPos:"after",outdoor:"morning",morningAt:"07:30",block:50,brk:10,
     plans:{},dirty:{}
@@ -287,7 +319,8 @@ if(S&&S.v===8){S.v=9;S.calWeekly=true;S.calStart=null;Object.keys(S.plans).forEa
 if(S&&S.v===9){S.v=10;const set={nat:1,car:2,vel:1,dom:2};S.subjects.forEach(x=>{if(x.id in set)x.sessions=set[x.id]});S.trainPlan={};Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
 // v11: los temas propios de Sevilla quedan fuera de la semana hasta que se activen en Ajustes
 if(S&&S.v===10){S.v=11;S.sevOn=false;Object.keys(S.plans).forEach(k=>S.dirty[k]=1)}
-if(!S||S.v!==11)S=defaults();
+if(S&&S.v===11){S.v=12;S.pomo={work:25,brk:5}}
+if(!S||S.v!==12)S=defaults();
 const hasTime=d=>S.days[d].study!==null&&S.days[d].study!==undefined&&S.days[d].study!=="";
 const anyTime=()=>S.days.some((_,d)=>hasTime(d));
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -484,7 +517,7 @@ function renderWeek(){
       if(b.type==="fixed")return `<li class="blk fixed"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(--c-fix)"></i>${esc(b.label)}</span></div><span class="fx">Fijo</span></li>`;
       const s=subj(b.subj)||{name:"?",color:"--c-fix"};
       const sub=b.type==="study"?(b.topic?esc(b.topic)+(b.part?" · parte "+b.part:""):"Sin temas pendientes"):(s.goal?goalHtml(s.goal).replace(/<\/?b>/g,""):"Entreno");
-      return `<li class="blk${b.done?" done":""}"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd"><span class="nm"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span>${b.type==="study"&&b.topic&&!b.done&&(S.topics[b.subj]||[]).filter(t=>!t.done).length>1?`<button class="tp chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el tema de ${esc(s.name)} de las ${fmt(b.start)}">${sub} <span class="ci">· Cambiar</span></button>`:(b.type==="train"&&!b.done?`<button class="tp chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el entreno de las ${fmt(b.start)}">${sub} <span class="ci">· Cambiar</span></button>`:`<span class="tp">${sub}</span>`)}</div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} de las ${fmt(b.start)} como hecho">${CHECK}</button></li>`;
+      return `<li class="blk${b.done?" done":""}${b.type==="study"?" study":""}" data-blk="${b.id}" data-d="${d}"><span class="tm">${fmt(b.start)}<small>${b.end-b.start} min</small></span><div class="bd">${b.type==="study"?`<button class="nm opentech" data-tech="${b.id}" data-d="${d}" aria-label="Técnicas de estudio para ${esc(s.name)} de las ${fmt(b.start)}"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)} <span class="tk">Técnicas ›</span></button>`:`<span class="nm"><i class="sw" style="background:var(${s.color})"></i>${esc(s.name)}</span>`}<span class="tp">${sub}${b.type==="study"&&b.topic&&!b.done&&(S.topics[b.subj]||[]).filter(t=>!t.done).length>1?` <button class="chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el tema de ${esc(s.name)} de las ${fmt(b.start)}">· Cambiar</button>`:(b.type==="train"&&!b.done?` <button class="chg" data-chg="${b.id}" data-d="${d}" aria-label="Cambiar el entreno de las ${fmt(b.start)}">· Cambiar</button>`:"")}</span></div><button class="tick" data-d="${d}" data-id="${b.id}" aria-pressed="${!!b.done}" aria-label="Marcar ${esc(s.name)} de las ${fmt(b.start)} como hecho">${CHECK}</button></li>`;
     }).join("");
     const h=hasTime(d),t=day.topics;
     return `<li class="day${d===todayIdx?" today":""}">
@@ -560,6 +593,7 @@ $("week").addEventListener("change",e=>{
 });
 $("week").addEventListener("focusout",e=>{const sel=e.target.closest(".chgsel");if(sel)setTimeout(()=>{if(document.activeElement!==sel&&sel.isConnected)renderWeek()},150)});
 $("week").addEventListener("click",e=>{
+  if(!e.target.closest(".chg,.chgsel,.tick")){const sb=e.target.closest(".blk.study");if(sb){openTech(+sb.dataset.d,sb.dataset.blk);return}}
   const cg=e.target.closest(".chg");
   if(cg){
     const blk=S.plans[iso(monday(offset))][+cg.dataset.d].find(x=>x.id===cg.dataset.chg);if(!blk)return;
@@ -626,8 +660,98 @@ $("resetArea").addEventListener("click",e=>{
   else if(e.target.id==="resetNo")a.innerHTML=idle;
 });
 
+/* ------- técnicas de estudio y pomodoro ------- */
+const TECH={
+  general:[
+    ["Recuerdo activo","Lee un apartado, cierra el tema y escribe o di en voz alta todo lo que recuerdes. Vuelve al texto solo para corregir lo que te falte."],
+    ["Técnica Feynman","Explica el tema como si se lo contaras a alguien que no sabe nada. Donde te atasques está lo que tienes que repasar."],
+    ["Esquema en una hoja","Resume el tema en una sola cara: artículos, plazos, cifras y órganos clave. Ese esquema será tu repaso rápido."],
+    ["Repaso espaciado","Vuelve a este tema al día siguiente, a los 3 días y a la semana, unos minutos cada vez, con preguntas o con el esquema."]],
+  test:[
+    ["Simulacro cronometrado","Haz el test con el tiempo real del examen, sin consultar nada y en un sitio sin ruido."],
+    ["Cuaderno de fallos","Apunta cada pregunta fallada con la respuesta correcta y el tema o artículo. Repasa ese cuaderno antes de cada test."],
+    ["Repaso espaciado","Repite las preguntas falladas al día siguiente y a los 3 días hasta que salgan solas."]],
+  cal:[
+    ["Mapa en blanco","Dibuja de memoria el distrito: calles principales, plazas y accesos. Después compáralo con el plano y corrige."],
+    ["Rutas de salida","Elige una dirección del distrito e imagina la salida desde el parque de bomberos más cercano. Di la ruta calle por calle."],
+    ["Tarjetas de calles","Calle por un lado; distrito y cruces principales por el otro. Repásalas en ratos muertos."],
+    ["Repaso espaciado","Repasa el distrito unos minutos al día siguiente y a los 3 días, empezando siempre por el mapa en blanco."]]
+};
+let techCtx=null,openTechIdx=0;
+const pomo={segs:[],i:0,left:0,running:false,endAt:0,timer:null,blk:null,label:"",lock:null};
+function pomoSegs(len,w,b){const out=[];let t=0;while(t<len){const s=Math.min(w,len-t);out.push(["w",s]);t+=s;if(t<len){const x=Math.min(b,len-t);out.push(["b",x]);t+=x}}return out}
+const mmss=sec=>{sec=Math.max(0,Math.round(sec));return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0")};
+function openTech(d,id){
+  const key=iso(monday(offset)),blk=(S.plans[key][d]||[]).find(x=>x.id===id);if(!blk)return;
+  techCtx={d,id,key};openTechIdx=0;renderTech();
+  const dlg=$("techSheet");try{dlg.open||dlg.showModal()}catch(e){dlg.setAttribute("open","")}
+}
+function renderTech(){
+  if(!techCtx)return;
+  const blk=(S.plans[techCtx.key][techCtx.d]||[]).find(x=>x.id===techCtx.id);if(!blk)return;
+  const s=subj(blk.subj)||{name:"?"},len=blk.end-blk.start,P=S.pomo||{work:25,brk:5};
+  const list=TECH[blk.subj==="cal"?"cal":blk.subj==="test"?"test":"general"];
+  const segs=pomoSegs(len,P.work,P.brk),nw=segs.filter(x=>x[0]==="w").length;
+  const mine=pomo.blk===blk.id;
+  const curSegs=mine?pomo.segs:segs;
+  const segBar=curSegs.map((x,k)=>`<i class="${x[0]}${mine&&k===pomo.i?" on":""}" style="flex:${x[1]}"></i>`).join("");
+  const ph=mine?(pomo.i>=pomo.segs.length?"Bloque terminado":(pomo.segs[pomo.i][0]==="w"?"Estudio":"Descanso")+" · "+(pomo.i+1)+" de "+pomo.segs.length):"Estudio · 1 de "+segs.length;
+  const clk=mine?mmss(pomo.left):mmss(segs[0][1]*60);
+  const pomoBody=`<p>Estudia sin móvil durante cada tanda y descansa de verdad entre ellas. Ajusta el reparto a tu ritmo: se guarda para todos los bloques.</p>
+    <div class="pomoset">
+      <div><span class="lab">Estudio</span><div class="step"><button data-pomo="w-" aria-label="Menos minutos de estudio">−</button><span class="val"><b>${P.work} min</b></span><button data-pomo="w+" aria-label="Más minutos de estudio">+</button></div></div>
+      <div><span class="lab">Descanso</span><div class="step"><button data-pomo="b-" aria-label="Menos minutos de descanso">−</button><span class="val"><b>${P.brk} min</b></span><button data-pomo="b+" aria-label="Más minutos de descanso">+</button></div></div>
+    </div>
+    <div class="segs" aria-hidden="true">${segBar}</div>
+    <p class="segtxt">Este bloque de ${len} min: ${nw} pomodoro${nw>1?"s":""} — ${segs.map(x=>(x[0]==="w"?"estudio ":"descanso ")+x[1]).join(" · ")} min.</p>
+    <div class="timer"><span class="ph" id="pomoPh">${ph}</span><span class="clock" id="pomoClock">${clk}</span>
+      <div class="row2">${mine&&pomo.i>=pomo.segs.length?(blk.done?"":`<button class="btn" data-pomo="done">Marcar bloque como hecho</button>`):`<button class="btn" data-pomo="go">${mine&&pomo.running?"Pausar":mine?"Seguir":"Empezar"}</button>`}${mine?`<button class="btn line" data-pomo="reset">Reiniciar</button>`:""}</div></div>`;
+  const items=[["Pomodoro",pomoBody,true],...list.map(x=>[x[0],`<p>${x[1]}</p>`,false])];
+  $("techBody").innerHTML=`<div class="shhead"><div><h2 id="techTitle">${esc(s.name)}</h2><p>${blk.topic?esc(blk.topic)+(blk.part?" · parte "+blk.part:"")+" · ":""}${fmt(blk.start)}–${fmt(blk.end)}</p></div><button class="nb" data-pomo="close" aria-label="Cerrar">✕</button></div>
+    <div class="techs">${items.map((it,k)=>`<div class="tech"><button aria-expanded="${k===openTechIdx}" data-techi="${k}">${it[0]}${it[2]?'<span class="rec">Recomendada</span>':""}</button>${k===openTechIdx?`<div class="tb">${it[1]}</div>`:""}</div>`).join("")}</div>`;
+}
+function pomoTick(){
+  if(pomo.running)pomo.left=(pomo.endAt-Date.now())/1000;
+  if(pomo.running&&pomo.left<=0){
+    beep();pomo.i++;
+    if(pomo.i>=pomo.segs.length){pomo.running=false;clearInterval(pomo.timer);releaseLock();pomo.left=0}
+    else{pomo.left=pomo.segs[pomo.i][1]*60;pomo.endAt=Date.now()+pomo.left*1000}
+    renderTech();
+  }
+  const c=$("pomoClock");if(c&&techCtx&&techCtx.id===pomo.blk)c.textContent=mmss(pomo.left);
+  const pill=$("pomoPill");pill.hidden=!pomo.blk||$("techSheet").open;
+  if(!pill.hidden)pill.textContent=(pomo.i>=pomo.segs.length?"Terminado":(pomo.segs[pomo.i][0]==="w"?"Estudio ":"Descanso ")+mmss(pomo.left))+(pomo.running?"":" · pausa");
+}
+function beep(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const ctx=pomo.ac||(pomo.ac=new A());[0,0.35].forEach(t=>{const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=880;g.gain.value=0.15;o.connect(g);g.connect(ctx.destination);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+0.2)})}catch(e){}}
+function holdLock(){try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>pomo.lock=l).catch(()=>{})}catch(e){}}
+function releaseLock(){try{pomo.lock&&pomo.lock.release()}catch(e){}pomo.lock=null}
+$("techSheet").addEventListener("click",e=>{
+  const dlg=$("techSheet");
+  if(e.target===dlg){dlg.close();return}
+  const ti=e.target.closest("[data-techi]");if(ti){const k=+ti.dataset.techi;openTechIdx=openTechIdx===k?-1:k;renderTech();return}
+  const b=e.target.closest("[data-pomo]");if(!b)return;
+  const a=b.dataset.pomo,P=S.pomo=S.pomo||{work:25,brk:5};
+  const blk=(S.plans[techCtx.key][techCtx.d]||[]).find(x=>x.id===techCtx.id);
+  if(a==="close"){dlg.close();return}
+  if(a[0]==="w"||a[0]==="b"){
+    if(a==="w+")P.work=Math.min(60,P.work+5);if(a==="w-")P.work=Math.max(10,P.work-5);
+    if(a==="b+")P.brk=Math.min(20,P.brk+1);if(a==="b-")P.brk=Math.max(1,P.brk-1);
+    save();if(pomo.blk===blk.id&&!pomo.running&&pomo.i===0)pomo.blk=null;renderTech();return}
+  if(a==="go"){
+    if(pomo.blk!==blk.id){clearInterval(pomo.timer);Object.assign(pomo,{segs:pomoSegs(blk.end-blk.start,P.work,P.brk),i:0,blk:blk.id,running:false});pomo.left=pomo.segs[0][1]*60}
+    if(pomo.running){pomo.running=false;pomo.left=(pomo.endAt-Date.now())/1000;clearInterval(pomo.timer);releaseLock()}
+    else{pomo.running=true;pomo.endAt=Date.now()+pomo.left*1000;clearInterval(pomo.timer);pomo.timer=setInterval(pomoTick,500);holdLock();
+      // el sonido solo se puede preparar al pulsar un botón
+      try{const A=window.AudioContext||window.webkitAudioContext;if(A&&!pomo.ac)pomo.ac=new A();pomo.ac&&pomo.ac.resume&&pomo.ac.resume()}catch(err){}}
+    renderTech();return}
+  if(a==="reset"){clearInterval(pomo.timer);releaseLock();Object.assign(pomo,{blk:null,running:false,i:0});renderTech();pomoTick();$("pomoPill").hidden=true;return}
+  if(a==="done"){blk.done=true;save();clearInterval(pomo.timer);Object.assign(pomo,{blk:null,running:false,i:0});dlg.close();renderWeek();toast("Bloque marcado como hecho")}
+});
+$("techSheet").addEventListener("close",()=>{techCtx=null;pomoTick()});
+$("pomoPill").onclick=()=>{for(const [d,arr] of (S.plans[iso(monday(offset))]||[]).entries()){if(arr.some(x=>x.id===pomo.blk)){openTech(d,pomo.blk);return}}};
+
 /* actualización: la app instalada en la pantalla de inicio puede quedarse con una copia antigua; si en el servidor hay otra versión, recarga */
-const VERSION="2026-11-04.1";
+const VERSION="2026-11-04.2";
 $("version").textContent="Versión "+VERSION+".";
 function checkUpdate(){
   if(!/github\.io$/.test(location.hostname))return;
